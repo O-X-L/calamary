@@ -1,0 +1,40 @@
+---
+
+name: Lint
+
+on:
+  push:
+    branches: [latest, v*]
+  pull_request:
+    branches: [latest, v*]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        python-version: [3.10]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements_test.txt
+        shell: bash
+
+      - name: Running Yamllint
+        run: yamllint .
+        shell: bash
+
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
