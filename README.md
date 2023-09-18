@@ -19,7 +19,7 @@ Its focus is set on security filtering for HTTPS.
 
 **Per example**:
 
-* transparent mode - [DNAT not supported](http://www.squid-cache.org/Advisories/SQUID-2011_1.txt)
+* intercept/transparent mode - [DNAT not supported](http://www.squid-cache.org/Advisories/SQUID-2011_1.txt)
 
   Related errors:
 
@@ -28,13 +28,14 @@ Its focus is set on security filtering for HTTPS.
   * `Forwarding loop detected`
 
 
-* transparent mode - [host verification - using DNS](http://www.squid-cache.org/Doc/config/host_verify_strict/)
+* intercept/transparent mode - [host verification - using DNS](http://www.squid-cache.org/Doc/config/host_verify_strict/)
 
   does hit issues with todays DNS-handling of major providers:
 
-  * TTLs around <=1 min (*p.e. download.docker.com, debian.map.fastlydns.net*)
+  * TTLs <= 1 min (*p.e. download.docker.com, debian.map.fastlydns.net*)
 
   Related error: `Host header forgery detected`
+
 
 
 ## How?
@@ -50,6 +51,11 @@ Its focus is set on security filtering for HTTPS.
   To overcome the DNAT restriction, of losing the real target IP, the proxy will have a lightweight forwarder mode:
 
   <img src="https://wiki.superstes.eu/en/latest/_images/squid_remote.png" alt="Proxy forwarder" width="400">
+
+
+* Transparent traffic interception will be the focus.
+
+  Setting the environment-variables 'HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy' and 'https_proxy' for all applications and HTTP-clients may be problematic/too inconsistent
 
 
 ## Roadmap
