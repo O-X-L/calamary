@@ -31,10 +31,15 @@ jobs:
         run: yamllint .
         shell: bash
 
-
       - uses: actions/setup-go@v4
         with:
           go-version: '1.21'
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
+
+      - name: Build binary
+        run: |
+          cd main/
+          go build
+        shell: bash
