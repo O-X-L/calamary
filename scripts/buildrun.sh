@@ -2,6 +2,6 @@
 
 set -e
 
-cd "$(dirname "$0")/../main"
+cd "$(dirname "$0")/../lib/main"
 go build
 ./main
