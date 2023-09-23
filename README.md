@@ -10,16 +10,28 @@ Its focus is set on security filtering for HTTPS.
 
 **Features**:
 * certificate verification
+* mode to enforce TLS (*deny any unencrypted connections*)
 * detect plain HTTP and respond with generic HTTPS-redirect
+* support for [proxy-protocol](https://github.com/pires/go-proxyproto)
 
 
 ## Why?
+
+Forward proxies are very useful to enforce a security-baseline in networks and a must-have for Zero-Trust environments.
+
+Many enterprises and individuals will use proxies integrated with vendor network-firewalls or cloud-services to handle this filtering.
+
+But some of us might like to keep control over that system.
+
+The usage of go-based applications is easy (_single binary_) and can perform well.
+
+### Why not use Squid?
 
 **Squid has some limitations** that make its usage more complicated than it should be.
 
 **Per example**:
 
-* intercept/transparent mode - [DNAT not supported](http://www.squid-cache.org/Advisories/SQUID-2011_1.txt)
+* intercept/transparent mode - no native solution for [the DNAT restrictions](http://www.squid-cache.org/Advisories/SQUID-2011_1.txt)
 
   Related errors:
 
@@ -36,6 +48,10 @@ Its focus is set on security filtering for HTTPS.
 
   Related error: `Host header forgery detected`
 
+
+Squid is a good and stable software. But I get the feeling it needed to grow into more than it was designed for initially. Some behavior is incomsistent between modes and not optimized for todays IT-world.
+
+I would much preferr a keep-it-simple approach. Even if that means that some nice-to-have features are not implemented.
 
 
 ## How?
@@ -69,6 +85,14 @@ Its focus is set on security filtering for HTTPS.
 
 - [ ] YAML-based configuration
 
+- [ ] Parsing
+
+  - [x] TCP
+  - [ ] TLS
+  - [ ] HTTP
+  - [ ] UDP
+  - [ ] DNS
+
 - [ ] Filtering
 
   - [ ] TCP
@@ -77,7 +101,8 @@ Its focus is set on security filtering for HTTPS.
   - [ ] UDP
 
   - [ ] Certificate validation
-  - [ ] ACLs
+  - [ ] Matches
 
+    - [ ] Config
     - [ ] Matching
     - [ ] Additional checks

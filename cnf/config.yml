@@ -1,0 +1,44 @@
+---
+
+config:
+  listen:
+    port: 4128
+    ip4:
+      - '127.0.0.1'
+    ip6:
+      - '::1'
+    tcp: true
+    udp: false
+    transparent: false
+
+  timeout:
+    connection: 5
+    handshake: 5
+    dial: 5
+    intercept: 5
+
+  output:
+    fwmark: 0
+    interface: ''
+
+vars:
+  net_private: ['192.168.0.0/16', '172.16.0.0/12', '10.0.0.0/8']
+  svc_http: [80, 443]
+
+filters:
+  - match:
+      dest: '192.168.100.0/24'
+    action: 'drop'
+
+  - match:
+      src: '$net_private'
+      dest: '$net_private'
+      port: '$svc_http'
+      protoL4: 'tcp'
+    action: 'accept'
+
+  - match:
+      dest: '!= $net_private'
+      port: 443
+      protoL4: 'tcp'
+    action: 'accept'

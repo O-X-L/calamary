@@ -638,4 +638,4 @@ copy of the Program in return for a fee.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     E-Mail: rath@oxl.at
-    Web: https://github.com/shield-wall-net
+    Web: https://github.com/superstes

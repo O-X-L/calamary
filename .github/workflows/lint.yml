@@ -37,6 +37,12 @@ jobs:
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
+        with:
+          args: '--config=.golangci.yml'
+
+      - name: Running tests
+        run: go test -v ./...
+        shell: bash
 
       - name: Build binary
         run: |

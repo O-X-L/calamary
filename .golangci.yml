@@ -1,0 +1,12 @@
+---
+
+run:
+  go: '1.21'
+  skip-dirs: []
+  skip-files:
+    # stdlib
+    - 'sort.go'
+
+issues:
+  exclude: []
+  exclude-rules: []
