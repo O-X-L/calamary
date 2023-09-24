@@ -35,12 +35,6 @@ jobs:
         with:
           go-version: '1.21'
 
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          args: '--config=../.golangci.yml'
-          working-directory: 'lib'
-
       - name: Running tests
         run: |
           cd lib/
@@ -52,3 +46,9 @@ jobs:
           cd main/
           go build
         shell: bash
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          args: '--config=../.golangci.yml'
+          working-directory: 'lib'

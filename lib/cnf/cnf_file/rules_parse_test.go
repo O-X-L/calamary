@@ -131,6 +131,18 @@ func TestMatchPort(t *testing.T) {
 	matchPort("random")
 }
 
+func TestMatchDomain(t *testing.T) {
+	if matchDomain(" superstes.eu") != "superstes.eu" {
+		t.Error("Match domain #1")
+	}
+	if matchDomain("www.google.com") != "www.google.com" {
+		t.Error("Match domain #2")
+	}
+	if matchDomain(".test.at") != "*.test.at" {
+		t.Error("Match domain #3")
+	}
+}
+
 func TestParseRules(t *testing.T) {
 	ParseRules([]cnf.RuleRaw{
 		cnf.RuleRaw{

@@ -145,7 +145,6 @@ func matchProtoL3(configProto string) meta.Proto {
 	default:
 		panic(fmt.Sprintf("protoL3 '%v' not found", configProto))
 	}
-	return 0
 }
 
 func matchProtoL4(configProto string) meta.Proto {
@@ -158,7 +157,6 @@ func matchProtoL4(configProto string) meta.Proto {
 	default:
 		panic(fmt.Sprintf("protoL4 '%v' not found or not yet supported", configProto))
 	}
-	return 0
 }
 
 func matchProtoL5(configProto string) meta.Proto {
@@ -177,7 +175,6 @@ func matchProtoL5(configProto string) meta.Proto {
 	default:
 		panic(fmt.Sprintf("protoL5 '%v' not found or not yet supported", configProto))
 	}
-	return 0
 }
 
 /*
@@ -239,8 +236,13 @@ func matchPort(configPort string) uint16 {
 
 func matchDomain(configDomain string) string {
 	configDomain = cleanRaw(configDomain)
-	if !u.IsDomainName(configDomain) {
-		panic(fmt.Sprintf("Domain '%s' is not valid", configDomain))
+	validateDomain := configDomain
+	if strings.HasPrefix(configDomain, ".") {
+		validateDomain = strings.Replace(configDomain, ".", "", 1)
+		configDomain = strings.Replace(configDomain, ".", "*.", 1)
+	}
+	if !u.IsDomainName(validateDomain) {
+		panic(fmt.Sprintf("Domain '%s' is not valid", validateDomain))
 	}
 	return configDomain
 }
