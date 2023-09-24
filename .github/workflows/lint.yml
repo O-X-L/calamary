@@ -43,7 +43,7 @@ jobs:
 
       - name: Build binary
         run: |
-          cd main/
+          cd lib/main/
           go build
         shell: bash
 
