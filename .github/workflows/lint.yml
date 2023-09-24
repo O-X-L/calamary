@@ -38,7 +38,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          args: '--config=.golangci.yml'
+          args: '--config=../.golangci.yml'
           working-directory: 'lib'
 
       - name: Running tests
