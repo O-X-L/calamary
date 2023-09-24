@@ -83,7 +83,7 @@ I would much preferr a keep-it-simple approach. Even if that means that some nic
   - [ ] HTTP
   - [ ] UDP
 
-- [ ] YAML-based configuration
+- [x] YAML-based configuration
 
 - [ ] Parsing
 
