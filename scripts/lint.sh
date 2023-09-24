@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cd "$(dirname "$0")/.."
-golangci-lint run --config .golangci.yml
+cd "$(dirname "$0")/../lib"
+golangci-lint run --config ../.golangci.yml

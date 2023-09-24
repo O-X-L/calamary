@@ -8,5 +8,6 @@ run:
     - 'sort.go'
 
 issues:
-  exclude: []
+  exclude:
+    - 'structtag'  # yaml-config defaults
   exclude-rules: []
