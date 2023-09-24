@@ -1,7 +1,7 @@
 package meta
 
-type Proto int
-type Action int
+type Proto uint8
+type Action uint8
 
 const (
 	ActionAccept Action = 0

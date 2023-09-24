@@ -37,7 +37,7 @@ func parseTcp(conn net.Conn) ParsedPackage {
 
 	// destination address
 	var dstIpPort net.Addr
-	if !cnf.ListenTransparent {
+	if !cnf.C.Service.Listen.Transparent {
 		dstIpPort, err = getTcpOriginalDstAddr(conn)
 		if err != nil {
 			log.ConnErrorS("proc-parse", PkgSrc(pkg), "?", "Failed to get original destination IP")

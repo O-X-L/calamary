@@ -18,7 +18,7 @@ func log(lvl string, pkg string, msg string) {
 	if cnf.LOG_TIME {
 		fmt.Printf("%s | %s", time.Now().Format(cnf.LOG_TIME_FORMAT), base)
 	} else {
-		fmt.Printf("%s | %s\n", lvl, base)
+		fmt.Printf("%s\n", base)
 	}
 }
 
@@ -76,4 +76,19 @@ func ConnInfo(pkg string, src string, dst string, msg string) {
 
 func Warn(pkg string, msg string) {
 	log("WARN", pkg, msg)
+}
+
+func Fatal(pkg string, msg string) {
+	var base string
+	if cnf.DEBUG {
+		base = fmt.Sprintf("FATAL | %s | %s\n", pkg, msg)
+	} else {
+		base = fmt.Sprintf("FATAL | %s\n", msg)
+	}
+
+	if cnf.LOG_TIME {
+		panic(fmt.Sprintf("%s | %s", time.Now().Format(cnf.LOG_TIME_FORMAT), base))
+	} else {
+		panic(fmt.Sprintf("%s\n", base))
+	}
 }

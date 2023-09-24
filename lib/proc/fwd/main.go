@@ -5,7 +5,7 @@ import (
 
 	"github.com/superstes/calamary/log"
 	"github.com/superstes/calamary/proc/filter"
-	parse "github.com/superstes/calamary/proc/parse"
+	"github.com/superstes/calamary/proc/parse"
 )
 
 func Forward(l4Proto string, conn net.Conn) {

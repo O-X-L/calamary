@@ -31,7 +31,7 @@ func NewListenerTcp(addr string) (Listener, error) {
 	ln, err := lc.Listen(
 		context.Background(),
 		network,
-		fmt.Sprintf("%v:%v", addr, cnf.ListenPort),
+		fmt.Sprintf("%v:%v", addr, cnf.C.Service.Listen.Port),
 	)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (l *listenerTcp) Close() error {
 
 func (l *listenerTcp) control(network, address string, c syscall.RawConn) error {
 	return c.Control(func(fd uintptr) {
-		if cnf.ListenTransparent {
+		if cnf.C.Service.Listen.Transparent {
 			if err := unix.SetsockoptInt(int(fd), unix.SOL_IP, unix.IP_TRANSPARENT, 1); err != nil {
 				log.ErrorS("listener-tcp", fmt.Sprintf("SetsockoptInt(SOL_IP, IP_TRANSPARENT, 1): %v", err))
 			}

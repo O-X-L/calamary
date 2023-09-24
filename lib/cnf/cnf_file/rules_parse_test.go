@@ -1,11 +1,20 @@
-package cnf
+package cnf_file
 
 import (
 	"testing"
 
+	"github.com/superstes/calamary/cnf"
 	"github.com/superstes/calamary/proc/meta"
-	"github.com/superstes/calamary/u"
 )
+
+func TestCleanRaw(t *testing.T) {
+	if cleanRaw(" te st ") != "test" {
+		t.Error("Clean raw #1 failed")
+	}
+	if cleanRaw("!test ") != "test" {
+		t.Error("Clean raw #2 failed")
+	}
+}
 
 func TestMatchFilterAction(t *testing.T) {
 	if filterAction("allow") != meta.ActionAccept || filterAction("accept") != meta.ActionAccept {
@@ -69,36 +78,24 @@ func TestMatchProtoL5(t *testing.T) {
 	matchProtoL5("random")
 }
 
-func TestMatchIPs(t *testing.T) {
-	nets1 := matchIPs([]string{"192.168.0.1", "192.168.10.0/24"})
-	if !u.AllStrInList(
-		[]string{nets1[0].String(), nets1[1].String()},
-		[]string{"192.168.0.1/32", "192.168.10.0/24"},
-	) {
+func TestMatchNet(t *testing.T) {
+	nets1 := matchNet("192.168.1.24")
+	if nets1.String() != "192.168.1.24/32" {
 		t.Error("Match IPs #1")
 	}
 
-	nets2 := matchIPs([]string{"192.168.20.0/29", "2001:db8::1", "2001:db8::/80"})
-	if !u.AllStrInList(
-		[]string{nets2[0].String(), nets2[1].String(), nets2[2].String()},
-		[]string{"192.168.20.0/29", "2001:db8::1/128", "2001:db8::/80"},
-	) {
-		t.Errorf("Match IPs #2 %v %v %v", nets2[0].String(), nets2[1].String(), nets2[2].String())
+	nets2 := matchNet("192.168.2.0/24")
+	if nets2.String() != "192.168.2.0/24" {
+		t.Error("Match IPs #2")
 	}
 
-	nets3 := matchIPs([]string{"192.168.40.0/24"})
-	if !u.AllStrInList(
-		[]string{nets3[0].String()},
-		[]string{"192.168.40.0/24"},
-	) {
+	nets3 := matchNet("2001:db8::1")
+	if nets3.String() != "2001:db8::1/128" {
 		t.Error("Match IPs #3")
 	}
 
-	nets4 := matchIPs([]string{"192.168.50.0/24"})
-	if !u.AllStrInList(
-		[]string{nets4[0].String()},
-		[]string{"192.168.50.0/24"},
-	) {
+	nets4 := matchNet("2001:db8::/80")
+	if nets4.String() != "2001:db8::/80" {
 		t.Error("Match IPs #4")
 	}
 
@@ -107,5 +104,56 @@ func TestMatchIPs(t *testing.T) {
 			t.Errorf("Match IPs not failing on invalid value")
 		}
 	}()
-	matchIPs([]string{"random"})
+	matchNet("random")
+}
+
+func TestMatchPort(t *testing.T) {
+	if matchPort("80") != 80 || matchPort("!80") != 80 || matchPort("! 80") != 80 {
+		t.Error("Match port #1")
+	}
+	if matchPort("50000") != 50000 || matchPort("!50000") != 50000 {
+		t.Error("Match port #2")
+	}
+	if matchPort("65000") != 65000 || matchPort("!65000") != 65000 {
+		t.Error("Match port #3")
+	}
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("Match port not failing on invalid value #1")
+		}
+	}()
+	matchPort("66000")
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("Match port not failing on invalid value #2")
+		}
+	}()
+	matchPort("random")
+}
+
+func TestParseRules(t *testing.T) {
+	ParseRules([]cnf.RuleRaw{
+		cnf.RuleRaw{
+			Match: cnf.MatchRaw{
+				ProtoL3:  []string{"ip4"},
+				ProtoL4:  []string{"tcp"},
+				DestPort: []string{"80"},
+				Domains:  []string{"superstes.eu"},
+				DestNet:  []string{"!192.168.0.0/16", "!172.16.0.0/12", "!10.0.0.0/8"},
+			},
+			Action: "allow",
+		},
+	})
+	ParseRules([]cnf.RuleRaw{
+		cnf.RuleRaw{
+			Match: cnf.MatchRaw{
+				ProtoL3:  []string{"ip4", "ipv6"},
+				ProtoL4:  []string{"tcp", "udp"},
+				DestPort: []string{"80", "443", "8443"},
+				Domains:  []string{"superstes.eu", "oxl.at"},
+				DestNet:  []string{"8.8.8.8", "1.1.1.1"},
+			},
+			Action: "deny",
+		},
+	})
 }

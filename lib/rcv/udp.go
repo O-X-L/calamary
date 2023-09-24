@@ -85,7 +85,7 @@ func listenUdp(addr string) (*net.UDPConn, error) {
 	lc := net.ListenConfig{
 		Control: func(network, address string, c syscall.RawConn) error {
 			return c.Control(func(fd uintptr) {
-				if cnf.ListenTransparent {
+				if cnf.C.Service.Listen.Transparent {
 					if err := unix.SetsockoptInt(int(fd), unix.SOL_IP, unix.IP_TRANSPARENT, 1); err != nil {
 						log.ErrorS("listener-udp", fmt.Sprintf("SetsockoptInt(SOL_IP, IP_TRANSPARENT, 1): %v", err))
 					}
@@ -104,7 +104,7 @@ func listenUdp(addr string) (*net.UDPConn, error) {
 	pc, err := lc.ListenPacket(
 		context.Background(),
 		network,
-		fmt.Sprintf("%v:%v", addr, cnf.ListenPort),
+		fmt.Sprintf("%v:%v", addr, cnf.C.Service.Listen.Port),
 	)
 	if err != nil {
 		return nil, err
@@ -114,6 +114,7 @@ func listenUdp(addr string) (*net.UDPConn, error) {
 }
 
 func (l *listenerUdp) accept() (conn net.Conn, err error) {
+	panic(fmt.Errorf("processing of UDP traffic is not yet implemented"))
 	/*
 		b := u.GetBufferPool(cnf.UDP_BUFFER_SIZE)
 
