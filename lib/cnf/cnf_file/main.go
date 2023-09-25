@@ -6,7 +6,7 @@ import (
 
 	"github.com/superstes/calamary/cnf"
 	"github.com/superstes/calamary/log"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 func readConfigFile(file string) (config []byte, err error) {
@@ -41,16 +41,20 @@ func readConfig() (config []byte) {
 	panic(fmt.Errorf("no valid config file found! (%s, %s)", cwdConfig, cnf.ConfigFileAbs))
 }
 
-func Load() {
+func Load(validate bool) {
 	log.Info("config", "Loading config from file")
 	newConfig := cnf.Config{}
 	err := yaml.Unmarshal(readConfig(), &newConfig)
 	if err != nil {
 		log.ErrorS("config", "Failed to parse config! Check if it is valid!")
-		panic(fmt.Errorf("failed to parse config"))
+		panic(fmt.Errorf("failed to parse config: %v", err))
 	}
-	cnf.C = &newConfig
+	if !validate {
+		cnf.C = &newConfig
+	}
 	newRules := ParseRules(cnf.C.Rules)
 	cnf.RULES = &newRules
 	log.Debug("config", "Finished loading config")
+	log.Debug("config", fmt.Sprintf("CONFIG DUMP: %+v", cnf.C))
+	log.Debug("config", fmt.Sprintf("PARSED RULES: %+v", cnf.RULES))
 }

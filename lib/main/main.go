@@ -30,13 +30,13 @@ func main() {
 
 	if modeValidate {
 		cnf.C.Service.Debug = true
-		cnf_file.Load()
+		cnf_file.Load(true)
 		log.Info("config", "Config validated successfully")
 		os.Exit(0)
 	}
 
 	welcome()
-	cnf_file.Load()
+	cnf_file.Load(false)
 	service := &service{}
 	service.start()
 	service.signalHandler()

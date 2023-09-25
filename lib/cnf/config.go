@@ -1,5 +1,7 @@
 package cnf
 
+import "gopkg.in/yaml.v3"
+
 var LOG_TIME bool = true
 var C *Config
 var RULES *[]Rule
@@ -36,4 +38,23 @@ type ServiceConfigTimeout struct {
 type ServiceConfigOutput struct {
 	FwMark    int    `yaml:"fwmark" default="0"`
 	Interface string `yaml:"interface" default=""`
+}
+
+// allow single string to be supplied
+type YamlStringArray []string
+
+func (a *YamlStringArray) UnmarshalYAML(value *yaml.Node) error {
+	var multi []string
+	err := value.Decode(&multi)
+	if err != nil {
+		var single string
+		err := value.Decode(&single)
+		if err != nil {
+			return err
+		}
+		*a = []string{single}
+	} else {
+		*a = multi
+	}
+	return nil
 }

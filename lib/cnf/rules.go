@@ -12,14 +12,14 @@ type RuleRaw struct {
 }
 
 type MatchRaw struct {
-	SrcNet   []string `yaml:"src"`
-	DestNet  []string `yaml:"dest"`
-	SrcPort  []string `yaml:"sport"`
-	DestPort []string `yaml:"port"`
-	ProtoL3  []string `yaml:"protoL3"`
-	ProtoL4  []string `yaml:"protoL4"`
-	ProtoL5  []string `yaml:"protoL5"`
-	Domains  []string `yaml:"dns"`
+	SrcNet   YamlStringArray `yaml:"src"`
+	DestNet  YamlStringArray `yaml:"dest"`
+	SrcPort  YamlStringArray `yaml:"sport"`
+	DestPort YamlStringArray `yaml:"port"`
+	ProtoL3  YamlStringArray `yaml:"protoL3"`
+	ProtoL4  YamlStringArray `yaml:"protoL4"`
+	ProtoL5  YamlStringArray `yaml:"protoL5"`
+	Domains  YamlStringArray `yaml:"dns"`
 }
 
 type Rule struct {
@@ -42,5 +42,5 @@ type Match struct {
 	ProtoL4N  []meta.Proto
 	ProtoL5   []meta.Proto
 	ProtoL5N  []meta.Proto
-	Domains   []string
+	Domains   YamlStringArray
 }

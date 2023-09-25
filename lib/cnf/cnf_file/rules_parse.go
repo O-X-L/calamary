@@ -12,112 +12,226 @@ import (
 )
 
 func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
+	var v cnf.Var
+	var vf bool
+	var vn bool
+	var value string
+
+	// todo: move duplicate lines into sub-functions
+
 	for i := range rawRules {
 		ruleRaw := rawRules[i]
 		rule := cnf.Rule{
 			Action: filterAction(ruleRaw.Action),
 		}
 
+		// source networks
 		if len(ruleRaw.Match.SrcNet) > 0 {
 			rule.Match.SrcNet = []*net.IPNet{}
 			rule.Match.SrcNetN = []*net.IPNet{}
 		}
 		for i2 := range ruleRaw.Match.SrcNet {
-			if ruleRaw.Match.SrcNet[i2][0] == '!' {
-				rule.Match.SrcNetN = append(rule.Match.SrcNetN, matchNet(ruleRaw.Match.SrcNet[i2]))
+			value = ruleRaw.Match.SrcNet[i2]
+			vf, vn, v = usedVar(value)
+			if vf {
+				for i3 := range v.Value {
+					if vn {
+						rule.Match.SrcNetN = append(rule.Match.SrcNetN, matchNet(v.Value[i3]))
+					} else {
+						rule.Match.SrcNet = append(rule.Match.SrcNet, matchNet(v.Value[i3]))
+					}
+				}
 			} else {
-				rule.Match.SrcNet = append(rule.Match.SrcNet, matchNet(ruleRaw.Match.SrcNet[i2]))
+				if negate(ruleRaw.Match.SrcNet[i2]) {
+					rule.Match.SrcNetN = append(rule.Match.SrcNetN, matchNet(value))
+				} else {
+					rule.Match.SrcNet = append(rule.Match.SrcNet, matchNet(value))
+				}
 			}
 		}
 
+		// destination networks
 		if len(ruleRaw.Match.DestNet) > 0 {
 			rule.Match.DestNet = []*net.IPNet{}
 			rule.Match.DestNetN = []*net.IPNet{}
 		}
 		for i2 := range ruleRaw.Match.DestNet {
-			if ruleRaw.Match.DestNet[i2][0] == '!' {
-				rule.Match.DestNetN = append(rule.Match.DestNetN, matchNet(ruleRaw.Match.DestNet[i2]))
+			value = ruleRaw.Match.DestNet[i2]
+			vf, vn, v = usedVar(value)
+			if vf {
+				for i3 := range v.Value {
+					if vn {
+						rule.Match.DestNetN = append(rule.Match.DestNetN, matchNet(v.Value[i3]))
+					} else {
+						rule.Match.DestNet = append(rule.Match.DestNet, matchNet(v.Value[i3]))
+					}
+				}
 			} else {
-				rule.Match.DestNet = append(rule.Match.DestNet, matchNet(ruleRaw.Match.DestNet[i2]))
+				if negate(ruleRaw.Match.DestNet[i2]) {
+					rule.Match.DestNetN = append(rule.Match.DestNetN, matchNet(value))
+				} else {
+					rule.Match.DestNet = append(rule.Match.DestNet, matchNet(value))
+				}
 			}
 		}
 
+		// source ports
 		if len(ruleRaw.Match.SrcPort) > 0 {
 			rule.Match.SrcPort = []uint16{}
 			rule.Match.SrcPortN = []uint16{}
 		}
 		for i2 := range ruleRaw.Match.SrcPort {
-			rule.Match.SrcPort = []uint16{}
-			rule.Match.SrcPortN = []uint16{}
-			if ruleRaw.Match.SrcPort[i2][0] == '!' {
-				rule.Match.SrcPortN = append(rule.Match.SrcPortN, matchPort(ruleRaw.Match.SrcPort[i2]))
+			value = ruleRaw.Match.SrcPort[i2]
+			vf, vn, v = usedVar(value)
+			if vf {
+				for i3 := range v.Value {
+					if vn {
+						rule.Match.SrcPortN = append(rule.Match.SrcPortN, matchPort(v.Value[i3]))
+					} else {
+						rule.Match.SrcPort = append(rule.Match.SrcPort, matchPort(v.Value[i3]))
+					}
+				}
 			} else {
-				rule.Match.SrcPort = append(rule.Match.SrcPort, matchPort(ruleRaw.Match.SrcPort[i2]))
+				if negate(ruleRaw.Match.SrcPort[i2]) {
+					rule.Match.SrcPortN = append(rule.Match.SrcPortN, matchPort(value))
+				} else {
+					rule.Match.SrcPort = append(rule.Match.SrcPort, matchPort(value))
+				}
 			}
 		}
 
+		// destination ports
 		if len(ruleRaw.Match.DestPort) > 0 {
 			rule.Match.DestPort = []uint16{}
 			rule.Match.DestPortN = []uint16{}
 		}
 		for i2 := range ruleRaw.Match.DestPort {
-			if ruleRaw.Match.DestPort[i2][0] == '!' {
-				rule.Match.DestPortN = append(rule.Match.DestPortN, matchPort(ruleRaw.Match.DestPort[i2]))
+			value = ruleRaw.Match.DestPort[i2]
+			vf, vn, v = usedVar(value)
+			if vf {
+				for i3 := range v.Value {
+					if vn {
+						rule.Match.DestPortN = append(rule.Match.DestPortN, matchPort(v.Value[i3]))
+					} else {
+						rule.Match.DestPort = append(rule.Match.DestPort, matchPort(v.Value[i3]))
+					}
+				}
 			} else {
-				rule.Match.DestPort = append(rule.Match.DestPort, matchPort(ruleRaw.Match.DestPort[i2]))
+				if negate(ruleRaw.Match.DestPort[i2]) {
+					rule.Match.DestPortN = append(rule.Match.DestPortN, matchPort(value))
+				} else {
+					rule.Match.DestPort = append(rule.Match.DestPort, matchPort(value))
+				}
 			}
 		}
 
+		// protocol layer 3
 		if len(ruleRaw.Match.ProtoL3) > 0 {
 			rule.Match.ProtoL3 = []meta.Proto{}
 			rule.Match.ProtoL3N = []meta.Proto{}
 		}
 		for i2 := range ruleRaw.Match.ProtoL3 {
-			if ruleRaw.Match.ProtoL3[i2][0] == '!' {
-				rule.Match.ProtoL3N = append(rule.Match.ProtoL3N, matchProtoL3(ruleRaw.Match.ProtoL3[i2]))
+			value = ruleRaw.Match.ProtoL3[i2]
+			vf, vn, v = usedVar(value)
+			if vf {
+				for i3 := range v.Value {
+					if vn {
+						rule.Match.ProtoL3N = append(rule.Match.ProtoL3N, matchProtoL3(v.Value[i3]))
+					} else {
+						rule.Match.ProtoL3 = append(rule.Match.ProtoL3, matchProtoL3(v.Value[i3]))
+					}
+				}
 			} else {
-				rule.Match.ProtoL3 = append(rule.Match.ProtoL3, matchProtoL3(ruleRaw.Match.ProtoL3[i2]))
+				if negate(ruleRaw.Match.ProtoL3[i2]) {
+					rule.Match.ProtoL3N = append(rule.Match.ProtoL3N, matchProtoL3(value))
+				} else {
+					rule.Match.ProtoL3 = append(rule.Match.ProtoL3, matchProtoL3(value))
+				}
 			}
 		}
 
+		// protocol layer 4
 		if len(ruleRaw.Match.ProtoL4) > 0 {
 			rule.Match.ProtoL4 = []meta.Proto{}
 			rule.Match.ProtoL4N = []meta.Proto{}
 		}
 		for i2 := range ruleRaw.Match.ProtoL4 {
-			if ruleRaw.Match.ProtoL4[i2][0] == '!' {
-				rule.Match.ProtoL4N = append(rule.Match.ProtoL4N, matchProtoL4(ruleRaw.Match.ProtoL4[i2]))
+			value = ruleRaw.Match.ProtoL4[i2]
+			vf, vn, v = usedVar(value)
+			if vf {
+				for i3 := range v.Value {
+					if vn {
+						rule.Match.ProtoL4N = append(rule.Match.ProtoL4N, matchProtoL4(v.Value[i3]))
+					} else {
+						rule.Match.ProtoL4 = append(rule.Match.ProtoL4, matchProtoL4(v.Value[i3]))
+					}
+				}
 			} else {
-				rule.Match.ProtoL4 = append(rule.Match.ProtoL4, matchProtoL4(ruleRaw.Match.ProtoL4[i2]))
+				if negate(ruleRaw.Match.ProtoL4[i2]) {
+					rule.Match.ProtoL4N = append(rule.Match.ProtoL4N, matchProtoL4(value))
+				} else {
+					rule.Match.ProtoL4 = append(rule.Match.ProtoL4, matchProtoL4(value))
+				}
 			}
 		}
 
+		// protocol layer 5
 		if len(ruleRaw.Match.ProtoL5) > 0 {
 			rule.Match.ProtoL5 = []meta.Proto{}
 			rule.Match.ProtoL5N = []meta.Proto{}
 		}
 		for i2 := range ruleRaw.Match.ProtoL5 {
-			if ruleRaw.Match.ProtoL5[i2][0] == '!' {
-				rule.Match.ProtoL5N = append(rule.Match.ProtoL5N, matchProtoL5(ruleRaw.Match.ProtoL5[i2]))
+			value = ruleRaw.Match.ProtoL5[i2]
+			vf, vn, v = usedVar(value)
+			if vf {
+				for i3 := range v.Value {
+					if vn {
+						rule.Match.ProtoL5N = append(rule.Match.ProtoL5N, matchProtoL5(v.Value[i3]))
+					} else {
+						rule.Match.ProtoL5 = append(rule.Match.ProtoL5, matchProtoL5(v.Value[i3]))
+					}
+				}
 			} else {
-				rule.Match.ProtoL5 = append(rule.Match.ProtoL5, matchProtoL5(ruleRaw.Match.ProtoL5[i2]))
+				if negate(ruleRaw.Match.ProtoL5[i2]) {
+					rule.Match.ProtoL5N = append(rule.Match.ProtoL5N, matchProtoL5(value))
+				} else {
+					rule.Match.ProtoL5 = append(rule.Match.ProtoL5, matchProtoL5(value))
+				}
 			}
 		}
 
+		// domains
 		if len(ruleRaw.Match.Domains) > 0 {
 			rule.Match.Domains = []string{}
 		}
 		for i2 := range ruleRaw.Match.Domains {
-			if ruleRaw.Match.Domains[i2][0] == '!' {
-				rule.Match.Domains = append(rule.Match.Domains, matchDomain(ruleRaw.Match.Domains[i2]))
+			value = ruleRaw.Match.Domains[i2]
+			vf, vn, v = usedVar(value)
+			if vf {
+				for i3 := range v.Value {
+					rule.Match.Domains = append(rule.Match.Domains, matchDomain(v.Value[i3]))
+				}
 			} else {
-				rule.Match.Domains = append(rule.Match.Domains, matchDomain(ruleRaw.Match.Domains[i2]))
+				rule.Match.Domains = append(rule.Match.Domains, matchDomain(value))
 			}
 		}
 
 		rules = append(rules, rule)
 	}
 	return rules
+}
+
+func negate(configRaw string) bool {
+	return configRaw[0] == '!'
+}
+
+func usedVar(configRaw string) (found bool, neg bool, variable cnf.Var) {
+	for i := range cnf.C.Vars {
+		if strings.Contains(configRaw, fmt.Sprintf("$%s", cnf.C.Vars[i].Name)) {
+			return true, negate(configRaw), cnf.C.Vars[i]
+		}
+	}
+	return false, false, cnf.Var{}
 }
 
 func cleanRaw(configRaw string) (configClean string) {

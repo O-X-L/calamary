@@ -29,7 +29,7 @@ func (svc *service) signalHandler() {
 			switch s {
 			case syscall.SIGHUP:
 				log.Warn("service", "Received reload signal")
-				cnf_file.Load()
+				cnf_file.Load(false)
 
 			case syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM:
 				log.Warn("service", "Received shutdown signal")

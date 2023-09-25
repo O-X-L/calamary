@@ -28,3 +28,24 @@ vars:
   - name: 'svc_http'
     value: [80, 443]
 
+rules:
+  - match:
+      dest: '192.168.100.0/24'
+    action: 'drop'
+
+  - match:
+      port: ['!443', '!80']
+    action: 'drop'
+
+  - match:
+      src: '$net_private'
+      dest: '$net_private'
+      port: '$svc_http'
+      protoL4: 'tcp'
+    action: 'accept'
+
+  - match:
+      dest: '!$net_private'
+      port: 443
+      protoL4: 'tcp'
+    action: 'accept'

@@ -1,3 +1,5 @@
+[![Docs](https://readthedocs.org/projects/calamary/badge/?version=latest)](https://docs.calamary.net/en/latest/?badge=latest)
+
 # Calamary - Forwarding- & Filtering-Proxy
 
 Calamary is a [squid](http://www.squid-cache.org/)-like proxy.
@@ -14,6 +16,10 @@ Its focus is set on security filtering for HTTPS.
 * detect plain HTTP and respond with generic HTTPS-redirect
 * support for [proxy-protocol](https://github.com/pires/go-proxyproto)
 
+
+## Documentation
+
+[docs.calamary.net](https://docs.calamary.net)
 
 ## Why?
 
