@@ -31,14 +31,14 @@ func readConfig() (config []byte) {
 			return config
 		}
 	}
-	config, err = readConfigFile(cnf.CONFIG_FILE_ABS)
+	config, err = readConfigFile(cnf.ConfigFileAbs)
 	if err == nil && config != nil {
 		return config
 	}
 	log.ErrorS("config", fmt.Sprintf(
-		"Neither config file could be read: (%s, %s)", cwdConfig, cnf.CONFIG_FILE_ABS,
+		"Neither config file could be read: (%s, %s)", cwdConfig, cnf.ConfigFileAbs,
 	))
-	panic(fmt.Errorf("no valid config file found! (%s, %s)", cwdConfig, cnf.CONFIG_FILE_ABS))
+	panic(fmt.Errorf("no valid config file found! (%s, %s)", cwdConfig, cnf.ConfigFileAbs))
 }
 
 func Load() {

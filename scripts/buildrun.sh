@@ -3,5 +3,5 @@
 set -e
 
 cd "$(dirname "$0")/../lib/main"
-go build
-./main
+go build -o calamary
+./calamary

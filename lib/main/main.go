@@ -1,10 +1,13 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"os"
 
 	"github.com/superstes/calamary/cnf"
 	"github.com/superstes/calamary/cnf/cnf_file"
+	"github.com/superstes/calamary/log"
 )
 
 func welcome() {
@@ -18,7 +21,20 @@ func welcome() {
 }
 
 func main() {
+	var modeValidate bool
+	flag.BoolVar(&modeValidate, "v", false, "Only validate config")
+	flag.StringVar(&cnf.ConfigFileAbs, "f", cnf.ConfigFileAbs, "Path to the config file")
+	flag.Parse()
+
 	cnf.C = &cnf.Config{}
+
+	if modeValidate {
+		cnf.C.Service.Debug = true
+		cnf_file.Load()
+		log.Info("config", "Config validated successfully")
+		os.Exit(0)
+	}
+
 	welcome()
 	cnf_file.Load()
 	service := &service{}

@@ -1,0 +1,30 @@
+[Unit]
+Description=Calamary Forward Proxy
+Documentation=https://docs.calamary.net
+Documentation=https://github.com/superstes/calamary
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=CONFIG=/etc/calamary/config.yml
+
+# validate before start/restart
+ExecStartPre=/usr/bin/calamary -f $CONFIG -v
+ExecStart=/usr/bin/calamary -f $CONFIG
+
+# validate before reload
+ExecReload=/usr/bin/calamary -f $CONFIG -v
+ExecReload=/bin/kill -HUP $MAINPID
+
+User=proxy
+Group=proxy
+Restart=on-failure
+RestartSec=5s
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=calamary
+
+[Install]
+WantedBy=multi-user.target
