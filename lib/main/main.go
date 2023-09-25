@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/superstes/calamary/cnf"
 	"github.com/superstes/calamary/cnf/cnf_file"
 )
 
@@ -17,10 +18,10 @@ func welcome() {
 }
 
 func main() {
+	cnf.C = &cnf.Config{}
 	welcome()
 	cnf_file.Load()
 	service := &service{}
-	_, cancel := service.start()
-	defer service.shutdown(cancel)
+	service.start()
 	service.signalHandler()
 }

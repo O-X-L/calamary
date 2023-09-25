@@ -1,9 +1,8 @@
 package cnf
 
-var DEBUG bool = false
 var LOG_TIME bool = true
-var C = Config{}
-var RULES = []Rule{}
+var C *Config
+var RULES *[]Rule
 
 type Config struct {
 	Service ServiceConfig `yaml:"service"`
@@ -15,6 +14,7 @@ type ServiceConfig struct {
 	Timeout ServiceConfigTimeout `yaml:"timeout"`
 	Listen  ServiceConfigListen  `yaml:"listen"`
 	Output  ServiceConfigOutput  `yaml:"output"`
+	Debug   bool                 `yaml:"debug" default="false"`
 }
 
 type ServiceConfigListen struct {

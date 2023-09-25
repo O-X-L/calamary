@@ -42,10 +42,15 @@ func readConfig() (config []byte) {
 }
 
 func Load() {
-	err := yaml.Unmarshal(readConfig(), &cnf.C)
+	log.Info("config", "Loading config from file")
+	newConfig := cnf.Config{}
+	err := yaml.Unmarshal(readConfig(), &newConfig)
 	if err != nil {
 		log.ErrorS("config", "Failed to parse config! Check if it is valid!")
 		panic(fmt.Errorf("failed to parse config"))
 	}
-	cnf.RULES = ParseRules(cnf.C.Rules)
+	cnf.C = &newConfig
+	newRules := ParseRules(cnf.C.Rules)
+	cnf.RULES = &newRules
+	log.Debug("config", "Finished loading config")
 }

@@ -117,7 +117,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 
 		rules = append(rules, rule)
 	}
-	return
+	return rules
 }
 
 func cleanRaw(configRaw string) (configClean string) {

@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/superstes/calamary/cnf/cnf_file"
 	"github.com/superstes/calamary/log"
 	"github.com/superstes/calamary/proc/fwd"
 	"github.com/superstes/calamary/rcv"
@@ -20,21 +21,33 @@ type service struct {
 }
 
 func (svc *service) signalHandler() {
-	sigc := make(chan os.Signal, 1)
-	signal.Notify(sigc, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-	sig := <-sigc
-	log.Info("service", fmt.Sprintf("Signal received: %v", sig))
+	signalCh := make(chan os.Signal, 1024)
+	signal.Notify(signalCh, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
+	for {
+		select {
+		case s := <-signalCh:
+			switch s {
+			case syscall.SIGHUP:
+				log.Warn("service", "Received reload signal")
+				cnf_file.Load()
+
+			case syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM:
+				log.Warn("service", "Received shutdown signal")
+				_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				defer cancel()
+				svc.shutdown(cancel)
+			}
+		}
+	}
 }
 
-func (svc *service) start() (ctx context.Context, cancel context.CancelFunc) {
-	ctx, cancel = context.WithCancel(context.Background())
+func (svc *service) start() {
 	svc.listeners = rcv.Start()
 	for i := range svc.listeners {
 		listener := svc.listeners[i]
 		go svc.serve(listener)
 	}
 	log.Info("service", "Started")
-	return
 }
 
 func (svc *service) shutdown(cancel context.CancelFunc) {
@@ -44,6 +57,7 @@ func (svc *service) shutdown(cancel context.CancelFunc) {
 		listener.Close()
 	}
 	log.Info("service", "Stopped")
+	os.Exit(0)
 	/*
 		ctx := context.Background()
 		doneHTTP := httpserver.Shutdown(ctx)
