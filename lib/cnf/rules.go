@@ -42,5 +42,5 @@ type Match struct {
 	ProtoL4N  []meta.Proto
 	ProtoL5   []meta.Proto
 	ProtoL5N  []meta.Proto
-	Domains   YamlStringArray
+	Domains   []string
 }

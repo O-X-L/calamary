@@ -42,7 +42,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 					}
 				}
 			} else {
-				if negate(ruleRaw.Match.SrcNet[i2]) {
+				if negate(value) {
 					rule.Match.SrcNetN = append(rule.Match.SrcNetN, matchNet(value))
 				} else {
 					rule.Match.SrcNet = append(rule.Match.SrcNet, matchNet(value))
@@ -67,7 +67,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 					}
 				}
 			} else {
-				if negate(ruleRaw.Match.DestNet[i2]) {
+				if negate(value) {
 					rule.Match.DestNetN = append(rule.Match.DestNetN, matchNet(value))
 				} else {
 					rule.Match.DestNet = append(rule.Match.DestNet, matchNet(value))
@@ -75,7 +75,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			}
 		}
 
-		// source ports
+		// source ports; todo: support for port ranges
 		if len(ruleRaw.Match.SrcPort) > 0 {
 			rule.Match.SrcPort = []uint16{}
 			rule.Match.SrcPortN = []uint16{}
@@ -92,7 +92,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 					}
 				}
 			} else {
-				if negate(ruleRaw.Match.SrcPort[i2]) {
+				if negate(value) {
 					rule.Match.SrcPortN = append(rule.Match.SrcPortN, matchPort(value))
 				} else {
 					rule.Match.SrcPort = append(rule.Match.SrcPort, matchPort(value))
@@ -117,7 +117,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 					}
 				}
 			} else {
-				if negate(ruleRaw.Match.DestPort[i2]) {
+				if negate(value) {
 					rule.Match.DestPortN = append(rule.Match.DestPortN, matchPort(value))
 				} else {
 					rule.Match.DestPort = append(rule.Match.DestPort, matchPort(value))
@@ -142,7 +142,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 					}
 				}
 			} else {
-				if negate(ruleRaw.Match.ProtoL3[i2]) {
+				if negate(value) {
 					rule.Match.ProtoL3N = append(rule.Match.ProtoL3N, matchProtoL3(value))
 				} else {
 					rule.Match.ProtoL3 = append(rule.Match.ProtoL3, matchProtoL3(value))
@@ -167,7 +167,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 					}
 				}
 			} else {
-				if negate(ruleRaw.Match.ProtoL4[i2]) {
+				if negate(value) {
 					rule.Match.ProtoL4N = append(rule.Match.ProtoL4N, matchProtoL4(value))
 				} else {
 					rule.Match.ProtoL4 = append(rule.Match.ProtoL4, matchProtoL4(value))
@@ -192,7 +192,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 					}
 				}
 			} else {
-				if negate(ruleRaw.Match.ProtoL5[i2]) {
+				if negate(value) {
 					rule.Match.ProtoL5N = append(rule.Match.ProtoL5N, matchProtoL5(value))
 				} else {
 					rule.Match.ProtoL5 = append(rule.Match.ProtoL5, matchProtoL5(value))

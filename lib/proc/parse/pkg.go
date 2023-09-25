@@ -23,8 +23,8 @@ type ParsedL3Package struct {
 }
 
 type ParsedL4Package struct {
-	SrcPort  int
-	DestPort int
+	SrcPort  uint16
+	DestPort uint16
 	L5Proto  meta.Proto
 }
 

@@ -19,9 +19,11 @@ func Parse(l4Proto string, conn net.Conn) ParsedPackage {
 func parseTcp(conn net.Conn) ParsedPackage {
 	pkg := ParsedPackage{
 		L3: &ParsedL3Package{
-			Proto: meta.ProtoL4Tcp,
+			L4Proto: meta.ProtoL4Tcp,
 		},
-		L4:     &ParsedL4Package{},
+		L4: &ParsedL4Package{
+			L5Proto: meta.ProtoNone,
+		},
 		L4Tcp:  &ParsedTcpPackage{},
 		L5Http: &ParsedHttpPackage{},
 	}
@@ -31,7 +33,8 @@ func parseTcp(conn net.Conn) ParsedPackage {
 		log.ConnErrorS("proc-parse", conn.RemoteAddr().String(), "?", "Failed to resolve TCP source-address")
 	}
 	pkg.L3.SrcIP = tcpSrcAddr.IP
-	pkg.L4.SrcPort = tcpSrcAddr.Port
+	pkg.L4.SrcPort = uint16(tcpSrcAddr.Port)
+	pkg.L3.Proto = getL3Proto(pkg.L3.SrcIP)
 
 	log.ConnDebug("proc-parse", PkgSrc(pkg), "?", "Parsing TCP connection")
 
@@ -52,7 +55,7 @@ func parseTcp(conn net.Conn) ParsedPackage {
 		log.ConnErrorS("proc-parse", PkgSrc(pkg), "?", "Failed to resolve TCP destination-address")
 	}
 	pkg.L3.DestIP = tcpDestAddr.IP
-	pkg.L4.DestPort = tcpDestAddr.Port
+	pkg.L4.DestPort = uint16(tcpDestAddr.Port)
 
 	// additional
 	log.ConnDebug("proc-parse", PkgSrc(pkg), PkgDest(pkg), "Processing TCP")
@@ -63,9 +66,11 @@ func parseTcp(conn net.Conn) ParsedPackage {
 func parseUdp(conn net.Conn) ParsedPackage {
 	pkg := ParsedPackage{
 		L3: &ParsedL3Package{
-			Proto: meta.ProtoL4Udp,
+			L4Proto: meta.ProtoL4Udp,
 		},
-		L4:    &ParsedL4Package{},
+		L4: &ParsedL4Package{
+			L5Proto: meta.ProtoNone,
+		},
 		L4Udp: &ParsedUdpPackage{},
 	}
 	/*
@@ -75,8 +80,10 @@ func parseUdp(conn net.Conn) ParsedPackage {
 		if err != nil {
 			log.ConnErrorS("proc-parse", PkgSrcIP(pkg), "?", "Failed to get original destination IP")
 		}
-		logSrc := raddr.String()
-		logDst := dstAddr.String()
+		pkg.L3.SrcIP = raddr.String()
+		pkg.L3.DestIP = dstAddr.String()
+		pkg.L3.Proto = getL3Proto(pkg.L3.SrcIP)
+
 	*/
 	/*
 		udpAddr, err := net.ResolveUDPAddr("tcp", dstIpPort.String())
@@ -90,4 +97,12 @@ func parseUdp(conn net.Conn) ParsedPackage {
 	log.ConnDebug("proc-parse", PkgSrc(pkg), PkgDest(pkg), "Processing UDP")
 
 	return pkg
+}
+
+func getL3Proto(ip net.IP) meta.Proto {
+	if ip.To4() != nil {
+		return meta.ProtoL3IP4
+	} else {
+		return meta.ProtoL3IP6
+	}
 }

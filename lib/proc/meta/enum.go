@@ -4,9 +4,10 @@ type Proto uint8
 type Action uint8
 
 const (
-	ActionAccept Action = 0
-	ActionDeny   Action = 1
+	ActionAccept Action = 1
+	ActionDeny   Action = 2
 
+	ProtoNone  Proto = 0
 	ProtoL3IP4 Proto = 5
 	ProtoL3IP6 Proto = 6
 
