@@ -101,7 +101,7 @@ I would much preferr a keep-it-simple approach. Even if that means that some nic
 
 - [ ] Filtering
 
-  - [ ] TCP
+  - [x] TCP
   - [ ] TLS
   - [ ] HTTP
   - [ ] UDP
@@ -109,6 +109,6 @@ I would much preferr a keep-it-simple approach. Even if that means that some nic
   - [ ] Certificate validation
   - [ ] Matches
 
-    - [ ] Config
-    - [ ] Matching
+    - [x] Config
+    - [x] Matching
     - [ ] Additional checks
