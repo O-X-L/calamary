@@ -21,6 +21,8 @@ service:
   output:
     fwmark: 0
     interface: ''
+    ip4: []
+    ip6: []
 
 vars:
   - name: 'net_private'

@@ -34,21 +34,21 @@ Config-validation only:
 TProxy
 ======
 
-To run Calamary as `TPROXY <https://docs.kernel.org/networking/tproxy.html>`_ target - you will have to set [CAP_NET_RAW](https://man7.org/linux/man-pages/man7/capabilities.7.html):
+To run Calamary as `TPROXY <https://docs.kernel.org/networking/tproxy.html>`_ target - you will have to set `CAP_NET_RAW <https://man7.org/linux/man-pages/man7/capabilities.7.html>`_:
 
 > bind to any address for transparent proxying
 
 You can add it like this:
 
-```bash
-setcap cap_net_raw=+ep /usr/bin/calamary
+.. code-block:: bash
 
-# make sure only wanted users can execute the binary!
-chown root:proxy /usr/bin/calamary
-chmod 750 /usr/bin/calamary
-```
+  setcap cap_net_raw=+ep /usr/bin/calamary
 
-Read more about TPROXY here: `wiki.superstes.eu - NFTables - TProxy <https://wiki.superstes.eu/en/latest/1/network/nftables.html#tproxy>`_
+  # make sure only wanted users can execute the binary!
+  chown root:proxy /usr/bin/calamary
+  chmod 750 /usr/bin/calamary
+
+Read more about TPROXY here: `wiki.superstes.eu - NFTables - TProxy <https://wiki.superstes.eu/en/latest/1/network/firewall_nftables.html#tproxy>`_
 
 Systemd service
 ===============
@@ -93,7 +93,7 @@ Example systemd service to run Calamary:
 Configuration
 #############
 
-See :ref:`Rules <rules>`for more details about defining the filter ruleset.
+See :ref:`Rules <rules>` for more details about defining the filter ruleset.
 
 The default config path is :code:`/etc/calamary/config.yml`
 
@@ -104,52 +104,65 @@ Basic config example:
     ---
 
     service:
-    listen:
-      port: 4128
-      ip4:
-        - '127.0.0.1'
-      ip6:
-        - '::1'
-      tcp: true
-      udp: false  # not yet implemented
-      transparent: false  # tproxy mode
+      listen:
+        port: 4128
+        ip4:
+          - '127.0.0.1'
+        ip6:
+          - '::1'
+        tcp: true
+        udp: false  # not yet implemented
+        transparent: false  # tproxy mode
 
-    debug: false
-    timeout:
-      connection: 5
-      handshake: 5
-      dial: 5
-      intercept: 2
+      debug: false
+      timeout:
+        connection: 5
+        handshake: 5
+        dial: 5
+        intercept: 2
 
-    output:
-      fwmark: 0
-      interface: ''
+      output:
+        fwmark: 0
+        interface: ''
+        ip4: []
+        ip6: []
 
-    vars:
-      - name: 'net_private'
-        value: ['192.168.0.0/16', '172.16.0.0/12', '10.0.0.0/8']
-      - name: 'svc_http'
-        value: [80, 443]
+      vars:
+        - name: 'net_private'
+          value: ['192.168.0.0/16', '172.16.0.0/12', '10.0.0.0/8']
+        - name: 'svc_http'
+          value: [80, 443]
 
-    rules:
-      - match:
-          dest: '192.168.100.0/24'
-        action: 'drop'
+      rules:
+        - match:
+            dest: '192.168.100.0/24'
+          action: 'drop'
 
-      - match:
-          port: ['!443', '!80']
-        action: 'drop'
+        - match:
+            port: ['!443', '!80']
+          action: 'drop'
 
-      - match:
-          src: '$net_private'
-          dest: '$net_private'
-          port: '$svc_http'
-          protoL4: 'tcp'
-        action: 'accept'
+        - match:
+            src: '$net_private'
+            dest: '$net_private'
+            port: '$svc_http'
+            protoL4: 'tcp'
+          action: 'accept'
 
-      - match:
-          dest: '!$net_private'
-          port: 443
-          protoL4: 'tcp'
-        action: 'accept' 
+        - match:
+            dest: '!$net_private'
+            port: 443
+            protoL4: 'tcp'
+          action: 'accept' 
  
+
+Build from sources
+##################
+
+Download and 'install' Golang 1.21 to build the binary from sources: `Golang download <https://go.dev/doc/install>`_
+
+.. code-block:: bash
+
+    git clone https://github.com/superstes/calamary
+    cd calamary/lib/main
+    go build -o calamary

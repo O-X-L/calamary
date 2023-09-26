@@ -14,10 +14,12 @@ Calamary is a `squid <http://www.squid-cache.org/>`_-like proxy.
 Its focus is set on **security filtering for HTTPS**.
 
 **It will not**:
+
 * act as caching proxy
 * act as reverse proxy
 
 **Features**:
+
 * basic traffic filtering - see :ref:`Rules <rules>`
 * certificate verification
 * enforce TLS (*deny any unencrypted connections*)
