@@ -9,6 +9,3 @@ Camalary Documentation
     :maxdepth: 1
 
     info/*
-
-
-.. include:: _inc/in_progress.rst
