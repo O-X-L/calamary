@@ -6,40 +6,40 @@ import (
 	"github.com/superstes/calamary/proc/meta"
 )
 
-type ParsedPackage struct {
-	L3     *ParsedL3Package
-	L4     *ParsedL4Package
-	L5     *ParsedL5Package
-	L4Tcp  *ParsedTcpPackage
-	L4Udp  *ParsedUdpPackage
-	L5Http *ParsedHttpPackage
-	L5Dns  *ParsedDnsPackage
+type ParsedPacket struct {
+	L3     *ParsedL3
+	L4     *ParsedL4
+	L5     *ParsedL5
+	L4Tcp  *ParsedTcp
+	L4Udp  *ParsedUdp
+	L5Http *ParsedHttp
+	L5Dns  *ParsedDns
 }
 
-type ParsedL3Package struct {
+type ParsedL3 struct {
 	Proto  meta.Proto
 	SrcIP  net.IP
 	DestIP net.IP
 }
 
-type ParsedL4Package struct {
+type ParsedL4 struct {
 	Proto    meta.Proto
 	SrcPort  uint16
 	DestPort uint16
 }
 
-type ParsedL5Package struct {
+type ParsedL5 struct {
 	Proto     meta.Proto
 	Encrypted meta.OptBool
 }
 
-type ParsedTcpPackage struct {
+type ParsedTcp struct {
 }
 
-type ParsedUdpPackage struct {
+type ParsedUdp struct {
 }
 
-type ParsedHttpPackage struct {
+type ParsedHttp struct {
 	// plaintext or intercepted HTTP
 	/*
 		method
@@ -50,7 +50,7 @@ type ParsedHttpPackage struct {
 	AuthPwd  string
 }
 
-type ParsedTlsPackage struct {
+type ParsedTls struct {
 	Valid           bool
 	Trusted         bool
 	Expired         bool
@@ -64,7 +64,7 @@ type ParsedTlsPackage struct {
 	SubjectAltNames []string
 }
 
-type ParsedDnsPackage struct {
+type ParsedDns struct {
 	Record     string
 	RecordType string
 	Ttl        int

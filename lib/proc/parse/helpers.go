@@ -8,16 +8,16 @@ import (
 	"github.com/superstes/calamary/u"
 )
 
-func PkgSrc(pkg ParsedPackage) string {
-	return pkg.L3.SrcIP.String()
+func PkgSrc(pkt ParsedPacket) string {
+	return pkt.L3.SrcIP.String()
 }
 
-func PkgDest(pkg ParsedPackage) string {
-	return fmt.Sprintf("%s:%v", pkg.L3.DestIP.String(), pkg.L4.DestPort)
+func PkgDest(pkt ParsedPacket) string {
+	return fmt.Sprintf("%s:%v", pkt.L3.DestIP.String(), pkt.L4.DestPort)
 }
 
-func PkgDestIP(pkg ParsedPackage) string {
-	return pkg.L3.DestIP.String()
+func PkgDestIP(pkt ParsedPacket) string {
+	return pkt.L3.DestIP.String()
 }
 
 func parseIpProto(addr net.Addr) meta.Proto {

@@ -1,6 +1,7 @@
 package cnf_file
 
 import (
+	"net"
 	"testing"
 
 	"github.com/superstes/calamary/cnf"
@@ -22,6 +23,21 @@ func TestMatchFilterAction(t *testing.T) {
 	}
 	if filterAction("deny") != meta.ActionDeny || filterAction("random") != meta.ActionDeny {
 		t.Error("Filter action deny")
+	}
+}
+
+func TestMatchEncryption(t *testing.T) {
+	if matchEncrypted(cnf.RuleRaw{}.Match.Encypted) != meta.OptBoolNone {
+		t.Error("Match encryption default-none")
+	}
+	if matchEncrypted("true") != meta.OptBoolTrue || matchEncrypted("Yes") != meta.OptBoolTrue || matchEncrypted("1") != meta.OptBoolTrue {
+		t.Error("Match encryption true")
+	}
+	if matchEncrypted("false") != meta.OptBoolFalse || matchEncrypted("No") != meta.OptBoolFalse || matchEncrypted("0") != meta.OptBoolFalse {
+		t.Error("Match encryption false")
+	}
+	if matchEncrypted("random") != meta.OptBoolNone || matchEncrypted("") != meta.OptBoolNone {
+		t.Error("Match encryption none")
 	}
 }
 
@@ -143,6 +159,45 @@ func TestMatchDomain(t *testing.T) {
 	}
 }
 
+func TestVars(t *testing.T) {
+	testVarFP := cnf.Var{ // could be false-positive match for 'test1'
+		Name:  "test11",
+		Value: []string{"test.com"},
+	}
+	testVar1 := cnf.Var{
+		Name:  "test1",
+		Value: []string{"192.168.0.0/16", "172.16.0.0/12"},
+	}
+	testVar2 := cnf.Var{
+		Name:  "test2",
+		Value: []string{"80", "443"},
+	}
+	cnf.C = &cnf.Config{
+		Vars: []cnf.Var{testVarFP, testVar1, testVar2},
+	}
+
+	vf, vn, v := usedVar("no-var")
+	if vf == true {
+		t.Error("Var #1")
+	}
+	vf, vn, v = usedVar("$non-existent-var")
+	if vf == true {
+		t.Error("Var #2")
+	}
+	vf, vn, v = usedVar("$test1")
+	if vf == false || vn == true || v.Name != testVar1.Name {
+		t.Error("Var #3")
+	}
+	vf, vn, v = usedVar("!$test1")
+	if vf == false || vn == false || v.Name != testVar1.Name {
+		t.Error("Var #4")
+	}
+	vf, vn, v = usedVar("$test2")
+	if vf == false || vn == true || v.Name != testVar2.Name {
+		t.Error("Var #5")
+	}
+}
+
 func TestParseRules(t *testing.T) {
 	ParseRules([]cnf.RuleRaw{
 		cnf.RuleRaw{
@@ -168,4 +223,48 @@ func TestParseRules(t *testing.T) {
 			Action: "deny",
 		},
 	})
+
+	cnf.C = &cnf.Config{
+		Vars: []cnf.Var{
+			cnf.Var{
+				Name:  "test1",
+				Value: []string{"192.168.0.0/16", "172.16.0.0/8"},
+			},
+		},
+	}
+	ParseRules([]cnf.RuleRaw{
+		cnf.RuleRaw{
+			Match: cnf.MatchRaw{
+				DestNet: []string{"$test1"},
+				SrcNet:  []string{"!$test1"},
+			},
+			Action: "deny",
+		},
+	})
+}
+
+func TestRuleHasMatches(t *testing.T) {
+	r := ruleHasMatches(cnf.Rule{})
+	if r == true {
+		t.Error("Rule #1")
+	}
+	r2 := cnf.Rule{}
+	r2.Match.Encrypted = meta.OptBoolNone
+	r = ruleHasMatches(r2)
+	if r == true {
+		t.Error("Rule #2")
+	}
+	r3 := cnf.Rule{}
+	_, r3Net, _ := net.ParseCIDR("192.168.0.0/16")
+	r3.Match.SrcNet = []*net.IPNet{r3Net}
+	r = ruleHasMatches(r3)
+	if r == false {
+		t.Error("Rule #3")
+	}
+	r4 := cnf.Rule{}
+	r4.Match.ProtoL4 = []meta.Proto{meta.ProtoL4Tcp}
+	r = ruleHasMatches(r4)
+	if r == false {
+		t.Error("Rule #4")
+	}
 }

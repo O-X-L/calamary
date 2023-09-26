@@ -20,7 +20,7 @@ const (
 	ProtoL5Dns  Proto = 22
 	ProtoL5Ntp  Proto = 23
 
-	OptBoolFalse OptBool = 0
+	OptBoolNone  OptBool = 0
 	OptBoolTrue  OptBool = 1
-	OptBoolNone  OptBool = 2
+	OptBoolFalse OptBool = 2
 )

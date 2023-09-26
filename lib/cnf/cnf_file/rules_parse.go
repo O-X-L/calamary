@@ -217,9 +217,61 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			}
 		}
 
-		rules = append(rules, rule)
+		if ruleHasMatches(rule) {
+			// if a rule has no match-values defined; we ignore it for security-reasons
+			rules = append(rules, rule)
+		}
 	}
 	return rules
+}
+
+func ruleHasMatches(rule cnf.Rule) bool {
+	if rule.Match.ProtoL3 != nil && len(rule.Match.ProtoL3) > 0 {
+		return true
+	}
+	if rule.Match.ProtoL3N != nil && len(rule.Match.ProtoL3N) > 0 {
+		return true
+	}
+	if rule.Match.ProtoL4 != nil && len(rule.Match.ProtoL4) > 0 {
+		return true
+	}
+	if rule.Match.ProtoL4N != nil && len(rule.Match.ProtoL4N) > 0 {
+		return true
+	}
+	if rule.Match.ProtoL5 != nil && len(rule.Match.ProtoL5) > 0 {
+		return true
+	}
+	if rule.Match.ProtoL5N != nil && len(rule.Match.ProtoL5N) > 0 {
+		return true
+	}
+	if rule.Match.Encrypted != meta.OptBoolNone {
+		return true
+	}
+	if rule.Match.SrcNet != nil && len(rule.Match.SrcNet) > 0 {
+		return true
+	}
+	if rule.Match.SrcNetN != nil && len(rule.Match.SrcNetN) > 0 {
+		return true
+	}
+	if rule.Match.DestNet != nil && len(rule.Match.DestNet) > 0 {
+		return true
+	}
+	if rule.Match.DestNetN != nil && len(rule.Match.DestNetN) > 0 {
+		return true
+	}
+	if rule.Match.SrcPort != nil && len(rule.Match.SrcPort) > 0 {
+		return true
+	}
+	if rule.Match.SrcPortN != nil && len(rule.Match.SrcPortN) > 0 {
+		return true
+	}
+	if rule.Match.DestPort != nil && len(rule.Match.DestPort) > 0 {
+		return true
+	}
+	if rule.Match.DestPortN != nil && len(rule.Match.DestPortN) > 0 {
+		return true
+	}
+	return false
 }
 
 func negate(configRaw string) bool {
@@ -302,19 +354,6 @@ func matchProtoL5(configProto string) meta.Proto {
 		panic(fmt.Sprintf("protoL5 '%v' not found or not yet supported", configProto))
 	}
 }
-
-/*
-func matchIPsRaw(configIPs interface{}) (networks []*net.IPNet) {
-	switch reflect.TypeOf(configIPs).Kind() {
-	case reflect.String:
-		return matchIPs(strings.Split(fmt.Sprintf("%v", configIPs), ","))
-	case reflect.Slice, reflect.Array:
-		return matchIPs(configIPs)
-	default:
-		panic(fmt.Errorf("IP-match '%v' neither of type string nor array/slice", configIPs))
-	}
-}
-*/
 
 func matchNet(ip string) *net.IPNet {
 	ip = cleanRaw(ip)

@@ -9,17 +9,17 @@ import (
 )
 
 func Forward(l4Proto string, conn net.Conn) {
-	pkg := parse.Parse(l4Proto, conn)
-	if filter.Filter(pkg) {
+	pkt := parse.Parse(l4Proto, conn)
+	if filter.Filter(pkt) {
 		// dialer := nw.NewDialerDirect()
 		log.ConnInfo(
-			"forward", parse.PkgSrc(pkg), parse.PkgDest(pkg),
+			"forward", parse.PkgSrc(pkt), parse.PkgDest(pkt),
 			"Accept",
 		)
 
 	} else {
 		log.ConnInfo(
-			"forward", parse.PkgSrc(pkg), parse.PkgDest(pkg),
+			"forward", parse.PkgSrc(pkt), parse.PkgDest(pkt),
 			"Denied",
 		)
 		conn.Close()
