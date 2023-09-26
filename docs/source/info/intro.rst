@@ -3,7 +3,7 @@
 .. |proxy_forwarder| image:: https://wiki.superstes.eu/en/latest/_images/squid_remote.png
    :class: wiki-img
 
-.. include:: _inc/head.rst
+.. include:: ../_inc/head.rst
 
 #####
 Intro
