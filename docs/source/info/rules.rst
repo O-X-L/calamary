@@ -33,15 +33,15 @@ Multiple matches can be defined in a single rule.
         sport: 'NUMBER'  # source ports
         protoL3: 'ip4/ivp4/ip6/ip6'
         protoL4: 'tcp/udp'  # others might be supported later on
-        protoL5: 'tls/http/dns/ntp'  # other might be supported later on
+        protoL5: 'tls/http/dns/ntp'  # others might be supported later on
         dns: 'DOMAIN'  # domain/TLS-SNI to match
-        encrypted: 'true/false/yes/no'  # only match TLS traffic
+        encrypted: 'true/false/yes/no'  # match TLS traffic
 
 The value of matches is **case-insensitive** by default.
 
 You can define **multiple values** for each match.
 
-Matches can also be **negated**:
+Matches can also be **negated** by using the :code:`!` prefix:
 
 .. code-block:: yaml
 
@@ -77,9 +77,11 @@ Calamary enables you to define variables that can be used inside your ruleset.
 
     vars:
       - name: 'net_private'
-          value: ['192.168.0.0/16', '172.16.0.0/12', '10.0.0.0/8']
+        value: ['192.168.0.0/16', '172.16.0.0/12', '10.0.0.0/8']
       - name: 'svc_http'
-          value: [80, 443]
+        value: [80, 443]
+
+Variables are referenced using the :code:`$` prefix.
 
 Whenever you use a variable, you can also negate it like any other value:
 

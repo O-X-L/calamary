@@ -23,6 +23,7 @@ service:
     interface: ''
     ip4: []
     ip6: []
+    multi_ip: 'roundrobin'  # or failover; not yet implemented
 
 vars:
   - name: 'net_private'

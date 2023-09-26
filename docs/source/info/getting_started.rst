@@ -36,7 +36,9 @@ TProxy
 
 To run Calamary as `TPROXY <https://docs.kernel.org/networking/tproxy.html>`_ target - you will have to set `CAP_NET_RAW <https://man7.org/linux/man-pages/man7/capabilities.7.html>`_:
 
-> bind to any address for transparent proxying
+::
+
+  bind to any address for transparent proxying
 
 You can add it like this:
 
