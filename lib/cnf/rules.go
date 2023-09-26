@@ -20,6 +20,7 @@ type MatchRaw struct {
 	ProtoL4  YamlStringArray `yaml:"protoL4"`
 	ProtoL5  YamlStringArray `yaml:"protoL5"`
 	Domains  YamlStringArray `yaml:"dns"`
+	Encypted string          `yaml:"encrypted"`
 }
 
 type Rule struct {
@@ -43,4 +44,5 @@ type Match struct {
 	ProtoL5   []meta.Proto
 	ProtoL5N  []meta.Proto
 	Domains   []string
+	Encrypted meta.OptBool
 }

@@ -9,6 +9,7 @@ import (
 type ParsedPackage struct {
 	L3     *ParsedL3Package
 	L4     *ParsedL4Package
+	L5     *ParsedL5Package
 	L4Tcp  *ParsedTcpPackage
 	L4Udp  *ParsedUdpPackage
 	L5Http *ParsedHttpPackage
@@ -16,16 +17,20 @@ type ParsedPackage struct {
 }
 
 type ParsedL3Package struct {
-	Proto   meta.Proto
-	SrcIP   net.IP
-	DestIP  net.IP
-	L4Proto meta.Proto
+	Proto  meta.Proto
+	SrcIP  net.IP
+	DestIP net.IP
 }
 
 type ParsedL4Package struct {
+	Proto    meta.Proto
 	SrcPort  uint16
 	DestPort uint16
-	L5Proto  meta.Proto
+}
+
+type ParsedL5Package struct {
+	Proto     meta.Proto
+	Encrypted meta.OptBool
 }
 
 type ParsedTcpPackage struct {

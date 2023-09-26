@@ -32,27 +32,33 @@ func Filter(pkg parse.ParsedPackage) bool {
 
 		// protocols layer 4
 		if rule.Match.ProtoL4 != nil && len(rule.Match.ProtoL4) > 0 {
-			ruleDebug(pkg, rid, fmt.Sprintf("Proto L4: %v vs %v", rule.Match.ProtoL4, pkg.L3.L4Proto))
-			if !anyProtoMatch(rule.Match.ProtoL4, pkg.L3.L4Proto) {
+			ruleDebug(pkg, rid, fmt.Sprintf("Proto L4: %v vs %v", rule.Match.ProtoL4, pkg.L4.Proto))
+			if !anyProtoMatch(rule.Match.ProtoL4, pkg.L4.Proto) {
 				continue
 			}
 		}
 		if rule.Match.ProtoL4N != nil && len(rule.Match.ProtoL4N) > 0 {
-			ruleDebug(pkg, rid, fmt.Sprintf("!Proto L4: %v vs %v", rule.Match.ProtoL4N, pkg.L3.L4Proto))
-			if anyProtoMatch(rule.Match.ProtoL4N, pkg.L3.L4Proto) {
+			ruleDebug(pkg, rid, fmt.Sprintf("!Proto L4: %v vs %v", rule.Match.ProtoL4N, pkg.L4.Proto))
+			if anyProtoMatch(rule.Match.ProtoL4N, pkg.L4.Proto) {
 				continue
 			}
 		}
 		// protocols layer 5
-		if rule.Match.ProtoL5 != nil && pkg.L4.L5Proto != meta.ProtoNone {
-			ruleDebug(pkg, rid, fmt.Sprintf("Proto L5: %v vs %v", rule.Match.ProtoL5, pkg.L4.L5Proto))
-			if !anyProtoMatch(rule.Match.ProtoL5, pkg.L4.L5Proto) {
+		if rule.Match.ProtoL5 != nil && pkg.L5.Proto != meta.ProtoNone {
+			ruleDebug(pkg, rid, fmt.Sprintf("Proto L5: %v vs %v", rule.Match.ProtoL5, pkg.L5.Proto))
+			if !anyProtoMatch(rule.Match.ProtoL5, pkg.L5.Proto) {
 				continue
 			}
 		}
-		if rule.Match.ProtoL5N != nil && pkg.L4.L5Proto != meta.ProtoNone {
-			ruleDebug(pkg, rid, fmt.Sprintf("!Proto L5: %v vs %v", rule.Match.ProtoL5N, pkg.L4.L5Proto))
-			if anyProtoMatch(rule.Match.ProtoL5N, pkg.L4.L5Proto) {
+		if rule.Match.ProtoL5N != nil && pkg.L5.Proto != meta.ProtoNone {
+			ruleDebug(pkg, rid, fmt.Sprintf("!Proto L5: %v vs %v", rule.Match.ProtoL5N, pkg.L5.Proto))
+			if anyProtoMatch(rule.Match.ProtoL5N, pkg.L5.Proto) {
+				continue
+			}
+		}
+		if rule.Match.Encrypted != meta.OptBoolNone && pkg.L5.Encrypted != meta.OptBoolNone {
+			ruleDebug(pkg, rid, fmt.Sprintf("Encrypted: %v vs %v", rule.Match.Encrypted, pkg.L5.Encrypted))
+			if rule.Match.Encrypted != pkg.L5.Encrypted {
 				continue
 			}
 		}
@@ -167,6 +173,7 @@ func anyNetMatch(nets []*net.IPNet, ip net.IP) bool {
 }
 
 func reverseFilterAction(action meta.Action) string {
+	// todo: merge with config-parser function to keep action matching in one place
 	switch action {
 	case meta.ActionAccept:
 		return "accept"

@@ -18,11 +18,13 @@ func Parse(l4Proto string, conn net.Conn) ParsedPackage {
 
 func parseTcp(conn net.Conn) ParsedPackage {
 	pkg := ParsedPackage{
-		L3: &ParsedL3Package{
-			L4Proto: meta.ProtoL4Tcp,
-		},
+		L3: &ParsedL3Package{},
 		L4: &ParsedL4Package{
-			L5Proto: meta.ProtoNone,
+			Proto: meta.ProtoL4Tcp,
+		},
+		L5: &ParsedL5Package{
+			Proto:     meta.ProtoNone,
+			Encrypted: meta.OptBoolNone,
 		},
 		L4Tcp:  &ParsedTcpPackage{},
 		L5Http: &ParsedHttpPackage{},
@@ -65,11 +67,13 @@ func parseTcp(conn net.Conn) ParsedPackage {
 
 func parseUdp(conn net.Conn) ParsedPackage {
 	pkg := ParsedPackage{
-		L3: &ParsedL3Package{
-			L4Proto: meta.ProtoL4Udp,
-		},
+		L3: &ParsedL3Package{},
 		L4: &ParsedL4Package{
-			L5Proto: meta.ProtoNone,
+			Proto: meta.ProtoL4Udp,
+		},
+		L5: &ParsedL5Package{
+			Proto:     meta.ProtoNone,
+			Encrypted: meta.OptBoolNone,
 		},
 		L4Udp: &ParsedUdpPackage{},
 	}

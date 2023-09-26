@@ -24,6 +24,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 		rule := cnf.Rule{
 			Action: filterAction(ruleRaw.Action),
 		}
+		rule.Match.Encrypted = matchEncrypted(ruleRaw.Match.Encypted)
 
 		// source networks
 		if len(ruleRaw.Match.SrcNet) > 0 {
@@ -238,6 +239,17 @@ func cleanRaw(configRaw string) (configClean string) {
 	configClean = strings.ReplaceAll(configRaw, " ", "")
 	configClean = strings.ReplaceAll(configClean, "!", "")
 	return
+}
+
+func matchEncrypted(configEncrypted string) meta.OptBool {
+	switch strings.ToLower(configEncrypted) {
+	case "true", "yes", "y", "1":
+		return meta.OptBoolTrue
+	case "false", "no", "n", "0":
+		return meta.OptBoolFalse
+	default:
+		return meta.OptBoolNone
+	}
 }
 
 func filterAction(configAction string) meta.Action {
