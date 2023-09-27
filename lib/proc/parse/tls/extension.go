@@ -125,12 +125,12 @@ func (ext *ServerNameExtension) Encode() ([]byte, error) {
 	buf := &bytes.Buffer{}
 	err := binary.Write(buf, binary.BigEndian, uint16(1+2+len(ext.Name)))
 	if err != nil {
-		log.Warn("proc-parse-tls", "Error encoding")
+		log.Warn("parse-tls", "Error encoding")
 	}
 	buf.WriteByte(ext.NameType)
 	err = binary.Write(buf, binary.BigEndian, uint16(len(ext.Name)))
 	if err != nil {
-		log.Warn("proc-parse-tls", "Error encoding")
+		log.Warn("parse-tls", "Error encoding")
 	}
 	buf.WriteString(ext.Name)
 	return buf.Bytes(), nil
@@ -210,12 +210,12 @@ func (ext *SupportedGroupsExtension) Encode() ([]byte, error) {
 	buf := &bytes.Buffer{}
 	err := binary.Write(buf, binary.BigEndian, uint16(len(ext.Groups)*2))
 	if err != nil {
-		log.Warn("proc-parse-tls", "Error encoding")
+		log.Warn("parse-tls", "Error encoding")
 	}
 	for _, group := range ext.Groups {
 		err = binary.Write(buf, binary.BigEndian, group)
 		if err != nil {
-			log.Warn("proc-parse-tls", "Error encoding")
+			log.Warn("parse-tls", "Error encoding")
 		}
 	}
 	return buf.Bytes(), nil
@@ -249,12 +249,12 @@ func (ext *SignatureAlgorithmsExtension) Encode() ([]byte, error) {
 	buf := &bytes.Buffer{}
 	err := binary.Write(buf, binary.BigEndian, uint16(len(ext.Algorithms)*2))
 	if err != nil {
-		log.Warn("proc-parse-tls", "Error encoding")
+		log.Warn("parse-tls", "Error encoding")
 	}
 	for _, alg := range ext.Algorithms {
 		err = binary.Write(buf, binary.BigEndian, alg)
 		if err != nil {
-			log.Warn("proc-parse-tls", "Error encoding")
+			log.Warn("parse-tls", "Error encoding")
 		}
 	}
 	return buf.Bytes(), nil

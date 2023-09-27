@@ -117,11 +117,11 @@ Basic config example:
         transparent: false  # tproxy mode
 
       debug: false
-      timeout:
-        connection: 5
-        handshake: 5
-        dial: 5
-        intercept: 2
+      timeout:  # ms
+        connection: 2000
+        handshake: 2000
+        dial: 2000
+        intercept: 500
 
       output:
         fwmark: 0

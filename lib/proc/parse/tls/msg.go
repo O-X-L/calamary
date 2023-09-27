@@ -193,13 +193,13 @@ func (m *ClientHelloMsg) WriteTo(w io.Writer) (n int64, err error) {
 	buf.Write([]byte{0, 0, 0}) // placeholder for payload length
 	err = binary.Write(buf, binary.BigEndian, m.Version)
 	if err != nil {
-		log.Warn("proc-parse-tls", "Hello error")
+		log.Warn("parse-tls", "Hello error")
 	}
 	pos := 6
 
 	err = binary.Write(buf, binary.BigEndian, m.Random.Time)
 	if err != nil {
-		log.Warn("proc-parse-tls", "Hello error")
+		log.Warn("parse-tls", "Hello error")
 	}
 	buf.Write(m.Random.Opaque[:])
 	pos += 32
@@ -210,12 +210,12 @@ func (m *ClientHelloMsg) WriteTo(w io.Writer) (n int64, err error) {
 
 	err = binary.Write(buf, binary.BigEndian, uint16(len(m.CipherSuites)*2))
 	if err != nil {
-		log.Warn("proc-parse-tls", "Hello error")
+		log.Warn("parse-tls", "Hello error")
 	}
 	for _, cs := range m.CipherSuites {
 		err = binary.Write(buf, binary.BigEndian, cs)
 		if err != nil {
-			log.Warn("proc-parse-tls", "Hello error")
+			log.Warn("parse-tls", "Hello error")
 		}
 	}
 	pos += (2 + len(m.CipherSuites)*2)
@@ -236,11 +236,11 @@ func (m *ClientHelloMsg) WriteTo(w io.Writer) (n int64, err error) {
 		}
 		err = binary.Write(buf, binary.BigEndian, ext.Type())
 		if err != nil {
-			log.Warn("proc-parse-tls", "Hello error")
+			log.Warn("parse-tls", "Hello error")
 		}
 		err = binary.Write(buf, binary.BigEndian, uint16(len(b)))
 		if err != nil {
-			log.Warn("proc-parse-tls", "Hello error")
+			log.Warn("parse-tls", "Hello error")
 		}
 		extLen += extensionHeaderLen
 
@@ -384,13 +384,13 @@ func (m *ServerHelloMsg) WriteTo(w io.Writer) (n int64, err error) {
 	buf.Write([]byte{0, 0, 0}) // placeholder for payload length
 	err = binary.Write(buf, binary.BigEndian, m.Version)
 	if err != nil {
-		log.Warn("proc-parse-tls", "Hello error")
+		log.Warn("parse-tls", "Hello error")
 	}
 	pos := 6
 
 	err = binary.Write(buf, binary.BigEndian, m.Random.Time)
 	if err != nil {
-		log.Warn("proc-parse-tls", "Hello error")
+		log.Warn("parse-tls", "Hello error")
 	}
 	buf.Write(m.Random.Opaque[:])
 	pos += 32
@@ -401,7 +401,7 @@ func (m *ServerHelloMsg) WriteTo(w io.Writer) (n int64, err error) {
 
 	err = binary.Write(buf, binary.BigEndian, uint16(m.CipherSuite))
 	if err != nil {
-		log.Warn("proc-parse-tls", "Hello error")
+		log.Warn("parse-tls", "Hello error")
 	}
 	pos += 2
 
@@ -418,11 +418,11 @@ func (m *ServerHelloMsg) WriteTo(w io.Writer) (n int64, err error) {
 		}
 		err = binary.Write(buf, binary.BigEndian, ext.Type())
 		if err != nil {
-			log.Warn("proc-parse-tls", "Hello error")
+			log.Warn("parse-tls", "Hello error")
 		}
 		err = binary.Write(buf, binary.BigEndian, uint16(len(b)))
 		if err != nil {
-			log.Warn("proc-parse-tls", "Hello error")
+			log.Warn("parse-tls", "Hello error")
 		}
 		extLen += extensionHeaderLen
 

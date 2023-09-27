@@ -22,9 +22,9 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 	for i := range rawRules {
 		ruleRaw := rawRules[i]
 		rule := cnf.Rule{
-			Action: filterAction(ruleRaw.Action),
+			Action: meta.RuleAction(ruleRaw.Action),
 		}
-		rule.Match.Encrypted = matchEncrypted(ruleRaw.Match.Encypted)
+		rule.Match.Encrypted = meta.MatchEncrypted(ruleRaw.Match.Encypted)
 
 		// source networks
 		if len(ruleRaw.Match.SrcNet) > 0 {
@@ -137,16 +137,16 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			if vf {
 				for i3 := range v.Value {
 					if vn {
-						rule.Match.ProtoL3N = append(rule.Match.ProtoL3N, matchProtoL3(v.Value[i3]))
+						rule.Match.ProtoL3N = append(rule.Match.ProtoL3N, meta.MatchProtoL3(v.Value[i3]))
 					} else {
-						rule.Match.ProtoL3 = append(rule.Match.ProtoL3, matchProtoL3(v.Value[i3]))
+						rule.Match.ProtoL3 = append(rule.Match.ProtoL3, meta.MatchProtoL3(v.Value[i3]))
 					}
 				}
 			} else {
 				if negate(value) {
-					rule.Match.ProtoL3N = append(rule.Match.ProtoL3N, matchProtoL3(value))
+					rule.Match.ProtoL3N = append(rule.Match.ProtoL3N, meta.MatchProtoL3(value))
 				} else {
-					rule.Match.ProtoL3 = append(rule.Match.ProtoL3, matchProtoL3(value))
+					rule.Match.ProtoL3 = append(rule.Match.ProtoL3, meta.MatchProtoL3(value))
 				}
 			}
 		}
@@ -162,16 +162,16 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			if vf {
 				for i3 := range v.Value {
 					if vn {
-						rule.Match.ProtoL4N = append(rule.Match.ProtoL4N, matchProtoL4(v.Value[i3]))
+						rule.Match.ProtoL4N = append(rule.Match.ProtoL4N, meta.MatchProtoL4(v.Value[i3]))
 					} else {
-						rule.Match.ProtoL4 = append(rule.Match.ProtoL4, matchProtoL4(v.Value[i3]))
+						rule.Match.ProtoL4 = append(rule.Match.ProtoL4, meta.MatchProtoL4(v.Value[i3]))
 					}
 				}
 			} else {
 				if negate(value) {
-					rule.Match.ProtoL4N = append(rule.Match.ProtoL4N, matchProtoL4(value))
+					rule.Match.ProtoL4N = append(rule.Match.ProtoL4N, meta.MatchProtoL4(value))
 				} else {
-					rule.Match.ProtoL4 = append(rule.Match.ProtoL4, matchProtoL4(value))
+					rule.Match.ProtoL4 = append(rule.Match.ProtoL4, meta.MatchProtoL4(value))
 				}
 			}
 		}
@@ -187,16 +187,16 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			if vf {
 				for i3 := range v.Value {
 					if vn {
-						rule.Match.ProtoL5N = append(rule.Match.ProtoL5N, matchProtoL5(v.Value[i3]))
+						rule.Match.ProtoL5N = append(rule.Match.ProtoL5N, meta.MatchProtoL5(v.Value[i3]))
 					} else {
-						rule.Match.ProtoL5 = append(rule.Match.ProtoL5, matchProtoL5(v.Value[i3]))
+						rule.Match.ProtoL5 = append(rule.Match.ProtoL5, meta.MatchProtoL5(v.Value[i3]))
 					}
 				}
 			} else {
 				if negate(value) {
-					rule.Match.ProtoL5N = append(rule.Match.ProtoL5N, matchProtoL5(value))
+					rule.Match.ProtoL5N = append(rule.Match.ProtoL5N, meta.MatchProtoL5(value))
 				} else {
-					rule.Match.ProtoL5 = append(rule.Match.ProtoL5, matchProtoL5(value))
+					rule.Match.ProtoL5 = append(rule.Match.ProtoL5, meta.MatchProtoL5(value))
 				}
 			}
 		}
@@ -291,68 +291,6 @@ func cleanRaw(configRaw string) (configClean string) {
 	configClean = strings.ReplaceAll(configRaw, " ", "")
 	configClean = strings.ReplaceAll(configClean, "!", "")
 	return
-}
-
-func matchEncrypted(configEncrypted string) meta.OptBool {
-	switch strings.ToLower(configEncrypted) {
-	case "true", "yes", "y", "1":
-		return meta.OptBoolTrue
-	case "false", "no", "n", "0":
-		return meta.OptBoolFalse
-	default:
-		return meta.OptBoolNone
-	}
-}
-
-func filterAction(configAction string) meta.Action {
-	switch strings.ToLower(configAction) {
-	case "accept", "allow":
-		return meta.ActionAccept
-	default:
-		return meta.ActionDeny
-	}
-}
-
-func matchProtoL3(configProto string) meta.Proto {
-	configProto = cleanRaw(configProto)
-	switch strings.ToLower(configProto) {
-	case "ip4", "ipv4":
-		return meta.ProtoL3IP4
-	case "ip6", "ipv6":
-		return meta.ProtoL3IP6
-	default:
-		panic(fmt.Sprintf("protoL3 '%v' not found", configProto))
-	}
-}
-
-func matchProtoL4(configProto string) meta.Proto {
-	configProto = cleanRaw(configProto)
-	switch strings.ToLower(configProto) {
-	case "tcp":
-		return meta.ProtoL4Tcp
-	case "udp":
-		return meta.ProtoL4Udp
-	default:
-		panic(fmt.Sprintf("protoL4 '%v' not found or not yet supported", configProto))
-	}
-}
-
-func matchProtoL5(configProto string) meta.Proto {
-	configProto = cleanRaw(configProto)
-	switch strings.ToLower(configProto) {
-	case "tls":
-		return meta.ProtoL5Tls
-	case "http":
-		return meta.ProtoL5Http
-	/*
-		case "dns":
-			return meta.ProtoL5Dns
-		case "ntp":
-			return meta.ProtoL5Ntp
-	*/
-	default:
-		panic(fmt.Sprintf("protoL5 '%v' not found or not yet supported", configProto))
-	}
 }
 
 func matchNet(ip string) *net.IPNet {

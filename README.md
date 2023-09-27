@@ -43,11 +43,13 @@ Its focus is set on security filtering for HTTPS.
 - [ ] Filtering
 
   - [x] TCP
-  - [ ] TLS
-  - [ ] HTTP
+  - [x] TLS
+
+    - [ ] Certificate validation
+
+  - [x] HTTP
   - [ ] UDP
 
-  - [ ] Certificate validation
   - [ ] Matches
 
     - [x] Config

@@ -10,6 +10,18 @@ const (
 	bufferSize = 64 * 1024
 )
 
+type readWriter struct {
+	io.Reader
+	io.Writer
+}
+
+func NewReadWriter(r io.Reader, w io.Writer) io.ReadWriter {
+	return &readWriter{
+		Reader: r,
+		Writer: w,
+	}
+}
+
 func Transport(rw1, rw2 io.ReadWriter) error {
 	errc := make(chan error, 1)
 	go func() {

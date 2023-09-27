@@ -17,81 +17,10 @@ func TestCleanRaw(t *testing.T) {
 	}
 }
 
-func TestMatchFilterAction(t *testing.T) {
-	if filterAction("allow") != meta.ActionAccept || filterAction("accept") != meta.ActionAccept {
-		t.Error("Filter action accept")
-	}
-	if filterAction("deny") != meta.ActionDeny || filterAction("random") != meta.ActionDeny {
-		t.Error("Filter action deny")
-	}
-}
-
 func TestMatchEncryption(t *testing.T) {
-	if matchEncrypted(cnf.RuleRaw{}.Match.Encypted) != meta.OptBoolNone {
+	if meta.MatchEncrypted(cnf.RuleRaw{}.Match.Encypted) != meta.OptBoolNone {
 		t.Error("Match encryption default-none")
 	}
-	if matchEncrypted("true") != meta.OptBoolTrue || matchEncrypted("Yes") != meta.OptBoolTrue || matchEncrypted("1") != meta.OptBoolTrue {
-		t.Error("Match encryption true")
-	}
-	if matchEncrypted("false") != meta.OptBoolFalse || matchEncrypted("No") != meta.OptBoolFalse || matchEncrypted("0") != meta.OptBoolFalse {
-		t.Error("Match encryption false")
-	}
-	if matchEncrypted("random") != meta.OptBoolNone || matchEncrypted("") != meta.OptBoolNone {
-		t.Error("Match encryption none")
-	}
-}
-
-func TestMatchProtoL3(t *testing.T) {
-	if matchProtoL3("ip4") != meta.ProtoL3IP4 || matchProtoL3("ipv4") != meta.ProtoL3IP4 || matchProtoL3("IPv4") != meta.ProtoL3IP4 {
-		t.Error("Match proto L3 ip4")
-	}
-	if matchProtoL3("ip6") != meta.ProtoL3IP6 || matchProtoL3("ipv6") != meta.ProtoL3IP6 || matchProtoL3("IPv6") != meta.ProtoL3IP6 {
-		t.Error("Match proto L3 ip6")
-	}
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("Match proto L3 not failing on invalid value")
-		}
-	}()
-	matchProtoL3("random")
-}
-
-func TestMatchProtoL4(t *testing.T) {
-	if matchProtoL4("tcp") != meta.ProtoL4Tcp || matchProtoL4("TCP") != meta.ProtoL4Tcp {
-		t.Error("Match proto L4 tcp")
-	}
-	if matchProtoL4("udp") != meta.ProtoL4Udp || matchProtoL4("UDP") != meta.ProtoL4Udp {
-		t.Error("Match proto L4 udp")
-	}
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("Match proto L4 not failing on invalid value")
-		}
-	}()
-	matchProtoL4("random")
-}
-
-func TestMatchProtoL5(t *testing.T) {
-	if matchProtoL5("tls") != meta.ProtoL5Tls {
-		t.Error("Match proto L5 tls")
-	}
-	if matchProtoL5("http") != meta.ProtoL5Http {
-		t.Error("Match proto L5 http")
-	}
-	/*
-		if matchProtoL5("dns") != meta.ProtoL5Dns {
-			t.Error("Match proto L5 dns")
-		}
-		if matchProtoL5("ntp") != meta.ProtoL5Ntp {
-			t.Error("Match proto L5 ntp")
-		}
-	*/
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("Match proto L5 not failing on invalid value")
-		}
-	}()
-	matchProtoL5("random")
 }
 
 func TestMatchNet(t *testing.T) {

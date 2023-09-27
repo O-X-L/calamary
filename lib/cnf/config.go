@@ -29,10 +29,10 @@ type ServiceConfigListen struct {
 }
 
 type ServiceConfigTimeout struct {
-	Connection int `yaml:"connection" default="5"`
-	Handshake  int `yaml:"handshake" default="5"`
-	Dial       int `yaml:"dial" default="5"`
-	Intercept  int `yaml:"intercept" default="2"`
+	Connection int `yaml:"connection" default="2000"`
+	Handshake  int `yaml:"handshake" default="2000"`
+	Dial       int `yaml:"dial" default="2000"`
+	Intercept  int `yaml:"intercept" default="500"`
 }
 
 type ServiceConfigOutput struct {

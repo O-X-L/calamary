@@ -29,8 +29,10 @@ type ParsedL4 struct {
 }
 
 type ParsedL5 struct {
-	Proto     meta.Proto
-	Encrypted meta.OptBool
+	Proto      meta.Proto
+	Encrypted  meta.OptBool
+	TlsVersion uint16
+	TlsSni     string
 }
 
 type ParsedTcp struct {

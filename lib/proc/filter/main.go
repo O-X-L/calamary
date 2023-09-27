@@ -30,7 +30,7 @@ func Filter(pkt parse.ParsedPacket) bool {
 			continue
 		}
 
-		ruleDebug(pkt, rid, fmt.Sprintf("Applying action '%v'", reverseFilterAction(rule.Action)))
+		ruleDebug(pkt, rid, fmt.Sprintf("Applying action '%v'", meta.RevRuleAction(rule.Action)))
 		return applyAction(rule.Action)
 
 	}
@@ -51,16 +51,4 @@ func applyAction(action meta.Action) bool {
 		return true
 	}
 	return false
-}
-
-func reverseFilterAction(action meta.Action) string {
-	// todo: merge with config-parser function to keep action matching in one place
-	switch action {
-	case meta.ActionAccept:
-		return "accept"
-	case meta.ActionDeny:
-		return "deny"
-	default:
-		return "unknown"
-	}
 }

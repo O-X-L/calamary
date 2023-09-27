@@ -62,11 +62,11 @@ func (rec *Record) WriteTo(w io.Writer) (n int64, err error) {
 	buf.WriteByte(rec.Type)
 	err = binary.Write(buf, binary.BigEndian, rec.Version)
 	if err != nil {
-		log.Warn("proc-parse-tls", "Hello error")
+		log.Warn("parse-tls", "Hello error")
 	}
 	err = binary.Write(buf, binary.BigEndian, uint16(len(rec.Opaque)))
 	if err != nil {
-		log.Warn("proc-parse-tls", "Hello error")
+		log.Warn("parse-tls", "Hello error")
 	}
 	buf.Write(rec.Opaque)
 	return buf.WriteTo(w)

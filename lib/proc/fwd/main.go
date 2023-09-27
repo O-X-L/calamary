@@ -1,6 +1,7 @@
 package fwd
 
 import (
+	"io"
 	"net"
 
 	"github.com/superstes/calamary/log"
@@ -9,7 +10,8 @@ import (
 )
 
 func Forward(l4Proto string, conn net.Conn) {
-	pkt := parse.Parse(l4Proto, conn)
+	var connIo io.ReadWriter = conn
+	pkt := parse.Parse(l4Proto, conn, connIo)
 	if filter.Filter(pkt) {
 		// dialer := nw.NewDialerDirect()
 		log.ConnInfo(
