@@ -261,3 +261,37 @@ func TestMatchProtoL5(t *testing.T) {
 		t.Error("Match ProtoL5 #2")
 	}
 }
+
+func TestMatchDomain(t *testing.T) {
+	cnf.C = &cnf.Config{}
+	cnf.C.Service.Debug = false
+
+	pkt := parse.ParsedPacket{
+		L5: &parse.ParsedL5{
+			Proto:     meta.ProtoL5Tls,
+			Encrypted: meta.OptBoolTrue,
+			TlsSni:    "random.xxx",
+		},
+	}
+	rule1 := cnf.Rule{}
+	rule1.Match.Domains = []string{"superstes.eu", "*.calamary.net"}
+	if matchDomain(pkt, rule1, 1) != meta.MatchNegative {
+		t.Error("Match Domain #1")
+	}
+	pkt.L5.TlsSni = "superstes.eu"
+	if matchDomain(pkt, rule1, 1) != meta.MatchPositive {
+		t.Error("Match Domain #2")
+	}
+	pkt.L5.TlsSni = "calamary.net"
+	if matchDomain(pkt, rule1, 1) != meta.MatchPositive {
+		t.Error("Match Domain #3")
+	}
+	pkt.L5.TlsSni = "test.calamary.net"
+	if matchDomain(pkt, rule1, 1) != meta.MatchPositive {
+		t.Error("Match Domain #4")
+	}
+	pkt.L5.TlsSni = "abc.test.calamary.net"
+	if matchDomain(pkt, rule1, 1) != meta.MatchPositive {
+		t.Error("Match Domain #5")
+	}
+}

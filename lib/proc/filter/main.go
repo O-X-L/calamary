@@ -29,6 +29,9 @@ func Filter(pkt parse.ParsedPacket) bool {
 			matchDestinationPort(pkt, rule, rid) == meta.MatchNegative {
 			continue
 		}
+		if matchDomain(pkt, rule, rid) == meta.MatchNegative {
+			continue
+		}
 
 		ruleDebug(pkt, rid, fmt.Sprintf("Applying action '%v'", meta.RevRuleAction(rule.Action)))
 		return applyAction(rule.Action)

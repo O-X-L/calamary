@@ -3,6 +3,7 @@ package filter
 import (
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/superstes/calamary/cnf"
 	"github.com/superstes/calamary/proc/meta"
@@ -129,6 +130,16 @@ func matchDestinationPort(pkt parse.ParsedPacket, rule cnf.Rule, rid int) meta.M
 	return meta.MatchNeutral
 }
 
+func matchDomain(pkt parse.ParsedPacket, rule cnf.Rule, rid int) meta.Match {
+	if rule.Match.Domains != nil && len(rule.Match.Domains) > 0 {
+		if pkt.L5.Proto == meta.ProtoL5Tls {
+			return ruleMatch(anyDomainMatch(rule.Match.Domains, pkt.L5.TlsSni))
+		}
+		// todo: add plain http domain-match
+	}
+	return meta.MatchNeutral
+}
+
 func anyProtoMatch(list []meta.Proto, single meta.Proto) bool {
 	for i := range list {
 		if list[i] == single {
@@ -151,6 +162,23 @@ func anyNetMatch(nets []*net.IPNet, ip net.IP) bool {
 	for i := range nets {
 		if nets[i].Contains(ip) {
 			return true
+		}
+	}
+	return false
+}
+
+func anyDomainMatch(domains []string, domain string) bool {
+	for i := range domains {
+		matchDomain := domains[i]
+		if strings.HasPrefix(matchDomain, "*.") {
+			matchDomain = strings.Replace(matchDomain, "*.", "", 1)
+			if strings.HasSuffix(domain, matchDomain) {
+				return true
+			}
+		} else {
+			if matchDomain == domain {
+				return true
+			}
 		}
 	}
 	return false

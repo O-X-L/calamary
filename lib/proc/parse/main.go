@@ -2,18 +2,14 @@ package parse
 
 import (
 	"bytes"
-	"encoding/binary"
 	"fmt"
 	"io"
 	"net"
-	"net/http"
-	"strings"
 	"time"
 
 	"github.com/superstes/calamary/cnf"
 	"github.com/superstes/calamary/log"
 	"github.com/superstes/calamary/proc/meta"
-	tls_dissector "github.com/superstes/calamary/proc/parse/tls"
 	"github.com/superstes/calamary/u"
 )
 
@@ -98,6 +94,7 @@ func parseTcp(conn net.Conn, connIo io.ReadWriter, hdr [cnf.L5HDRLEN]byte) Parse
 		pkt.L5.Proto = meta.ProtoL5Http
 		pkt.L5Http = &ParsedHttp{}
 	}
+	// todo: plain-http parsing
 
 	return pkt
 }
@@ -146,53 +143,4 @@ func getL3Proto(ip net.IP) meta.Proto {
 	} else {
 		return meta.ProtoL3IP6
 	}
-}
-
-func parseTls(pkt ParsedPacket, conn net.Conn, connIo io.ReadWriter, hdr [cnf.L5HDRLEN]byte) (isTls meta.OptBool, tlsVersion uint16, sni string) {
-	isTlsRaw := hdr[0] == tls_dissector.Handshake
-	tlsVersion = binary.BigEndian.Uint16(hdr[1:3])
-	if isTlsRaw {
-		isTls = meta.OptBoolTrue
-	} else {
-		isTls = meta.OptBoolFalse
-	}
-
-	if isTlsRaw {
-		buf := new(bytes.Buffer)
-		r := io.TeeReader(connIo, buf)
-		record, err := tls_dissector.ReadRecord(r)
-		if err != nil {
-			return
-		}
-
-		clientHello := tls_dissector.ClientHelloMsg{}
-		if err = clientHello.Decode(record.Opaque); err != nil {
-			return
-		}
-
-		for _, ext := range clientHello.Extensions {
-			if ext.Type() == tls_dissector.ExtServerName {
-				snExtension := ext.(*tls_dissector.ServerNameExtension)
-				sni = snExtension.Name
-				break
-			}
-		}
-	}
-	log.ConnDebug("parse", PktSrc(pkt), PktDest(pkt), fmt.Sprintf(
-		"TLS information: IsTls=%v, TlsVersion=%v, TlsSni=%s", isTlsRaw, tlsVersion, sni,
-	))
-	return
-}
-
-func hdrL5Http(hdr [cnf.L5HDRLEN]byte) bool {
-	s := string(hdr[:])
-	return strings.HasPrefix(http.MethodGet, s[:3]) ||
-		strings.HasPrefix(http.MethodPost, s[:4]) ||
-		strings.HasPrefix(http.MethodPut, s[:3]) ||
-		strings.HasPrefix(http.MethodDelete, s) ||
-		strings.HasPrefix(http.MethodOptions, s) ||
-		strings.HasPrefix(http.MethodPatch, s) ||
-		strings.HasPrefix(http.MethodHead, s[:4]) ||
-		strings.HasPrefix(http.MethodConnect, s) ||
-		strings.HasPrefix(http.MethodTrace, s)
 }
