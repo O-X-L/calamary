@@ -86,15 +86,15 @@ func TestMatchSourcePort(t *testing.T) {
 	}
 	rule1 := cnf.Rule{}
 	rule1.Match.SrcPort = []uint16{51029}
-	if !matchSourcePort(pkt, rule1, 1) {
+	if matchSourcePort(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match Source-Ports #1")
 	}
 	rule1.Match.SrcPortN = []uint16{3000}
-	if !matchSourcePort(pkt, rule1, 1) {
+	if matchSourcePort(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match Source-Ports #2")
 	}
 	rule1.Match.SrcPort = []uint16{4000}
-	if matchSourcePort(pkt, rule1, 1) {
+	if matchSourcePort(pkt, rule1, 1) != meta.MatchNegative {
 		t.Error("Match Source-Ports #3")
 	}
 }
@@ -110,15 +110,15 @@ func TestMatchDestinationPort(t *testing.T) {
 	}
 	rule1 := cnf.Rule{}
 	rule1.Match.DestPort = []uint16{80}
-	if !matchDestinationPort(pkt, rule1, 1) {
+	if matchDestinationPort(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match Destination-Ports #1")
 	}
 	rule1.Match.DestPortN = []uint16{3000}
-	if !matchDestinationPort(pkt, rule1, 1) {
+	if matchDestinationPort(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match Destination-Ports #2")
 	}
 	rule1.Match.DestPort = []uint16{4000}
-	if matchDestinationPort(pkt, rule1, 1) {
+	if matchDestinationPort(pkt, rule1, 1) != meta.MatchNegative {
 		t.Error("Match Destination-Ports #3")
 	}
 }
@@ -134,28 +134,28 @@ func TestMatchDestinationNetwork(t *testing.T) {
 	}
 	rule1 := cnf.Rule{}
 	rule1.Match.DestNetN = []*net.IPNet{testNet("172.16.0.0/24")}
-	if !matchDestinationNetwork(pkt, rule1, 1) {
+	if matchDestinationNetwork(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match Destination-Networks #1")
 	}
 	rule1.Match.DestNet = []*net.IPNet{testNet("192.168.0.0/24")}
-	if !matchDestinationNetwork(pkt, rule1, 1) {
+	if matchDestinationNetwork(pkt, rule1, 1) != meta.MatchPositive {
 		// note: edge-case behavior - might not be expected (because of DestNetN)
 		t.Error("Match Destination-Networks #2")
 	}
 	rule1.Match.DestNetN = []*net.IPNet{}
-	if matchDestinationNetwork(pkt, rule1, 1) {
+	if matchDestinationNetwork(pkt, rule1, 1) != meta.MatchNegative {
 		t.Error("Match Destination-Networks #3")
 	}
 	rule1.Match.DestNet = []*net.IPNet{testNet("10.0.0.0/24")}
-	if !matchDestinationNetwork(pkt, rule1, 1) {
+	if matchDestinationNetwork(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match Destination-Networks #4")
 	}
 	rule1.Match.DestNetN = []*net.IPNet{testNet("192.168.0.0/29")}
-	if !matchDestinationNetwork(pkt, rule1, 1) {
+	if matchDestinationNetwork(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match Destination-Networks #5")
 	}
 	rule1.Match.DestNetN = []*net.IPNet{testNet("10.0.0.0/29")}
-	if matchDestinationNetwork(pkt, rule1, 1) {
+	if matchDestinationNetwork(pkt, rule1, 1) != meta.MatchNegative {
 		t.Error("Match Destination-Networks #6")
 	}
 }
@@ -171,28 +171,28 @@ func TestMatchSourceNetwork(t *testing.T) {
 	}
 	rule1 := cnf.Rule{}
 	rule1.Match.SrcNetN = []*net.IPNet{testNet("172.16.0.0/24")}
-	if !matchSourceNetwork(pkt, rule1, 1) {
+	if matchSourceNetwork(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match Source-Networks #1")
 	}
 	rule1.Match.SrcNet = []*net.IPNet{testNet("192.168.0.0/24")}
-	if !matchSourceNetwork(pkt, rule1, 1) {
+	if matchSourceNetwork(pkt, rule1, 1) != meta.MatchPositive {
 		// note: edge-case behavior - might not be expected (because of DestNetN)
 		t.Error("Match Source-Networks #2")
 	}
 	rule1.Match.SrcNetN = []*net.IPNet{}
-	if matchSourceNetwork(pkt, rule1, 1) {
+	if matchSourceNetwork(pkt, rule1, 1) != meta.MatchNegative {
 		t.Error("Match Source-Networks #3")
 	}
 	rule1.Match.SrcNet = []*net.IPNet{testNet("10.0.0.0/24")}
-	if !matchSourceNetwork(pkt, rule1, 1) {
+	if matchSourceNetwork(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match Source-Networks #4")
 	}
 	rule1.Match.SrcNetN = []*net.IPNet{testNet("192.168.0.0/29")}
-	if !matchSourceNetwork(pkt, rule1, 1) {
+	if matchSourceNetwork(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match Source-Networks #5")
 	}
 	rule1.Match.SrcNetN = []*net.IPNet{testNet("10.0.0.0/29")}
-	if matchSourceNetwork(pkt, rule1, 1) {
+	if matchSourceNetwork(pkt, rule1, 1) != meta.MatchNegative {
 		t.Error("Match Source-Networks #6")
 	}
 }
@@ -208,11 +208,11 @@ func TestMatchProtoL3(t *testing.T) {
 	}
 	rule1 := cnf.Rule{}
 	rule1.Match.ProtoL3 = []meta.Proto{meta.ProtoL3IP4}
-	if !matchProtoL3(pkt, rule1, 1) {
+	if matchProtoL3(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match ProtoL3 #1")
 	}
 	rule1.Match.ProtoL3 = []meta.Proto{meta.ProtoL3IP6}
-	if matchProtoL3(pkt, rule1, 1) {
+	if matchProtoL3(pkt, rule1, 1) != meta.MatchNegative {
 		t.Error("Match ProtoL3 #2")
 	}
 }
@@ -228,15 +228,15 @@ func TestMatchProtoL4(t *testing.T) {
 	}
 	rule1 := cnf.Rule{}
 	rule1.Match.ProtoL4N = []meta.Proto{meta.ProtoL4Udp}
-	if !matchProtoL4(pkt, rule1, 1) {
+	if matchProtoL4(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match ProtoL4 #1")
 	}
 	rule1.Match.ProtoL4 = []meta.Proto{meta.ProtoL4Tcp}
-	if !matchProtoL4(pkt, rule1, 1) {
+	if matchProtoL4(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match ProtoL4 #2")
 	}
 	rule1.Match.ProtoL4 = []meta.Proto{meta.ProtoL4Udp}
-	if matchProtoL4(pkt, rule1, 1) {
+	if matchProtoL4(pkt, rule1, 1) != meta.MatchNegative {
 		t.Error("Match ProtoL4 #3")
 	}
 }
@@ -253,11 +253,11 @@ func TestMatchProtoL5(t *testing.T) {
 	}
 	rule1 := cnf.Rule{}
 	rule1.Match.ProtoL5 = []meta.Proto{meta.ProtoL5Tls}
-	if matchProtoL5(pkt, rule1, 1) {
+	if matchProtoL5(pkt, rule1, 1) != meta.MatchNegative {
 		t.Error("Match ProtoL5 #1")
 	}
 	rule1.Match.ProtoL5 = []meta.Proto{meta.ProtoL5Tls, meta.ProtoL5Http}
-	if !matchProtoL5(pkt, rule1, 1) {
+	if matchProtoL5(pkt, rule1, 1) != meta.MatchPositive {
 		t.Error("Match ProtoL5 #2")
 	}
 }

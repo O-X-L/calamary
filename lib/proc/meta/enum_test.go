@@ -10,4 +10,7 @@ func TestEnumDefaultValues(t *testing.T) {
 	if ProtoNone != 0 {
 		t.Error("ProtoNone will not be default!")
 	}
+	if MatchNeutral != 0 {
+		t.Error("MatchNeutral will not be default!")
+	}
 }

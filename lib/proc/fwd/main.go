@@ -13,13 +13,13 @@ func Forward(l4Proto string, conn net.Conn) {
 	if filter.Filter(pkt) {
 		// dialer := nw.NewDialerDirect()
 		log.ConnInfo(
-			"forward", parse.PkgSrc(pkt), parse.PkgDest(pkt),
+			"forward", parse.PktSrc(pkt), parse.PktDest(pkt),
 			"Accept",
 		)
 
 	} else {
 		log.ConnInfo(
-			"forward", parse.PkgSrc(pkt), parse.PkgDest(pkt),
+			"forward", parse.PktSrc(pkt), parse.PktDest(pkt),
 			"Denied",
 		)
 		conn.Close()

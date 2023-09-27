@@ -16,13 +16,17 @@ func Filter(pkt parse.ParsedPacket) bool {
 		rule := (*cnf.RULES)[rid]
 
 		// go to next rule if match is defined and packet missed it
-		if !matchProtoL3(pkt, rule, rid) || !matchProtoL4(pkt, rule, rid) || !matchProtoL5(pkt, rule, rid) {
+		if matchProtoL3(pkt, rule, rid) == meta.MatchNegative ||
+			matchProtoL4(pkt, rule, rid) == meta.MatchNegative ||
+			matchProtoL5(pkt, rule, rid) == meta.MatchNegative {
 			continue
 		}
-		if !matchSourceNetwork(pkt, rule, rid) || !matchDestinationNetwork(pkt, rule, rid) {
+		if matchSourceNetwork(pkt, rule, rid) == meta.MatchNegative ||
+			matchDestinationNetwork(pkt, rule, rid) == meta.MatchNegative {
 			continue
 		}
-		if !matchSourcePort(pkt, rule, rid) || !matchDestinationPort(pkt, rule, rid) {
+		if matchSourcePort(pkt, rule, rid) == meta.MatchNegative ||
+			matchDestinationPort(pkt, rule, rid) == meta.MatchNegative {
 			continue
 		}
 
@@ -32,13 +36,13 @@ func Filter(pkt parse.ParsedPacket) bool {
 	}
 
 	// implicit deny
-	log.ConnDebug("filter", parse.PkgSrc(pkt), parse.PkgDest(pkt), "No rule matched - implicit deny")
+	log.ConnDebug("filter", parse.PktSrc(pkt), parse.PktDest(pkt), "No rule matched - implicit deny")
 	return applyAction(meta.ActionDeny)
 }
 
 func ruleDebug(pkt parse.ParsedPacket, rule_id int, msg string) {
 	if cnf.C.Service.Debug {
-		log.ConnDebug("filter", parse.PkgSrc(pkt), parse.PkgDest(pkt), fmt.Sprintf("Rule %v - %s", rule_id, msg))
+		log.ConnDebug("filter", parse.PktSrc(pkt), parse.PktDest(pkt), fmt.Sprintf("Rule %v - %s", rule_id, msg))
 	}
 }
 

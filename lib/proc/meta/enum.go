@@ -3,6 +3,7 @@ package meta
 type Proto uint8
 type Action uint8
 type OptBool uint8
+type Match uint8
 
 const (
 	ActionAccept Action = 1
@@ -23,4 +24,8 @@ const (
 	OptBoolNone  OptBool = 0
 	OptBoolTrue  OptBool = 1
 	OptBoolFalse OptBool = 2
+
+	MatchNeutral  Match = 0
+	MatchPositive Match = 1
+	MatchNegative Match = 2
 )
