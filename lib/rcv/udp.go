@@ -85,7 +85,7 @@ func listenUdp(addr string) (*net.UDPConn, error) {
 	lc := net.ListenConfig{
 		Control: func(network, address string, c syscall.RawConn) error {
 			return c.Control(func(fd uintptr) {
-				if cnf.C.Service.Listen.Transparent {
+				if cnf.C.Service.Listen.TProxy {
 					if err := unix.SetsockoptInt(int(fd), unix.SOL_IP, unix.IP_TRANSPARENT, 1); err != nil {
 						log.ErrorS("listener-udp", fmt.Sprintf("SetsockoptInt(SOL_IP, IP_TRANSPARENT, 1): %v", err))
 					}

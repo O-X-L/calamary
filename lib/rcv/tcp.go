@@ -57,7 +57,7 @@ func (l *listenerTcp) Close() error {
 
 func (l *listenerTcp) control(network, address string, c syscall.RawConn) error {
 	return c.Control(func(fd uintptr) {
-		if cnf.C.Service.Listen.Transparent {
+		if cnf.C.Service.Listen.TProxy {
 			if err := unix.SetsockoptInt(int(fd), unix.SOL_IP, unix.IP_TRANSPARENT, 1); err != nil {
 				log.ErrorS("listener-tcp", fmt.Sprintf("SetsockoptInt(SOL_IP, IP_TRANSPARENT, 1): %v", err))
 			}

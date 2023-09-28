@@ -3,6 +3,7 @@ package u
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"slices"
 )
@@ -69,4 +70,8 @@ func IsDomainName(s string) bool {
 	}
 
 	return nonNumeric
+}
+
+func Timeout(timeout uint) time.Duration {
+	return time.Duration(int(timeout) * int(time.Millisecond))
 }

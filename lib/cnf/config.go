@@ -20,24 +20,25 @@ type ServiceConfig struct {
 }
 
 type ServiceConfigListen struct {
-	Port        int      `yaml:"port" default="4128"`
-	IP4         []string `ip4:"ip4"`
-	IP6         []string `ip6:"ip6"`
-	Tcp         bool     `yaml:"tcp" default="true"`
-	Udp         bool     `yaml:"udp" default="false"` // not implemented
-	Transparent bool     `yaml:"transparent" "default=false"`
+	Port   int      `yaml:"port" default="4128"`
+	IP4    []string `ip4:"ip4"`
+	IP6    []string `ip6:"ip6"`
+	Tcp    bool     `yaml:"tcp" default="true"`
+	Udp    bool     `yaml:"udp" default="false"` // not implemented
+	TProxy bool     `yaml:"tproxy" "default=false"`
 }
 
 type ServiceConfigTimeout struct {
-	Connection int `yaml:"connection" default="2000"`
-	Handshake  int `yaml:"handshake" default="2000"`
-	Dial       int `yaml:"dial" default="2000"`
-	Intercept  int `yaml:"intercept" default="500"`
+	Connect uint `yaml:"connect" default="2000"`
+	Process uint `yaml:"process" default="1000"`
 }
 
 type ServiceConfigOutput struct {
-	FwMark    int    `yaml:"fwmark" default="0"`
+	FwMark    uint8  `yaml:"fwmark" default="0"`
 	Interface string `yaml:"interface" default=""`
+	// IP4       []string `ip4:"ip4"`
+	// IP6       []string `ip6:"ip6"`
+	// Retries   uint8  `yaml:"retries" default="1"`
 }
 
 // allow single string to be supplied

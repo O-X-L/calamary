@@ -53,6 +53,9 @@ func (rec *Record) ReadFrom(r io.Reader) (n int64, err error) {
 	length := int(binary.BigEndian.Uint16(b[3:5]))
 	rec.Opaque = make([]byte, length)
 	nn, err = io.ReadFull(r, rec.Opaque)
+	if err != nil {
+		return
+	}
 	n += int64(nn)
 	return
 }

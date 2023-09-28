@@ -13,36 +13,32 @@ import (
 	"github.com/superstes/calamary/u"
 )
 
-func Parse(l4Proto string, conn net.Conn, connIo io.ReadWriter) ParsedPacket {
+func Parse(l4Proto string, conn net.Conn, connIo io.Reader) (pkt ParsedPacket) {
 	// get packet L5-header
-	conn.SetReadDeadline(time.Now().Add(
-		time.Duration(cnf.C.Service.Timeout.Intercept * int(time.Millisecond)),
-	))
+	conn.SetReadDeadline(time.Now().Add(u.Timeout(cnf.C.Service.Timeout.Process)))
 	var hdr [cnf.L5HDRLEN]byte
 	n, err := io.ReadFull(connIo, hdr[:])
-	conn.SetReadDeadline(time.Time{})
-	if err == nil {
-		connIo = u.NewReadWriter(io.MultiReader(bytes.NewReader(hdr[:n]), connIo), connIo)
-	} else {
+	if err != nil {
 		log.Warn("parse", fmt.Sprintf("Error parsing L5Header: %v", err))
 	}
+	connIo = io.MultiReader(bytes.NewReader(hdr[:n]), connIo) // write header back to stream
 
 	// main L4 split
-	var pkt ParsedPacket
 	if l4Proto == "udp" {
 		pkt = parseUdp(conn, connIo, hdr)
 	} else {
 		pkt = parseTcp(conn, connIo, hdr)
 	}
 
+	conn.SetReadDeadline(time.Time{})
 	log.ConnDebug(
 		"parse", PktSrc(pkt), PktDest(pkt),
 		fmt.Sprintf("Packet L5Proto: %v | TLS: %v", meta.RevProto(pkt.L5.Proto), meta.RevTlsVersion(pkt.L5.TlsVersion)),
 	)
-	return pkt
+	return
 }
 
-func parseTcp(conn net.Conn, connIo io.ReadWriter, hdr [cnf.L5HDRLEN]byte) ParsedPacket {
+func parseTcp(conn net.Conn, connIo io.Reader, hdr [cnf.L5HDRLEN]byte) ParsedPacket {
 	pkt := ParsedPacket{
 		L3: &ParsedL3{},
 		L4: &ParsedL4{
@@ -67,7 +63,7 @@ func parseTcp(conn net.Conn, connIo io.ReadWriter, hdr [cnf.L5HDRLEN]byte) Parse
 
 	// destination address
 	var dstIpPort net.Addr
-	if !cnf.C.Service.Listen.Transparent {
+	if !cnf.C.Service.Listen.TProxy {
 		dstIpPort, err = getTcpOriginalDstAddr(conn)
 		if err != nil {
 			log.ConnErrorS("parse", PktSrc(pkt), "?", "Failed to get original destination IP")
@@ -99,7 +95,7 @@ func parseTcp(conn net.Conn, connIo io.ReadWriter, hdr [cnf.L5HDRLEN]byte) Parse
 	return pkt
 }
 
-func parseUdp(conn net.Conn, connIo io.ReadWriter, hdr [cnf.L5HDRLEN]byte) ParsedPacket {
+func parseUdp(conn net.Conn, connIo io.Reader, hdr [cnf.L5HDRLEN]byte) ParsedPacket {
 	pkt := ParsedPacket{
 		L3: &ParsedL3{},
 		L4: &ParsedL4{

@@ -1,8 +1,6 @@
 package parse
 
 import (
-	"bytes"
-	"encoding/binary"
 	"fmt"
 	"io"
 	"net"
@@ -13,9 +11,8 @@ import (
 	tls_dissector "github.com/superstes/calamary/proc/parse/tls"
 )
 
-func parseTls(pkt ParsedPacket, conn net.Conn, connIo io.ReadWriter, hdr [cnf.L5HDRLEN]byte) (isTls meta.OptBool, tlsVersion uint16, sni string) {
+func parseTls(pkt ParsedPacket, conn net.Conn, connIo io.Reader, hdr [cnf.L5HDRLEN]byte) (isTls meta.OptBool, tlsVersion uint16, sni string) {
 	isTlsRaw := hdr[0] == tls_dissector.Handshake
-	tlsVersion = binary.BigEndian.Uint16(hdr[1:3])
 	if isTlsRaw {
 		isTls = meta.OptBoolTrue
 	} else {
@@ -23,9 +20,7 @@ func parseTls(pkt ParsedPacket, conn net.Conn, connIo io.ReadWriter, hdr [cnf.L5
 	}
 
 	if isTlsRaw {
-		buf := new(bytes.Buffer)
-		r := io.TeeReader(connIo, buf)
-		record, err := tls_dissector.ReadRecord(r)
+		record, err := tls_dissector.ReadRecord(connIo)
 		if err != nil {
 			return
 		}
@@ -33,6 +28,13 @@ func parseTls(pkt ParsedPacket, conn net.Conn, connIo io.ReadWriter, hdr [cnf.L5
 		clientHello := tls_dissector.ClientHelloMsg{}
 		if err = clientHello.Decode(record.Opaque); err != nil {
 			return
+		}
+
+		// todo: update connection TLS-version after serverHello
+		if clientHello.Version != 0 {
+			tlsVersion = uint16(clientHello.Version)
+		} else {
+			tlsVersion = uint16(record.Version)
 		}
 
 		for _, ext := range clientHello.Extensions {

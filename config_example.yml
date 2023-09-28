@@ -9,21 +9,20 @@ service:
       - '::1'
     tcp: true
     udp: false  # not yet implemented
-    transparent: false
+    tproxy: false
 
   debug: true
   timeout:
-    connection: 2000
-    handshake: 2000
-    dial: 2000
-    intercept: 500
+    connect: 2000
+    process: 1000
 
   output:
-    fwmark: 0
-    interface: ''
-    ip4: []
-    ip6: []
+    fwmark: 0  # not yet implemented
+    interface: ''  # not yet implemented
+    ip4: []  # not yet implemented
+    ip6: []  # not yet implemented
     multi_ip: 'roundrobin'  # or failover; not yet implemented
+    retries: 1  # connection-retries; not yet implemented
 
 vars:
   - name: 'net_private'
@@ -49,6 +48,6 @@ rules:
 
   - match:
       dest: '!$net_private'
-      port: 443
+      port: [443, 80]
       protoL4: 'tcp'
     action: 'accept'
