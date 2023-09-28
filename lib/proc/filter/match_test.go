@@ -15,16 +15,16 @@ func testNet(netIn string) *net.IPNet {
 }
 
 func TestAnyPortMatch(t *testing.T) {
-	if !anyPortMatch([]uint16{80, 443}, uint16(80)) {
+	if anyPortMatch([]uint16{80, 443}, uint16(80)) == meta.MatchNegative {
 		t.Error("AnyPort #1")
 	}
-	if !anyPortMatch([]uint16{389, 34938, 1022}, uint16(34938)) {
+	if anyPortMatch([]uint16{389, 34938, 1022}, uint16(34938)) == meta.MatchNegative {
 		t.Error("AnyPort #2")
 	}
-	if anyPortMatch([]uint16{389, 34938, 1022}, uint16(20930)) {
+	if anyPortMatch([]uint16{389, 34938, 1022}, uint16(20930)) == meta.MatchPositive {
 		t.Error("AnyPort #3")
 	}
-	if anyPortMatch([]uint16{65000, 443}, uint16(1000)) {
+	if anyPortMatch([]uint16{65000, 443}, uint16(1000)) == meta.MatchPositive {
 		t.Error("AnyPort #3")
 	}
 }
@@ -32,45 +32,45 @@ func TestAnyPortMatch(t *testing.T) {
 func TestAnyNetMatch(t *testing.T) {
 	net1 := testNet("192.168.0.0/16")
 	ip := net.ParseIP("192.168.0.1")
-	if !anyNetMatch([]*net.IPNet{net1}, ip) {
+	if anyNetMatch([]*net.IPNet{net1}, ip) == meta.MatchNegative {
 		t.Error("AnyNet #1")
 	}
 	ip = net.ParseIP("192.167.0.1")
-	if anyNetMatch([]*net.IPNet{net1}, ip) {
+	if anyNetMatch([]*net.IPNet{net1}, ip) == meta.MatchPositive {
 		t.Error("AnyNet #2")
 	}
 	net2 := testNet("10.0.0.0/8")
 	ip = net.ParseIP("10.255.0.1")
-	if !anyNetMatch([]*net.IPNet{net1, net2}, ip) {
+	if anyNetMatch([]*net.IPNet{net1, net2}, ip) == meta.MatchNegative {
 		t.Error("AnyNet #3")
 	}
 	ip = net.ParseIP("172.16.0.1")
-	if anyNetMatch([]*net.IPNet{net1, net2}, ip) {
+	if anyNetMatch([]*net.IPNet{net1, net2}, ip) == meta.MatchPositive {
 		t.Error("AnyNet #4")
 	}
 	net3 := testNet("2001:db8::/80")
 	ip = net.ParseIP("192.168.251.48")
-	if !anyNetMatch([]*net.IPNet{net1, net2, net3}, ip) {
+	if anyNetMatch([]*net.IPNet{net1, net2, net3}, ip) == meta.MatchNegative {
 		t.Error("AnyNet #5")
 	}
 	ip = net.ParseIP("2001:db8::1:9")
-	if !anyNetMatch([]*net.IPNet{net1, net2, net3}, ip) {
+	if anyNetMatch([]*net.IPNet{net1, net2, net3}, ip) == meta.MatchNegative {
 		t.Error("AnyNet #6")
 	}
 	ip = net.ParseIP("2002:db8::1:9")
-	if anyNetMatch([]*net.IPNet{net1, net2, net3}, ip) {
+	if anyNetMatch([]*net.IPNet{net1, net2, net3}, ip) == meta.MatchPositive {
 		t.Error("AnyNet #7")
 	}
 }
 
 func TestAnyProtoMatch(t *testing.T) {
-	if !anyProtoMatch([]meta.Proto{meta.ProtoL4Tcp, meta.ProtoL4Udp}, meta.ProtoL4Udp) {
+	if anyProtoMatch([]meta.Proto{meta.ProtoL4Tcp, meta.ProtoL4Udp}, meta.ProtoL4Udp) == meta.MatchNegative {
 		t.Error("AnyProto #1")
 	}
-	if anyProtoMatch([]meta.Proto{meta.ProtoL5Dns, meta.ProtoL5Tls}, meta.ProtoL5Http) {
+	if anyProtoMatch([]meta.Proto{meta.ProtoL5Dns, meta.ProtoL5Tls}, meta.ProtoL5Http) == meta.MatchPositive {
 		t.Error("AnyProto #2")
 	}
-	if anyProtoMatch([]meta.Proto{meta.ProtoL5Tls}, meta.ProtoL5Http) {
+	if anyProtoMatch([]meta.Proto{meta.ProtoL5Tls}, meta.ProtoL5Http) == meta.MatchPositive {
 		t.Error("AnyProto #3")
 	}
 }
