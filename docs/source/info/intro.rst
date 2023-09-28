@@ -69,7 +69,7 @@ Why not use Squid?
   Related error: `Host header forgery detected`
 
 
-Squid is a good and stable software. But I get the feeling it needed to grow into more than it was designed for initially. Some behavior is incomsistent between modes and not optimized for todays IT-world.
+Squid is a good and stable software. But I get the feeling it needed to grow into more than it was designed for initially. Some behavior is inconsistent between modes and not optimized for todays IT-world.
 
 I would much preferr a keep-it-simple approach. Even if that means that some nice-to-have features are not implemented.
 

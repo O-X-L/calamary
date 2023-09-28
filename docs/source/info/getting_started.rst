@@ -31,27 +31,6 @@ Config-validation only:
     /usr/bin/calamary -v
 
 
-TProxy
-======
-
-To run Calamary as `TPROXY <https://docs.kernel.org/networking/tproxy.html>`_ target - you will have to set `CAP_NET_RAW <https://man7.org/linux/man-pages/man7/capabilities.7.html>`_:
-
-::
-
-  bind to any address for transparent proxying
-
-You can add it like this:
-
-.. code-block:: bash
-
-  setcap cap_net_raw=+ep /usr/bin/calamary
-
-  # make sure only wanted users can execute the binary!
-  chown root:proxy /usr/bin/calamary
-  chmod 750 /usr/bin/calamary
-
-Read more about TPROXY here: `wiki.superstes.eu - NFTables - TProxy <https://wiki.superstes.eu/en/latest/1/network/firewall_nftables.html#tproxy>`_
-
 Systemd service
 ===============
 
@@ -113,21 +92,12 @@ Basic config example:
         ip6:
           - '::1'
         tcp: true
-        udp: false  # not yet implemented
-        transparent: false  # tproxy mode
+        tproxy: false
 
       debug: false
       timeout:  # ms
-        connection: 2000
-        handshake: 2000
-        dial: 2000
-        intercept: 500
-
-      output:
-        fwmark: 0
-        interface: ''
-        ip4: []
-        ip6: []
+        connect: 2000
+        process: 1000
 
       vars:
         - name: 'net_private'
@@ -157,6 +127,12 @@ Basic config example:
             protoL4: 'tcp'
           action: 'accept' 
  
+ 
+Redirect traffic
+################
+
+See :ref:`Redirect traffic <redirect>`
+
 
 Build from sources
 ##################

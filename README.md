@@ -25,9 +25,14 @@ Its focus is set on security filtering for HTTPS.
 
 - [ ] Forwarding
 
-  - [ ] TCP
-  - [ ] TLS
-  - [ ] HTTP
+  - [x] TCP
+
+    - [ ] HTTP
+
+  - [x] TLS
+
+    - [ ] TLS Interception
+
   - [ ] UDP
 
 - [x] YAML-based configuration
@@ -35,7 +40,7 @@ Its focus is set on security filtering for HTTPS.
 - [ ] Parsing
 
   - [x] TCP
-  - [ ] TLS
+  - [x] TLS
   - [ ] HTTP
   - [ ] UDP
   - [ ] DNS
