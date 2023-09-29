@@ -11,7 +11,7 @@ import (
 	tls_dissector "github.com/superstes/calamary/proc/parse/tls"
 )
 
-func parseTls(pkt ParsedPacket, conn net.Conn, connIo io.Reader, hdr [cnf.L5HDRLEN]byte) (isTls meta.OptBool, tlsVersion uint16, sni string) {
+func parseTls(pkt ParsedPacket, conn net.Conn, connIo io.Reader, hdr [cnf.BYTES_HDR_L5]byte) (isTls meta.OptBool, tlsVersion uint16, sni string) {
 	isTlsRaw := hdr[0] == tls_dissector.Handshake
 	if isTlsRaw {
 		isTls = meta.OptBoolTrue
@@ -22,11 +22,17 @@ func parseTls(pkt ParsedPacket, conn net.Conn, connIo io.Reader, hdr [cnf.L5HDRL
 	if isTlsRaw {
 		record, err := tls_dissector.ReadRecord(connIo)
 		if err != nil {
+			log.ConnWarnS("parse", PktSrc(pkt), PktDest(pkt), fmt.Sprintf(
+				"Failed to parse TLS handshake: %v", err,
+			))
 			return
 		}
 
 		clientHello := tls_dissector.ClientHelloMsg{}
 		if err = clientHello.Decode(record.Opaque); err != nil {
+			log.ConnWarnS("parse", PktSrc(pkt), PktDest(pkt), fmt.Sprintf(
+				"Failed to parse TLS client-hello: %v", err,
+			))
 			return
 		}
 

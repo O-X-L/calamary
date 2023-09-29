@@ -6,11 +6,8 @@ import (
 	"errors"
 	"io"
 
+	"github.com/superstes/calamary/cnf"
 	"github.com/superstes/calamary/log"
-)
-
-const (
-	RecordHeaderLen = 5
 )
 
 // record content type
@@ -42,7 +39,7 @@ func ReadRecord(r io.Reader) (*Record, error) {
 }
 
 func (rec *Record) ReadFrom(r io.Reader) (n int64, err error) {
-	b := make([]byte, RecordHeaderLen)
+	b := make([]byte, cnf.BYTES_TLS_REC)
 	nn, err := io.ReadFull(r, b)
 	n += int64(nn)
 	if err != nil {

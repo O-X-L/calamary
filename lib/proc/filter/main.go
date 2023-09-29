@@ -5,6 +5,7 @@ import (
 
 	"github.com/superstes/calamary/cnf"
 	"github.com/superstes/calamary/log"
+	"github.com/superstes/calamary/metrics"
 	"github.com/superstes/calamary/proc/meta"
 	"github.com/superstes/calamary/proc/parse"
 )
@@ -14,6 +15,10 @@ import (
 func Filter(pkt parse.ParsedPacket) bool {
 	for rid := range *cnf.RULES {
 		rule := (*cnf.RULES)[rid]
+
+		if cnf.Metrics() {
+			metrics.RuleHits.WithLabelValues(fmt.Sprintf("%v", rid)).Inc()
+		}
 
 		// go to next rule if match is defined and packet missed it
 		if matchProtoL3(pkt, rule, rid) == meta.MatchNegative ||
@@ -33,7 +38,12 @@ func Filter(pkt parse.ParsedPacket) bool {
 			continue
 		}
 
-		ruleDebug(pkt, rid, fmt.Sprintf("Applying action '%v'", meta.RevRuleAction(rule.Action)))
+		actionStr := meta.RevRuleAction(rule.Action)
+		if cnf.Metrics() {
+			metrics.RuleMatches.WithLabelValues(fmt.Sprintf("%v", rid)).Inc()
+			metrics.RuleActions.WithLabelValues(actionStr).Inc()
+		}
+		ruleDebug(pkt, rid, fmt.Sprintf("Applying action '%v'", actionStr))
 		return applyAction(rule.Action)
 
 	}

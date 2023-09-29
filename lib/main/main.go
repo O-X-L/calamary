@@ -38,6 +38,7 @@ func main() {
 	welcome()
 	cnf_file.Load(false)
 	service := &service{}
+	go startPrometheusExporter()
 	service.start()
 	service.signalHandler()
 }

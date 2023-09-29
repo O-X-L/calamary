@@ -114,13 +114,13 @@ func RevProto(proto Proto) string {
 func RevTlsVersion(version uint16) string {
 	switch version {
 	case tls.VersionTLS10:
-		return "TLSv1.0"
+		return "1.0"
 	case tls.VersionTLS11:
-		return "TLSv1.1"
+		return "1.1"
 	case tls.VersionTLS12:
-		return "TLSv1.2"
+		return "1.2"
 	case tls.VersionTLS13:
-		return "TLSv1.3"
+		return "1.3"
 	default:
 		return "none"
 	}

@@ -6,11 +6,8 @@ import (
 	"errors"
 	"io"
 
+	"github.com/superstes/calamary/cnf"
 	"github.com/superstes/calamary/log"
-)
-
-const (
-	extensionHeaderLen = 4
 )
 
 const (
@@ -63,7 +60,7 @@ func NewExtension(t uint16, data []byte) (ext Extension, err error) {
 }
 
 func ReadExtension(r io.Reader) (Extension, error) {
-	b := make([]byte, extensionHeaderLen)
+	b := make([]byte, cnf.BYTES_TLS_EXT)
 	if _, err := io.ReadFull(r, b); err != nil {
 		return nil, err
 	}

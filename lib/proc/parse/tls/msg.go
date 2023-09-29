@@ -7,11 +7,8 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/superstes/calamary/cnf"
 	"github.com/superstes/calamary/log"
-)
-
-const (
-	handshakeHeaderLen = 4
 )
 
 const (
@@ -49,7 +46,7 @@ func (m *ClientHelloMsg) Decode(data []byte) (err error) {
 }
 
 func (m *ClientHelloMsg) ReadFrom(r io.Reader) (n int64, err error) {
-	b := make([]byte, handshakeHeaderLen)
+	b := make([]byte, cnf.BYTES_TLS_HS)
 	nn, err := io.ReadFull(r, b)
 	n += int64(nn)
 	if err != nil {
@@ -242,14 +239,14 @@ func (m *ClientHelloMsg) WriteTo(w io.Writer) (n int64, err error) {
 		if err != nil {
 			log.Warn("parse-tls", "Hello error")
 		}
-		extLen += extensionHeaderLen
+		extLen += cnf.BYTES_TLS_EXT
 
 		nn, _ := buf.Write(b)
 		extLen += nn
 	}
 
 	b := buf.Bytes()
-	plen := len(b) - handshakeHeaderLen
+	plen := len(b) - cnf.BYTES_TLS_HS
 	b[1], b[2], b[3] = byte((plen>>16)&0xFF), byte((plen>>8)&0xFF), byte(plen&0xFF) // payload length
 	b[pos], b[pos+1] = byte((extLen>>8)&0xFF), byte(extLen&0xFF)                    // extensions length
 
@@ -282,7 +279,7 @@ func (m *ServerHelloMsg) Decode(data []byte) (err error) {
 }
 
 func (m *ServerHelloMsg) ReadFrom(r io.Reader) (n int64, err error) {
-	b := make([]byte, handshakeHeaderLen)
+	b := make([]byte, cnf.BYTES_TLS_HS)
 	nn, err := io.ReadFull(r, b)
 	n += int64(nn)
 	if err != nil {
@@ -424,14 +421,14 @@ func (m *ServerHelloMsg) WriteTo(w io.Writer) (n int64, err error) {
 		if err != nil {
 			log.Warn("parse-tls", "Hello error")
 		}
-		extLen += extensionHeaderLen
+		extLen += cnf.BYTES_TLS_EXT
 
 		nn, _ := buf.Write(b)
 		extLen += nn
 	}
 
 	b := buf.Bytes()
-	plen := len(b) - handshakeHeaderLen
+	plen := len(b) - cnf.BYTES_TLS_HS
 	b[1], b[2], b[3] = byte((plen>>16)&0xFF), byte((plen>>8)&0xFF), byte(plen&0xFF) // payload length
 	b[pos], b[pos+1] = byte((extLen>>8)&0xFF), byte(extLen&0xFF)                    // extensions length
 

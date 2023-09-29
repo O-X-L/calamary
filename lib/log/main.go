@@ -54,6 +54,14 @@ func ConnError(pkg string, src string, dst string, err error) {
 	logConn("ERROR", pkg, src, dst, fmt.Sprintf("%s", err))
 }
 
+func ConnWarnS(pkg string, src string, dst string, msg string) {
+	logConn("WARN", pkg, src, dst, msg)
+}
+
+func ConnWarn(pkg string, src string, dst string, err error) {
+	logConn("WARN", pkg, src, dst, fmt.Sprintf("%s", err))
+}
+
 func Debug(pkg string, msg string) {
 	if cnf.C.Service.Debug {
 		log("DEBUG", pkg, msg)

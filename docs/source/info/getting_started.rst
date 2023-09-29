@@ -31,6 +31,74 @@ Config-validation only:
     /usr/bin/calamary -v
 
 
+Configuration
+#############
+
+See :ref:`Rules <rules>` for more details about defining the filter ruleset.
+
+The default config path is :code:`/etc/calamary/config.yml`
+
+Basic config example:
+
+.. code-block:: yaml
+
+    ---
+
+    service:
+      listen:
+        port: 4128
+        ip4:
+          - '127.0.0.1'
+        ip6:
+          - '::1'
+        tcp: true
+        tproxy: false
+
+      debug: false
+      timeout:  # ms
+        connect: 2000
+        process: 1000
+        idle: 15000
+
+      metrics:
+        enabled: false
+        port: 9512
+
+      vars:
+        - name: 'net_private'
+          value: ['192.168.0.0/16', '172.16.0.0/12', '10.0.0.0/8']
+        - name: 'svc_http'
+          value: [80, 443]
+
+      rules:
+        - match:
+            dest: '192.168.100.0/24'
+          action: 'drop'
+
+        - match:
+            port: ['!443', '!80']
+          action: 'drop'
+
+        - match:
+            src: '$net_private'
+            dest: '$net_private'
+            port: '$svc_http'
+            protoL4: 'tcp'
+          action: 'accept'
+
+        - match:
+            dest: '!$net_private'
+            port: 443
+            protoL4: 'tcp'
+          action: 'accept' 
+ 
+ 
+Redirect traffic
+################
+
+See :ref:`Redirect traffic <redirect>`
+
+
 Systemd service
 ===============
 
@@ -69,69 +137,6 @@ Example systemd service to run Calamary:
 
     [Install]
     WantedBy=multi-user.target
-
-
-Configuration
-#############
-
-See :ref:`Rules <rules>` for more details about defining the filter ruleset.
-
-The default config path is :code:`/etc/calamary/config.yml`
-
-Basic config example:
-
-.. code-block:: yaml
-
-    ---
-
-    service:
-      listen:
-        port: 4128
-        ip4:
-          - '127.0.0.1'
-        ip6:
-          - '::1'
-        tcp: true
-        tproxy: false
-
-      debug: false
-      timeout:  # ms
-        connect: 2000
-        process: 1000
-
-      vars:
-        - name: 'net_private'
-          value: ['192.168.0.0/16', '172.16.0.0/12', '10.0.0.0/8']
-        - name: 'svc_http'
-          value: [80, 443]
-
-      rules:
-        - match:
-            dest: '192.168.100.0/24'
-          action: 'drop'
-
-        - match:
-            port: ['!443', '!80']
-          action: 'drop'
-
-        - match:
-            src: '$net_private'
-            dest: '$net_private'
-            port: '$svc_http'
-            protoL4: 'tcp'
-          action: 'accept'
-
-        - match:
-            dest: '!$net_private'
-            port: 443
-            protoL4: 'tcp'
-          action: 'accept' 
- 
- 
-Redirect traffic
-################
-
-See :ref:`Redirect traffic <redirect>`
 
 
 Build from sources
