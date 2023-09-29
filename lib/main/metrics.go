@@ -17,7 +17,7 @@ func catchAll(w http.ResponseWriter, r *http.Request) {
 
 func startPrometheusExporter() {
 	if cnf.Metrics() {
-		log.Debug("service", "Starting prometheus metrics-exporter")
+		log.Info("service", "Starting prometheus metrics-exporter")
 		prometheus.Register(metrics.BytesRcv)
 		prometheus.Register(metrics.BytesSent)
 		prometheus.Register(metrics.CurrentConn)

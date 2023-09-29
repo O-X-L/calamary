@@ -11,7 +11,7 @@ service:
     udp: false  # not yet implemented
     tproxy: false
 
-  debug: true
+  debug: false
   timeout:
     connect: 2000
     process: 1000
@@ -24,6 +24,10 @@ service:
     ip6: []  # not yet implemented
     multi_ip: 'roundrobin'  # or failover; not yet implemented
     retries: 1  # connection-retries; not yet implemented
+
+  metrics:
+    enabled: false
+    port: 9512
 
 vars:
   - name: 'net_private'
