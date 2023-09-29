@@ -15,6 +15,7 @@ service:
   timeout:
     connect: 2000
     process: 1000
+    idle: 30000
 
   output:
     fwmark: 0  # not yet implemented

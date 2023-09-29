@@ -17,6 +17,7 @@ type ServiceConfig struct {
 	Listen  ServiceConfigListen  `yaml:"listen"`
 	Output  ServiceConfigOutput  `yaml:"output"`
 	Debug   bool                 `yaml:"debug" default="false"`
+	Metrics MetricsConfig        `yaml:"metrics"`
 }
 
 type ServiceConfigListen struct {
@@ -28,9 +29,11 @@ type ServiceConfigListen struct {
 	TProxy bool     `yaml:"tproxy" "default=false"`
 }
 
+// todo: defaults not working; set to 0
 type ServiceConfigTimeout struct {
-	Connect uint `yaml:"connect" default="2000"`
-	Process uint `yaml:"process" default="1000"`
+	Connect uint `yaml:"connect" default="2000"` // dial
+	Process uint `yaml:"process" default="1000"` // parsing packet
+	Idle    uint `yaml:"idle" default="15000"`   // close connection if no data was sent or received
 }
 
 type ServiceConfigOutput struct {
@@ -58,4 +61,14 @@ func (a *YamlStringArray) UnmarshalYAML(value *yaml.Node) error {
 		*a = multi
 	}
 	return nil
+}
+
+type MetricsConfig struct {
+	Enabled bool `yaml:"enabled" default="false"`
+	Port    int  `yaml:"port" default="9512"`
+}
+
+// shortcut to setting as it is referenced often
+func Metrics() bool {
+	return C.Service.Metrics.Enabled
 }
