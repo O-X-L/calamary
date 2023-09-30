@@ -15,24 +15,29 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func init() {}
-
-type listenerUdp struct {
-	ln   *net.UDPConn
-	addr string
+type listenerTransparentUdp struct {
+	ln    *net.UDPConn
+	addr  string
+	Lncnf cnf.ServiceListener
 }
 
-func NewListenerUdp(addr string) (Listener, error) {
-	ln, err := listenUdp(addr)
-	if err != nil {
-		return nil, err
-	}
-	return &listenerUdp{ln, addr}, nil
+func newServerTransparentUdp(addr string, lncnf cnf.ServiceListener) (Server, error) {
+	return Server{}, fmt.Errorf("UDP listener is not yet implemented!")
+	/*
+		lnu := &listenerTransparentUdp{
+			addr:  addr,
+			lncnf: lncnf,
+		}
+		ln, err := lnu.listenUdp(addr)
+		if err != nil {
+			return nil, err
+		}
+		lnu.ln = ln
+		return lnu, nil
+	*/
 }
 
-func (l *listenerUdp) Init() (err error) { return }
-
-func (l *listenerUdp) Accept() (conn net.Conn, err error) {
+func (l *listenerTransparentUdp) Accept() (conn net.Conn, err error) {
 	conn, err = l.accept()
 	if err != nil {
 		return
@@ -40,11 +45,11 @@ func (l *listenerUdp) Accept() (conn net.Conn, err error) {
 	return
 }
 
-func (l *listenerUdp) Addr() net.Addr {
+func (l *listenerTransparentUdp) Addr() net.Addr {
 	return l.ln.LocalAddr()
 }
 
-func (l *listenerUdp) Close() error {
+func (l *listenerTransparentUdp) Close() error {
 	return l.ln.Close()
 }
 
@@ -81,11 +86,11 @@ func (c *connUdp) Write(b []byte) (n int, err error) {
 	return c.Conn.Write(b)
 }
 
-func listenUdp(addr string) (*net.UDPConn, error) {
+func (l *listenerTransparentUdp) listenUdp(addr string) (*net.UDPConn, error) {
 	lc := net.ListenConfig{
 		Control: func(network, address string, c syscall.RawConn) error {
 			return c.Control(func(fd uintptr) {
-				if cnf.C.Service.Listen.TProxy {
+				if l.Lncnf.TProxy {
 					if err := unix.SetsockoptInt(int(fd), unix.SOL_IP, unix.IP_TRANSPARENT, 1); err != nil {
 						log.ErrorS("listener-udp", fmt.Sprintf("SetsockoptInt(SOL_IP, IP_TRANSPARENT, 1): %v", err))
 					}
@@ -104,7 +109,7 @@ func listenUdp(addr string) (*net.UDPConn, error) {
 	pc, err := lc.ListenPacket(
 		context.Background(),
 		network,
-		fmt.Sprintf("%v:%v", addr, cnf.C.Service.Listen.Port),
+		fmt.Sprintf("%v:%v", addr, l.Lncnf.Port),
 	)
 	if err != nil {
 		return nil, err
@@ -113,7 +118,7 @@ func listenUdp(addr string) (*net.UDPConn, error) {
 	return pc.(*net.UDPConn), nil
 }
 
-func (l *listenerUdp) accept() (conn net.Conn, err error) {
+func (l *listenerTransparentUdp) accept() (conn net.Conn, err error) {
 	panic(fmt.Errorf("processing of UDP traffic is not yet implemented"))
 	/*
 		b := u.GetBufferPool(cnf.UDP_BUFFER_SIZE)

@@ -36,12 +36,6 @@ jobs:
         with:
           go-version: '1.21'
 
-      - name: Running tests
-        run: |
-          cd lib/
-          go test -v ./...
-        shell: bash
-
       - name: Build binary
         run: |
           cd lib/main/

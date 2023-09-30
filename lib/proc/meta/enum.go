@@ -4,6 +4,7 @@ type Proto uint8
 type Action uint8
 type OptBool uint8
 type Match uint8
+type ListenMode string
 
 const (
 	ActionAccept Action = 1
@@ -28,4 +29,10 @@ const (
 	MatchNeutral  Match = 0
 	MatchPositive Match = 1
 	MatchNegative Match = 2
+
+	ListenModeTransparent ListenMode = "transparent"
+	ListenModeProxyProto  ListenMode = "proxyproto"
+	ListenModeHttp        ListenMode = "http"
+	ListenModeHttps       ListenMode = "https"
+	ListenModeSocks5      ListenMode = "socks5"
 )

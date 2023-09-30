@@ -46,19 +46,28 @@ Basic config example:
 
     service:
       listen:
-        port: 4128
-        ip4:
-          - '127.0.0.1'
-        ip6:
-          - '::1'
-        tcp: true
-        tproxy: false
+        - mode: 'transparent'
+          ip4: ['127.0.0.1']  # is default
+          ip6: ['::1']  # is default
+          port: 4128
+          tcp: true
+          udp: false  # not yet implemented
+          tproxy: false
+
+      certs:
+        serverPublic: '/tmp/calamary.crt'
+        serverPrivate: '/tmp/calamary.key'
+        interceptPublic: '/tmp/calamary.subca.crt'
+        interceptPrivate: '/tmp/calamary.subca.key'
 
       debug: false
       timeout:  # ms
         connect: 2000
         process: 1000
-        idle: 15000
+        idle: 30000
+
+      output:
+        retries: 1  # connect-retries
 
       metrics:
         enabled: false

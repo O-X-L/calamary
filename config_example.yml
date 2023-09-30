@@ -2,14 +2,27 @@
 
 service:
   listen:
-    port: 4128
-    ip4:
-      - '127.0.0.1'
-    ip6:
-      - '::1'
-    tcp: true
-    udp: false  # not yet implemented
-    tproxy: false
+    - mode: 'transparent'
+      ip4: ['127.0.0.1']  # is default
+      ip6: ['::1']  # is default
+      port: 4128
+      tcp: true
+      udp: false  # not yet implemented
+      tproxy: false
+    - mode: 'proxyproto'
+      port: 4129
+    # - mode: 'http'  # not yet implemented
+    #   port: 4130
+    # - mode: 'https'  # not yet implemented
+    #   port: 4131
+    # - mode: 'socks5'  # not yet implemented
+    #   port: 4132
+
+  certs:
+    serverPublic: '/tmp/calamary.crt'
+    serverPrivate: '/tmp/calamary.key'
+    interceptPublic: '/tmp/calamary.subca.crt'
+    interceptPrivate: '/tmp/calamary.subca.key'
 
   debug: false
   timeout:
@@ -18,12 +31,7 @@ service:
     idle: 30000
 
   output:
-    fwmark: 0  # not yet implemented
-    interface: ''  # not yet implemented
-    ip4: []  # not yet implemented
-    ip6: []  # not yet implemented
-    multi_ip: 'roundrobin'  # or failover; not yet implemented
-    retries: 1  # connection-retries; not yet implemented
+    retries: 1  # connect-retries
 
   metrics:
     enabled: false

@@ -75,3 +75,12 @@ func IsDomainName(s string) bool {
 func Timeout(timeout uint) time.Duration {
 	return time.Duration(int(timeout) * int(time.Millisecond))
 }
+
+func IsIn(value string, list []string) bool {
+	for i := range list {
+		if list[i] == value {
+			return true
+		}
+	}
+	return false
+}

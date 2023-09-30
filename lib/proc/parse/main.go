@@ -14,7 +14,7 @@ import (
 	"github.com/superstes/calamary/u"
 )
 
-func Parse(l4Proto string, conn net.Conn, connIo io.Reader) (pkt ParsedPacket) {
+func Parse(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn, connIo io.Reader) (pkt ParsedPacket) {
 	// get packet L5-header
 	conn.SetReadDeadline(time.Now().Add(u.Timeout(cnf.C.Service.Timeout.Process)))
 	var hdr [cnf.BYTES_HDR_L5]byte
@@ -25,28 +25,25 @@ func Parse(l4Proto string, conn net.Conn, connIo io.Reader) (pkt ParsedPacket) {
 	connIo = io.MultiReader(bytes.NewReader(hdr[:n]), connIo) // write header back to stream
 
 	// main L4 split
-	if l4Proto == "udp" {
-		pkt = parseUdp(conn, connIo, hdr)
+	if l4Proto == meta.ProtoL4Udp {
+		pkt = parseUdp(srvCnf, conn, connIo, hdr)
 	} else {
-		pkt = parseTcp(conn, connIo, hdr)
+		pkt = parseTcp(srvCnf, conn, connIo, hdr)
 	}
 
 	conn.SetReadDeadline(time.Time{})
 	l5ProtoStr := meta.RevProto(pkt.L5.Proto)
 	tlsVersionStr := meta.RevTlsVersion(pkt.L5.TlsVersion)
 	if cnf.Metrics() {
-		metrics.RuleReqL3Proto.WithLabelValues(meta.RevProto(pkt.L3.Proto)).Inc()
-		metrics.RuleReqL5Proto.WithLabelValues(l5ProtoStr).Inc()
-		metrics.RuleReqTlsVersion.WithLabelValues(tlsVersionStr).Inc()
+		metrics.ReqL3Proto.WithLabelValues(meta.RevProto(pkt.L3.Proto)).Inc()
+		metrics.ReqL5Proto.WithLabelValues(l5ProtoStr).Inc()
+		metrics.ReqTlsVersion.WithLabelValues(tlsVersionStr).Inc()
 	}
-	log.ConnDebug(
-		"parse", PktSrc(pkt), PktDest(pkt),
-		fmt.Sprintf("Packet L5Proto: %v | TLS: v%v", l5ProtoStr, tlsVersionStr),
-	)
+	LogConnDebug("parse", pkt, fmt.Sprintf("Packet L5Proto: %v | TLS: %v", l5ProtoStr, tlsVersionStr))
 	return
 }
 
-func parseTcp(conn net.Conn, connIo io.Reader, hdr [cnf.BYTES_HDR_L5]byte) ParsedPacket {
+func parseTcp(srvCnf cnf.ServiceListener, conn net.Conn, connIo io.Reader, hdr [cnf.BYTES_HDR_L5]byte) ParsedPacket {
 	pkt := ParsedPacket{
 		L3: &ParsedL3{},
 		L4: &ParsedL4{
@@ -61,35 +58,36 @@ func parseTcp(conn net.Conn, connIo io.Reader, hdr [cnf.BYTES_HDR_L5]byte) Parse
 	// source address
 	tcpSrcAddr, err := net.ResolveTCPAddr("tcp", conn.RemoteAddr().String())
 	if err != nil {
-		log.ConnErrorS("parse", conn.RemoteAddr().String(), "?", "Failed to resolve TCP source-address")
+		log.ConnError("parse", conn.RemoteAddr().String(), "?", "Failed to resolve TCP source-address")
 	}
 	pkt.L3.SrcIP = tcpSrcAddr.IP
 	pkt.L4.SrcPort = uint16(tcpSrcAddr.Port)
 	pkt.L3.Proto = getL3Proto(pkt.L3.SrcIP)
 
-	log.ConnDebug("parse", PktSrc(pkt), "?", "Parsing TCP connection")
+	LogConnDebug("parse", pkt, "Parsing TCP connection")
 
 	// destination address
 	var dstIpPort net.Addr
-	if !cnf.C.Service.Listen.TProxy {
+	if srvCnf.TProxy {
+		dstIpPort = conn.LocalAddr()
+
+	} else {
 		dstIpPort, err = getTcpOriginalDstAddr(conn)
 		if err != nil {
-			log.ConnErrorS("parse", PktSrc(pkt), "?", "Failed to get original destination IP")
+			LogConnError("parse", pkt, "Failed to get original destination IP")
 		}
-	} else {
-		dstIpPort = conn.LocalAddr()
 	}
 
 	pkt.L3.Proto = parseIpProto(dstIpPort)
 	tcpDestAddr, err := net.ResolveTCPAddr("tcp", dstIpPort.String())
 	if err != nil {
-		log.ConnErrorS("parse", PktSrc(pkt), "?", "Failed to resolve TCP destination-address")
+		LogConnError("parse", pkt, "Failed to resolve TCP destination-address")
 	}
 	pkt.L3.DestIP = tcpDestAddr.IP
 	pkt.L4.DestPort = uint16(tcpDestAddr.Port)
 
 	// additional
-	log.ConnDebug("parse", PktSrc(pkt), PktDest(pkt), "Processing TCP")
+	LogConnDebug("parse", pkt, "Processing TCP")
 	pkt.L5.Encrypted, pkt.L5.TlsVersion, pkt.L5.TlsSni = parseTls(pkt, conn, connIo, hdr)
 
 	if pkt.L5.Encrypted == meta.OptBoolTrue {
@@ -101,7 +99,7 @@ func parseTcp(conn net.Conn, connIo io.Reader, hdr [cnf.BYTES_HDR_L5]byte) Parse
 	return pkt
 }
 
-func parseUdp(conn net.Conn, connIo io.Reader, hdr [cnf.BYTES_HDR_L5]byte) ParsedPacket {
+func parseUdp(srvCnf cnf.ServiceListener, conn net.Conn, connIo io.Reader, hdr [cnf.BYTES_HDR_L5]byte) ParsedPacket {
 	pkt := ParsedPacket{
 		L3: &ParsedL3{},
 		L4: &ParsedL4{
@@ -118,7 +116,7 @@ func parseUdp(conn net.Conn, connIo io.Reader, hdr [cnf.BYTES_HDR_L5]byte) Parse
 
 		_, raddr, dstAddr, err := getUdpOriginalDstAddr(*conn, *b)
 		if err != nil {
-			log.ConnErrorS("parse", PktSrcIP(pkt), "?", "Failed to get original destination IP")
+			LogConnError("parse", pkt, "Failed to get original destination IP")
 		}
 		pkt.L3.SrcIP = raddr.String()
 		pkt.L3.DestIP = dstAddr.String()
@@ -128,13 +126,13 @@ func parseUdp(conn net.Conn, connIo io.Reader, hdr [cnf.BYTES_HDR_L5]byte) Parse
 	/*
 		udpAddr, err := net.ResolveUDPAddr("tcp", dstIpPort.String())
 		if err != nil {
-			log.ConnErrorS("parse", PktSrcIP(pkt), "?", "Failed to resolve UDP address")
+			LogConnError("parse", pkt, "Failed to resolve UDP address")
 		}
 		pkt.L3.DestIP = udpAddr.IP
 		pkt.L4.DestPort = udpAddr.Port
 	*/
 
-	log.ConnDebug("parse", PktSrc(pkt), PktDest(pkt), "Processing UDP")
+	LogConnDebug("parse", pkt, "Processing UDP")
 
 	return pkt
 }

@@ -4,24 +4,28 @@
 
 Calamary is a [squid](http://www.squid-cache.org/)-like proxy.
 
-Its focus is set on security filtering for HTTPS.
-
-**It will not**:
-* act as caching proxy
-* act as reverse proxy
-
-**Features**:
-* certificate verification
-* mode to enforce TLS (*deny any unencrypted connections*)
-* detect plain HTTP and respond with generic HTTPS-redirect
-* support for [proxy-protocol](https://github.com/pires/go-proxyproto)
-
+Its focus is set on transparent security filtering.
 
 ## Documentation
 
 [docs.calamary.net](https://docs.calamary.net)
 
 ## Roadmap
+
+- [ ] Listeners
+
+  - [ ] Transparent
+
+    - [x] TCP
+    - [ ] UDP
+
+  - [ ] Proxy-Protocol
+
+  - [ ] HTTP Proxy
+
+  - [ ] HTTPS Proxy
+
+  - [ ] SOCKS5 Proxy
 
 - [ ] Forwarding
 
@@ -39,10 +43,19 @@ Its focus is set on security filtering for HTTPS.
 
 - [ ] Parsing
 
-  - [x] TCP
-  - [x] TLS
-  - [ ] HTTP
-  - [ ] UDP
+  - [ ] Basic
+
+    - [x] TCP
+    - [ ] UDP
+    - [x] TLS
+    - [ ] Identify common protocols
+
+  - [ ] Listener-Specific
+
+    - [ ] Proxy-Protocol
+    - [ ] HTTP Proxy
+    - [ ] SOCKS5 Proxy
+
   - [ ] DNS
 
 - [ ] Filtering
@@ -60,3 +73,5 @@ Its focus is set on security filtering for HTTPS.
     - [x] Config
     - [x] Matching
     - [ ] Additional checks
+
+  - [ ] DNS

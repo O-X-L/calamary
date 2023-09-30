@@ -6,15 +6,15 @@ import (
 	"net"
 
 	"github.com/superstes/calamary/cnf"
-	"github.com/superstes/calamary/log"
 	"github.com/superstes/calamary/metrics"
 	"github.com/superstes/calamary/proc/filter"
+	"github.com/superstes/calamary/proc/meta"
 	"github.com/superstes/calamary/proc/parse"
 	"github.com/superstes/calamary/send"
 	"github.com/superstes/calamary/u"
 )
 
-func Forward(l4Proto string, conn net.Conn) {
+func Forward(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn) {
 	defer conn.Close()
 
 	if cnf.Metrics() {
@@ -26,15 +26,15 @@ func Forward(l4Proto string, conn net.Conn) {
 	var connIo io.ReadWriter = conn
 	connIoBuf := new(bytes.Buffer)
 	connIoTee := io.TeeReader(connIo, connIoBuf)
-	pkt := parse.Parse(l4Proto, conn, connIoTee)
+	pkt := parse.Parse(srvCnf, l4Proto, conn, connIoTee)
 	if !filter.Filter(pkt) {
-		log.ConnInfo("forward", parse.PktSrc(pkt), parse.PktDest(pkt), "Denied")
+		parse.LogConnInfo("forward", pkt, "Denied")
 		conn.Close()
 		return
 	}
 	// write read bytes back to stream so we can forward them
 	connIo = u.NewReadWriter(io.MultiReader(bytes.NewReader(connIoBuf.Bytes()), connIo), connIo)
 
-	log.ConnInfo("forward", parse.PktSrc(pkt), parse.PktDest(pkt), "Accept")
+	parse.LogConnInfo("forward", pkt, "Accept")
 	send.Forward(pkt, conn, connIo)
 }

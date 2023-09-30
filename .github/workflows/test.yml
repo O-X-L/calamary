@@ -1,0 +1,30 @@
+---
+
+name: Unit Tests
+
+on:
+  push:
+    branches: [latest, v*]
+  pull_request:
+    branches: [latest, v*]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        python-version: [3.10]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Running tests
+        run: |
+          cd lib/
+          go test -v ./...
+        shell: bash
