@@ -41,15 +41,26 @@ func readConfig() (config []byte) {
 	panic(fmt.Errorf("no valid config file found! (%s, %s)", cwdConfig, cnf.ConfigFileAbs))
 }
 
-func Load(validate bool) {
+func Load(validationMode bool, fail bool) {
 	log.Info("config", "Loading config from file")
 	newConfig := cnf.Config{}
 	err := yaml.Unmarshal(readConfig(), &newConfig)
 	if err != nil {
-		log.ErrorS("config", "Failed to parse config! Check if it is valid!")
+		log.ErrorS("config", "Failed to parse config! Check if it's schema is valid!")
+		if !fail {
+			return
+		}
 		panic(fmt.Errorf("failed to parse config: %v", err))
 	}
-	if !validate {
+	applyConfigDefaults(&newConfig)
+	if !validateConfig(newConfig, fail) {
+		if !fail {
+			log.ErrorS("config", "Failed to validate config!")
+			return
+		}
+		panic(fmt.Errorf("failed to vaidate config!"))
+	}
+	if !validationMode {
 		cnf.C = &newConfig
 	}
 	newRules := ParseRules(cnf.C.Rules)
