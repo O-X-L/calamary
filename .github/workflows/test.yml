@@ -5,8 +5,14 @@ name: Unit Tests
 on:
   push:
     branches: [latest, v*]
+    paths:
+      - 'lib/**.go'
+      - '.github/workflows/test.yml'
   pull_request:
     branches: [latest, v*]
+    paths:
+      - 'lib/**.go'
+      - '.github/workflows/test.yml'
 
 jobs:
   build:

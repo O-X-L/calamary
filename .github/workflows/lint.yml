@@ -5,8 +5,14 @@ name: Lint
 on:
   push:
     branches: [latest, v*]
+    paths:
+      - 'lib/**'
+      - '.github/workflows/lint.yml'
   pull_request:
     branches: [latest, v*]
+    paths:
+      - 'lib/**'
+      - '.github/workflows/lint.yml'
 
 jobs:
   build:
