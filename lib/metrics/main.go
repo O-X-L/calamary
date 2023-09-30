@@ -26,7 +26,7 @@ var (
 		Name:      "req_tcp",
 		Help:      "Count of tcp requests received",
 	})
-	RuleReqL3Proto = prometheus.NewCounterVec(
+	ReqL3Proto = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Namespace: "calamary",
 			Name:      "req_protoL3",
@@ -34,7 +34,7 @@ var (
 		},
 		[]string{"protocol"},
 	)
-	RuleReqL5Proto = prometheus.NewCounterVec(
+	ReqL5Proto = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Namespace: "calamary",
 			Name:      "req_protoL5",
@@ -42,7 +42,7 @@ var (
 		},
 		[]string{"protocol"},
 	)
-	RuleReqTlsVersion = prometheus.NewCounterVec(
+	ReqTlsVersion = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Namespace: "calamary",
 			Name:      "req_tls_version",

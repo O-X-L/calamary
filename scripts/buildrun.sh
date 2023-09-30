@@ -15,6 +15,7 @@ then
   echo 'GENERATING DUMMY CERTS...'
   echo ''
   openssl req -x509 -newkey rsa:4096 -keyout /tmp/calamary.key -out /tmp/calamary.crt -sha256 -days 60 -nodes -subj "$CERT_CN"
+  chmod 644 /tmp/calamary.key /tmp/calamary.crt
 fi
 
 echo ''

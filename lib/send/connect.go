@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/superstes/calamary/cnf"
-	"github.com/superstes/calamary/log"
 	"github.com/superstes/calamary/metrics"
 	"github.com/superstes/calamary/proc/parse"
 	"github.com/superstes/calamary/u"
@@ -47,13 +46,13 @@ func (l *Link) pipe(pkt parse.ParsedPacket, srcConn net.Conn, src io.ReadWriter,
 				metrics.BytesSent.Add(float64(n))
 			}
 			l.sentBytes += uint64(n)
-			log.ConnDebug("send", parse.PktSrc(pkt), parse.PktDest(pkt), fmt.Sprintf("%d bytes sent", l.sentBytes))
+			parse.LogConnDebug("send", pkt, fmt.Sprintf("%d bytes sent", l.sentBytes))
 		} else {
 			if cnf.Metrics() {
 				metrics.BytesRcv.Add(float64(n))
 			}
 			l.rcvBytes += uint64(n)
-			log.ConnDebug("send", parse.PktSrc(pkt), parse.PktDest(pkt), fmt.Sprintf("%d bytes received", l.rcvBytes))
+			parse.LogConnDebug("send", pkt, fmt.Sprintf("%d bytes received", l.rcvBytes))
 		}
 	}
 }
@@ -63,10 +62,7 @@ func (l *Link) closer(pkt parse.ParsedPacket, errMsg string, err error) {
 		return
 	}
 	if err != io.EOF {
-		log.ConnErrorS(
-			"send", parse.PktSrc(pkt), parse.PktDest(pkt),
-			fmt.Sprintf("Read failed: %s - %v", errMsg, err),
-		)
+		parse.LogConnError("send", pkt, fmt.Sprintf("Read failed: %s - %v", errMsg, err))
 	}
 	l.close <- true
 	l.closed = true

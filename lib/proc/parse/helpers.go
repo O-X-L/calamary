@@ -13,6 +13,9 @@ func PktSrc(pkt ParsedPacket) string {
 }
 
 func PktDest(pkt ParsedPacket) string {
+	if pkt.L3.DestIP == nil {
+		return "?"
+	}
 	return fmt.Sprintf("%s:%v", pkt.L3.DestIP.String(), pkt.L4.DestPort)
 }
 

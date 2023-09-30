@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/superstes/calamary/cnf"
-	"github.com/superstes/calamary/log"
 	"github.com/superstes/calamary/metrics"
 	"github.com/superstes/calamary/proc/meta"
 	"github.com/superstes/calamary/proc/parse"
@@ -49,13 +48,17 @@ func Filter(pkt parse.ParsedPacket) bool {
 	}
 
 	// implicit deny
-	log.ConnDebug("filter", parse.PktSrc(pkt), parse.PktDest(pkt), "No rule matched - implicit deny")
+	if cnf.Metrics() {
+		metrics.RuleMatches.WithLabelValues("default").Inc()
+		metrics.RuleActions.WithLabelValues(meta.RevRuleAction(meta.ActionDeny)).Inc()
+	}
+	parse.LogConnDebug("filter", pkt, "No rule matched - implicit deny")
 	return applyAction(meta.ActionDeny)
 }
 
 func ruleDebug(pkt parse.ParsedPacket, rule_id int, msg string) {
-	if cnf.C.Service.Debug {
-		log.ConnDebug("filter", parse.PktSrc(pkt), parse.PktDest(pkt), fmt.Sprintf("Rule %v - %s", rule_id, msg))
+	if cnf.Debug() {
+		parse.LogConnDebug("filter", pkt, fmt.Sprintf("Rule %v - %s", rule_id, msg))
 	}
 }
 

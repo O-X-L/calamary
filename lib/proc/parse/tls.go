@@ -6,7 +6,6 @@ import (
 	"net"
 
 	"github.com/superstes/calamary/cnf"
-	"github.com/superstes/calamary/log"
 	"github.com/superstes/calamary/proc/meta"
 	tls_dissector "github.com/superstes/calamary/proc/parse/tls"
 )
@@ -22,17 +21,13 @@ func parseTls(pkt ParsedPacket, conn net.Conn, connIo io.Reader, hdr [cnf.BYTES_
 	if isTlsRaw {
 		record, err := tls_dissector.ReadRecord(connIo)
 		if err != nil {
-			log.ConnWarnS("parse", PktSrc(pkt), PktDest(pkt), fmt.Sprintf(
-				"Failed to parse TLS handshake: %v", err,
-			))
+			LogConnWarn("parse", pkt, fmt.Sprintf("Failed to parse TLS handshake: %v", err))
 			return
 		}
 
 		clientHello := tls_dissector.ClientHelloMsg{}
 		if err = clientHello.Decode(record.Opaque); err != nil {
-			log.ConnWarnS("parse", PktSrc(pkt), PktDest(pkt), fmt.Sprintf(
-				"Failed to parse TLS client-hello: %v", err,
-			))
+			LogConnWarn("parse", pkt, fmt.Sprintf("Failed to parse TLS client-hello: %v", err))
 			return
 		}
 
@@ -51,8 +46,6 @@ func parseTls(pkt ParsedPacket, conn net.Conn, connIo io.Reader, hdr [cnf.BYTES_
 			}
 		}
 	}
-	log.ConnDebug("parse", PktSrc(pkt), PktDest(pkt), fmt.Sprintf(
-		"TLS information: IsTls=%v, TlsVersion=%v, TlsSni=%s", isTlsRaw, tlsVersion, sni,
-	))
+	LogConnDebug("parse", pkt, fmt.Sprintf("TLS information: IsTls=%v, TlsVersion=%v, TlsSni=%s", isTlsRaw, tlsVersion, sni))
 	return
 }

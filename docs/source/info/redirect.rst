@@ -8,57 +8,27 @@
 Redirect Traffic
 ################
 
-TProxy
+Basics
 ######
 
-To run Calamary as `TPROXY <https://docs.kernel.org/networking/tproxy.html>`_ target - you will have to set `CAP_NET_RAW <https://man7.org/linux/man-pages/man7/capabilities.7.html>`_:
+You may want/need to redirect traffic to the proxy's listeners for some use-case.
 
-::
+This is essential for using the :code:`transparent` mode.
 
-  bind to any address for transparent proxying
+For modes like :code:`proxyproto`, :code:`http`, :code:`https` or :code:`socks5` this is not necessary. (*but it's also possible using the :ref:`Redirector <redirector>`*)
 
-You can add it like this:
+You will have to choose between using **DNAT** and **TPROXY** to redirect the traffic on firewall-level.
 
-.. code-block:: bash
+**TProxy** has the benefit that it won't modify the packets destination. This makes processing the traffic easier and can be benefitial in regards to performance.
 
-    setcap cap_net_raw=+ep /usr/bin/calamary
+But it also has the drawback that traffic that originates from the proxy-server (*netfilter hook - output*) will have to be looped-back.
 
-    # make sure only wanted users can execute the binary!
-    chown root:proxy /usr/bin/calamary
-    chmod 750 /usr/bin/calamary
+I personally like to use TProxy for filtering input/forward- and DNAT for output-traffic.
 
-Read more about TPROXY here:
 
-* `wiki.superstes.eu - NFTables - TProxy <https://wiki.superstes.eu/en/latest/1/network/firewall_nftables.html#tproxy>`_
-
-* `kernel docs <https://docs.kernel.org/networking/tproxy.html>`_
-
-Output loopback
-===============
-
-You will have to configure a loopback route if you want to proxy 'output' traffic:
-
-.. code-block:: bash
-
-    echo "200 proxy_loopback" > /etc/iproute2/rt_tables.d/proxy.conf
-
-    # These need to be configured persistent: (maybe use an interface up-hook)
-    ip rule add fwmark 200 table proxy_loopback
-    ip -6 rule add fwmark 200 table proxy_loopback
-    ip route add local 0.0.0.0/0 dev lo table proxy_loopback
-    ip -6 route add local ::/0 dev lo table proxy_loopback
-
-    # can be checked using:
-    ip rule list
-    ip -6 rule list
-    ip -d route show table all
-
-    # you might need to set a sysctl:
-    sysctl -w net.ipv4.conf.all.route_localnet=1
-
-    # you might want to block 127.0.0.1 on non loopback interfaces if you enable it:
-    iptables -t raw -A PREROUTING ! -i lo -d 127.0.0.0/8 -j DROP
-    iptables -t mangle -A POSTROUTING ! -o lo -s 127.0.0.0/8 -j DROP
+.. warning::
+    The config-examples below may not be complete!
+    If you find issues with them - please `open an issue <https://github.com/superstes/calamary/issues>`_
 
 
 NFTables
@@ -154,3 +124,56 @@ TProxy
 Full TProxy example: `gist.github.com/superstes - TProxy IPTables <https://gist.github.com/superstes/c4fefbf403f61812abf89165d7bc4000>`_
 
 You might need to enable some iptables kernel modules: `Kernel docs - IPTables extensions <https://docs.kernel.org/networking/tproxy.html#iptables-and-nf-tables-extensions>`_   
+
+
+TProxy
+######
+
+To run Calamary as `TPROXY <https://docs.kernel.org/networking/tproxy.html>`_ target - you will have to set `CAP_NET_RAW <https://man7.org/linux/man-pages/man7/capabilities.7.html>`_:
+
+::
+
+  bind to any address for transparent proxying
+
+You can add it like this:
+
+.. code-block:: bash
+
+    setcap cap_net_raw=+ep /usr/bin/calamary
+
+    # make sure only wanted users can execute the binary!
+    chown root:proxy /usr/bin/calamary
+    chmod 750 /usr/bin/calamary
+
+Read more about TPROXY here:
+
+* `wiki.superstes.eu - NFTables - TProxy <https://wiki.superstes.eu/en/latest/1/network/firewall_nftables.html#tproxy>`_
+
+* `kernel docs <https://docs.kernel.org/networking/tproxy.html>`_
+
+Output loopback
+===============
+
+You will have to configure a loopback route if you want to proxy 'output' traffic:
+
+.. code-block:: bash
+
+    echo "200 proxy_loopback" > /etc/iproute2/rt_tables.d/proxy.conf
+
+    # These need to be configured persistent: (maybe use an interface up-hook)
+    ip rule add fwmark 200 table proxy_loopback
+    ip -6 rule add fwmark 200 table proxy_loopback
+    ip route add local 0.0.0.0/0 dev lo table proxy_loopback
+    ip -6 route add local ::/0 dev lo table proxy_loopback
+
+    # can be checked using:
+    ip rule list
+    ip -6 rule list
+    ip -d route show table all
+
+    # you might need to set a sysctl:
+    sysctl -w net.ipv4.conf.all.route_localnet=1
+
+    # you might want to block 127.0.0.1 on non loopback interfaces if you enable it:
+    iptables -t raw -A PREROUTING ! -i lo -d 127.0.0.0/8 -j DROP
+    iptables -t mangle -A POSTROUTING ! -o lo -s 127.0.0.0/8 -j DROP

@@ -30,13 +30,13 @@ func main() {
 
 	if modeValidate {
 		cnf.C.Service.Debug = true
-		cnf_file.Load(true)
+		cnf_file.Load(true, true)
 		log.Info("config", "Config validated successfully")
 		os.Exit(0)
 	}
 
 	welcome()
-	cnf_file.Load(false)
+	cnf_file.Load(false, true)
 	service := &service{}
 	go startPrometheusExporter()
 	service.start()
