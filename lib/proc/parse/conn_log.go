@@ -1,9 +1,14 @@
 package parse
 
-import "github.com/superstes/calamary/log"
+import (
+	"github.com/superstes/calamary/cnf"
+	"github.com/superstes/calamary/log"
+)
 
 func LogConnDebug(pkg string, pkt ParsedPacket, msg string) {
-	log.Conn("DEBUG", pkg, PktSrc(pkt), PktDest(pkt), msg)
+	if cnf.Debug() {
+		log.Conn("DEBUG", pkg, PktSrc(pkt), PktDest(pkt), msg)
+	}
 }
 
 func LogConnInfo(pkg string, pkt ParsedPacket, msg string) {

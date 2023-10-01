@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/superstes/calamary/cnf"
@@ -14,13 +15,18 @@ import (
 	"github.com/superstes/calamary/u"
 )
 
-func Parse(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn, connIo io.Reader) (pkt ParsedPacket) {
-	// get packet L5-header
+func Parse(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn, connIo io.Reader) (pkt ParsedPacket, err error) {
 	conn.SetReadDeadline(time.Now().Add(u.Timeout(cnf.C.Service.Timeout.Process)))
+
+	// get packet L5-header
 	var hdr [cnf.BYTES_HDR_L5]byte
 	n, err := io.ReadFull(connIo, hdr[:])
 	if err != nil {
 		log.Warn("parse", fmt.Sprintf("Error parsing L5Header: %v", err))
+		if strings.Contains(fmt.Sprintf("%v", err), "first record does not look like a TLS handshake") {
+			// plain http received by https mode
+			return
+		}
 	}
 	connIo = io.MultiReader(bytes.NewReader(hdr[:n]), connIo) // write header back to stream
 
@@ -68,7 +74,7 @@ func parseTcp(srvCnf cnf.ServiceListener, conn net.Conn, connIo io.Reader, hdr [
 
 	// destination address
 	var dstIpPort net.Addr
-	if srvCnf.TProxy {
+	if srvCnf.Mode != meta.ListenModeTransparent || srvCnf.TProxy {
 		dstIpPort = conn.LocalAddr()
 
 	} else {

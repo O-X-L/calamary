@@ -2,8 +2,10 @@ package u
 
 import (
 	"context"
+	"crypto/x509"
 	"fmt"
 	"net"
+	"os"
 	"strings"
 	"time"
 
@@ -147,4 +149,41 @@ func FormatIPv6(ip string) string {
 		return fmt.Sprintf("[%v]", ip)
 	}
 	return ip
+}
+
+func TrustedCAs() *x509.CertPool {
+	cafile := cnf.C.Service.Certs.CAPublic
+	caCertPool := x509.NewCertPool()
+	if cafile != "" {
+		cas, err := os.ReadFile(cafile)
+		if err != nil {
+			log.ErrorS("util", fmt.Sprintf("Failed to load trusted CAs from file %v", cafile))
+			return caCertPool
+		}
+		caCertPool.AppendCertsFromPEM(cas)
+	}
+	return caCertPool
+}
+
+/*
+Usage example:
+
+	buf := make([]byte, 512)
+	conn.Read(buf)
+	u.DumpToFile(buf)
+*/
+func DumpToFile(data []byte) {
+	file := fmt.Sprintf("/tmp/calamary_dump_%v.bin", time.Now().Unix())
+	dump, err := os.Create(file)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer dump.Close()
+	_, err = dump.Write(data)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	log.Info("util", "Dump written to file: "+file)
 }

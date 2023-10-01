@@ -45,6 +45,11 @@ func validateListener(lncnf cnf.ServiceListener, fail bool) bool {
 }
 
 func validateCerts(certs cnf.ServiceCertificates, fail bool) bool {
+	if certs.CAPublic != "" {
+		if !validateCert(certs.CAPublic, true, fail) {
+			return false
+		}
+	}
 	if certs.ServerPublic != "" || certs.ServerPrivate != "" {
 		if !validateCert(certs.ServerPublic, true, fail) {
 			return false

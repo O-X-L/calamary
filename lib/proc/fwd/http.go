@@ -31,7 +31,10 @@ func ForwardHttp(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn) 
 	}
 
 	// todo: full parsing may not be needed if 'connect'
-	pktProxy, connProxyIo := parseConn(srvCnf, l4Proto, conn)
+	pktProxy, connProxyIo, err := parseConn(srvCnf, l4Proto, conn)
+	if err != nil {
+		return
+	}
 
 	if pktProxy.L5.Proto != meta.ProtoL5Http {
 		parse.LogConnError("forward", pktProxy, "Got non HTTP-Request on HTTP server")
@@ -39,13 +42,14 @@ func ForwardHttp(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn) 
 	}
 
 	reqProxy := readRequest(pktProxy, connProxyIo)
-
 	if reqProxy == nil {
 		return
+
 	} else if reqProxy.Method == http.MethodConnect {
 		forwardConnect(srvCnf, l4Proto, conn, pktProxy, connProxyIo, reqProxy)
+
 	} else {
-		// plaintext HTTP is unsafe by design and should not be allowed
+		// plaintext HTTP is unsecure by design and should not be allowed
 		// todo: implement generic https-redirection response
 
 		forwardPlain(srvCnf, l4Proto, conn, pktProxy, connProxyIo, reqProxy)
@@ -67,7 +71,11 @@ func forwardPlain(
 	pkt.L3.DestIP = dest
 	parse.LogConnDebug("forward", pkt, "Updated destination IP")
 
-	filterConn(pkt, conn, connIo)
+	if !filterConn(pkt, conn, connIo) {
+		proxyResp := responseReject()
+		proxyResp.Write(conn)
+		return
+	}
 	send.ForwardHttp(pkt, conn, connIo, req)
 }
 
@@ -87,7 +95,11 @@ func forwardConnect(
 		return
 	}
 
-	pkt, connIo := parseConn(srvCnf, l4Proto, conn)
+	pkt, connIo, err := parseConn(srvCnf, l4Proto, conn)
+	if err != nil {
+		return
+	}
+
 	host, port := parse.SplitHttpHost(reqProxy.Host, pkt.L5.Encrypted)
 	pkt.L5Http = &parse.ParsedHttp{
 		Host: host,
@@ -108,9 +120,18 @@ func forwardConnect(
 	pkt.L3.DestIP = dest
 	parse.LogConnDebug("forward", pkt, "Updated destination IP")
 
-	filterConn(pkt, conn, connIo)
-	send.Forward(pkt, conn, connIo)
+	if !filterConn(pkt, conn, connIo) {
+		if pkt.L5.Encrypted == meta.OptBoolTrue {
+			// http response for https will show a cryptic response ('wrong version number' vs 'eof while reading')
+			return
 
+		} else {
+			proxyResp := responseReject()
+			proxyResp.Write(conn)
+			return
+		}
+	}
+	send.Forward(pkt, conn, connIo)
 }
 
 func resolveTargetHostname(pkt parse.ParsedPacket) net.IP {
@@ -145,6 +166,14 @@ func resolveTargetHostname(pkt parse.ParsedPacket) net.IP {
 func responseFailed() http.Response {
 	return http.Response{
 		StatusCode: http.StatusRequestTimeout,
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+	}
+}
+
+func responseReject() http.Response {
+	return http.Response{
+		StatusCode: http.StatusForbidden,
 		ProtoMajor: 1,
 		ProtoMinor: 1,
 	}

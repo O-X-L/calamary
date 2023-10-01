@@ -59,11 +59,6 @@ func (svc *service) shutdown(cancel context.CancelFunc) {
 	}
 	log.Info("service", "Stopped")
 	os.Exit(0)
-	/*
-		ctx := context.Background()
-		doneHTTP := httpserver.Shutdown(ctx)
-		<-doneHTTP
-	*/
 }
 
 func (svc *service) serve(srv rcv.Server) (err error) {

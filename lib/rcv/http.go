@@ -21,19 +21,17 @@ func newServerHttpTcp(addr string, lncnf cnf.ServiceListener) (Server, error) {
 }
 
 func newServerHttpsTcp(addr string, lncnf cnf.ServiceListener) (Server, error) {
+	keyPair, err := tls.LoadX509KeyPair(
+		cnf.C.Service.Certs.ServerPublic,
+		cnf.C.Service.Certs.ServerPrivate,
+	)
+	if err != nil {
+		return Server{}, fmt.Errorf("Failed to load certificates")
+	}
 	tlsCnf := &tls.Config{
-		MinVersion: tls.VersionTLS11,
-		NextProtos: []string{"h2", "http/1.1"},
-		/*
-			CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
-			PreferServerCipherSuites: true,
-			CipherSuites: []uint16{
-				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-				tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-				tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
-				tls.TLS_RSA_WITH_AES_256_CBC_SHA,
-			},
-		*/
+		MinVersion:   tls.VersionTLS10,
+		NextProtos:   []string{"http/1.1"},
+		Certificates: []tls.Certificate{keyPair},
 	}
 	ln, err := tls.Listen(
 		"tcp",

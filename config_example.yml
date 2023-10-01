@@ -11,14 +11,15 @@ service:
       tproxy: false
     - mode: 'proxyproto'
       port: 4129
-    # - mode: 'http'  # not yet implemented
-    #   port: 4130
-    # - mode: 'https'  # not yet implemented
-    #   port: 4131
+    - mode: 'http'
+      port: 4130
+    - mode: 'https'  # not yet implemented
+      port: 4131
     # - mode: 'socks5'  # not yet implemented
     #   port: 4132
 
   certs:
+    caPublic: '/tmp/calamary.ca.crt'
     serverPublic: '/tmp/calamary.crt'
     serverPrivate: '/tmp/calamary.key'
     interceptPublic: '/tmp/calamary.subca.crt'

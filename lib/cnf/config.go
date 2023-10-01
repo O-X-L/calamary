@@ -64,6 +64,7 @@ type ServiceMetrics struct {
 }
 
 type ServiceCertificates struct {
+	CAPublic         string `yaml:"caPublic"`
 	ServerPublic     string `yaml:"serverPublic"`
 	ServerPrivate    string `yaml:"serverPrivate"`
 	InterceptPublic  string `yaml:"interceptPublic"`

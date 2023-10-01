@@ -23,17 +23,26 @@ func Forward(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn) {
 		defer metrics.CurrentConn.Dec()
 	}
 
-	pkt, connIo := parseConn(srvCnf, l4Proto, conn)
-	filterConn(pkt, conn, connIo)
+	pkt, connIo, err := parseConn(srvCnf, l4Proto, conn)
+	if err != nil {
+		return
+	}
+	if !filterConn(pkt, conn, connIo) {
+		return
+	}
 	send.Forward(pkt, conn, connIo)
 }
 
-func parseConn(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn) (pkt parse.ParsedPacket, connIo io.ReadWriter) {
+func parseConn(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn) (pkt parse.ParsedPacket, connIo io.ReadWriter, err error) {
 	connIo = conn
 	connIoBuf := new(bytes.Buffer)
 	connIoTee := io.TeeReader(connIo, connIoBuf)
 
-	pkt = parse.Parse(srvCnf, l4Proto, conn, connIoTee)
+	pkt, err = parse.Parse(srvCnf, l4Proto, conn, connIoTee)
+
+	if err != nil {
+		return
+	}
 
 	// write read bytes back to stream so we can forward them
 	connIo = u.NewReadWriter(io.MultiReader(bytes.NewReader(connIoBuf.Bytes()), connIo), connIo)
@@ -41,12 +50,12 @@ func parseConn(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn) (p
 	return
 }
 
-func filterConn(pkt parse.ParsedPacket, conn net.Conn, connIo io.ReadWriter) {
+func filterConn(pkt parse.ParsedPacket, conn net.Conn, connIo io.ReadWriter) bool {
 	if !filter.Filter(pkt) {
 		parse.LogConnInfo("forward", pkt, "Denied")
-		conn.Close()
-		return
+		return false
 	}
 
 	parse.LogConnInfo("forward", pkt, "Accept")
+	return true
 }

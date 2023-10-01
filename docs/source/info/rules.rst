@@ -39,6 +39,8 @@ Multiple matches can be defined in a single rule.
 
 The value of matches is **case-insensitive** by default.
 
+NOTE: The HTTP host-header domain is not compared if :code:`dns` is used - as it can be modified easily.
+
 You can define **multiple values** for each match.
 
 Matches can also be **negated** by using the :code:`!` prefix:
