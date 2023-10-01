@@ -125,7 +125,8 @@ func matchDomain(pkt parse.ParsedPacket, rule cnf.Rule, rid int) meta.Match {
 		if pkt.L5.Proto == meta.ProtoL5Tls {
 			return anyDomainMatch(rule.Match.Domains, pkt.L5.TlsSni)
 		}
-		// todo: add plain http domain-match
+		// NOTE: domains from plain http host-headers are ignored by design as they can be modified easily
+		//   no important dataflow should use plain HTTP anyway - just move to HTTPS already..
 	}
 	return meta.MatchNeutral
 }
@@ -158,8 +159,7 @@ func anyNetMatch(nets []*net.IPNet, ip net.IP) meta.Match {
 }
 
 func anyDomainMatch(domains []string, domain string) meta.Match {
-	for i := range domains {
-		matchDomain := domains[i]
+	for _, matchDomain := range domains {
 		if strings.HasPrefix(matchDomain, "*.") {
 			matchDomain = strings.Replace(matchDomain, "*.", "", 1)
 			if strings.HasSuffix(domain, matchDomain) {

@@ -23,7 +23,7 @@ Its focus is set on transparent security filtering.
 
   - [ ] Proxy-Protocol
 
-  - [ ] HTTP Proxy
+  - [x] HTTP Proxy
 
   - [ ] HTTPS Proxy
 
@@ -33,7 +33,7 @@ Its focus is set on transparent security filtering.
 
   - [x] TCP
 
-    - [ ] HTTP
+    - [x] HTTP
 
   - [x] TLS
 
@@ -55,7 +55,7 @@ Its focus is set on transparent security filtering.
   - [ ] Listener-Specific
 
     - [ ] Proxy-Protocol
-    - [ ] HTTP Proxy
+    - [x] HTTP Proxy
     - [ ] SOCKS5 Proxy
 
   - [ ] DNS

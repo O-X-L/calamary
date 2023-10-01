@@ -1,6 +1,7 @@
 package cnf
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -59,5 +60,10 @@ func TestConfigDefaults(t *testing.T) {
 	}
 	if cnf2.Service.Metrics.Port != 9512 {
 		t.Errorf("Unmarshal defaults-file #6 (%+v)", cnf2.Service.Metrics)
+	}
+	if len(cnf2.Service.DnsNameservers) != 2 ||
+		fmt.Sprintf("%v", cnf2.Service.DnsNameservers[0]) != "1.1.1.1" ||
+		fmt.Sprintf("%v", cnf2.Service.DnsNameservers[1]) != "8.8.8.8" {
+		t.Errorf("Unmarshal defaults-file #7 (%+v)", cnf2.Service.DnsNameservers)
 	}
 }

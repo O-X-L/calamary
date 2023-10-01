@@ -2,7 +2,6 @@ package rcv
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/superstes/calamary/cnf"
 	"github.com/superstes/calamary/log"
@@ -26,11 +25,8 @@ func newServersForIps(
 	lnfuncUdp func(string, cnf.ServiceListener) (Server, error),
 ) (servers []Server) {
 	if len(ips) > 0 {
-		for i := range ips {
-			ip := ips[i]
-			if !u.IsIPv4(ip) && !strings.Contains(ip, "[") {
-				ip = fmt.Sprintf("[%v]", ip)
-			}
+		for _, ip := range ips {
+			ip = u.FormatIPv6(ip)
 			if lncnf.Tcp && lnfuncTcp != nil {
 				srv, err := lnfuncTcp(ip, lncnf)
 				if err != nil {
@@ -85,8 +81,7 @@ func newServerSocks5(lncnf cnf.ServiceListener) (servers []Server) {
 }
 
 func BuildServers() (servers []Server) {
-	for i := range cnf.C.Service.Listen {
-		lncnf := cnf.C.Service.Listen[i]
+	for _, lncnf := range cnf.C.Service.Listen {
 		servers = append(
 			servers,
 			serverModeMapping[lncnf.Mode](lncnf)...,

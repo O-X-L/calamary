@@ -25,3 +25,22 @@ func parseHttp(pkt ParsedPacket, hdr [cnf.BYTES_HDR_L5]byte) {
 		pkt.L5Http = &ParsedHttp{}
 	}
 }
+
+func ParseHttpPacket(pkt ParsedPacket, req *http.Request) *ParsedHttp {
+	if pkt.L5.Encrypted == meta.OptBoolTrue {
+		// todo: implement tls-interception
+		return &ParsedHttp{}
+	}
+
+	host, port := SplitHttpHost(req.Host, pkt.L5.Encrypted)
+
+	// todo: parse further useful information for fitlering
+	return &ParsedHttp{
+		Host:       host,
+		Port:       port,
+		Method:     req.Method,
+		ProtoMajor: req.ProtoMajor,
+		ProtoMinor: req.ProtoMinor,
+		Url:        req.URL,
+	}
+}

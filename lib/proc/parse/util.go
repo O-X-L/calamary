@@ -3,6 +3,8 @@ package parse
 import (
 	"fmt"
 	"net"
+	"strconv"
+	"strings"
 
 	"github.com/superstes/calamary/proc/meta"
 	"github.com/superstes/calamary/u"
@@ -28,4 +30,20 @@ func parseIpProto(addr net.Addr) meta.Proto {
 		return meta.ProtoL3IP4
 	}
 	return meta.ProtoL3IP6
+}
+
+func SplitHttpHost(host string, encypted meta.OptBool) (dns string, port uint16) {
+	if strings.Contains(host, ":") {
+		parts := strings.SplitN(host, ":", 2)
+		port, err := strconv.Atoi(parts[1])
+
+		if err == nil {
+			return parts[0], uint16(port)
+		}
+	}
+
+	if encypted == meta.OptBoolTrue {
+		return host, 443
+	}
+	return host, 80
 }

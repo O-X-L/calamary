@@ -12,9 +12,17 @@ import (
 // http://www.squid-cache.org/Doc/config/acl/
 
 func Filter(pkt parse.ParsedPacket) bool {
-	for rid := range *cnf.RULES {
-		rule := (*cnf.RULES)[rid]
+	// anti-loop & security loopholes
+	if alwaysDeny(pkt) == meta.MatchPositive {
+		if cnf.Metrics() {
+			metrics.RuleMatches.WithLabelValues("always").Inc()
+			metrics.RuleActions.WithLabelValues(meta.RevRuleAction(meta.ActionDeny)).Inc()
+		}
+		parse.LogConnDebug("filter", pkt, "Matched always deny")
+		return applyAction(meta.ActionDeny)
+	}
 
+	for rid, rule := range *cnf.RULES {
 		if cnf.Metrics() {
 			metrics.RuleHits.WithLabelValues(fmt.Sprintf("%v", rid)).Inc()
 		}
@@ -67,4 +75,14 @@ func applyAction(action meta.Action) bool {
 		return true
 	}
 	return false
+}
+
+func alwaysDeny(pkt parse.ParsedPacket) meta.Match {
+	if cnf.NetForwardDeny == nil {
+		cnf.InitNetForwardDeny()
+	}
+	return anyNetMatch(
+		cnf.NetForwardDeny,
+		pkt.L3.DestIP,
+	)
 }

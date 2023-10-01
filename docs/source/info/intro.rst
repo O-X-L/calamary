@@ -11,22 +11,26 @@ Intro
 
 Calamary is a `squid <http://www.squid-cache.org/>`_-like proxy.
 
-Its focus is set on **security filtering for HTTPS**.
+Its focus is set on **security filtering for HTTPS/TLS**.
+
+The ruleset should be logical, transparent & easy to understand.
+
+**Features**:
+
+* support for mainstream :ref:`proxy modes <getting_started>`
+* filtering ruleset - see :ref:`Rules <rules>`
+
+  * ability to filter on protocol-basis
+  * ability to enforce TLS (*deny any unencrypted connections*)
+
+* certificate verification
+* detect plain HTTP and respond with generic HTTPS-redirect
 
 **It will not**:
 
 * act as caching proxy
 * act as reverse proxy
-
-**Features**:
-
-* basic traffic filtering - see :ref:`Rules <rules>`
-* certificate verification
-* enforce TLS (*deny any unencrypted connections*)
-* detect plain HTTP and respond with generic HTTPS-redirect
-* intercept-, http-proxy and proxy-proto-modes
-
-  * support for `proxy-protocol <https://github.com/pires/go-proxyproto>`_
+* implement edge-case workarounds for unencrypted protocols
 
 Getting Started
 ###############
@@ -77,17 +81,18 @@ I would much preferr a keep-it-simple approach. Even if that means that some nic
 How?
 ####
 
-* Use TLS-SNI as target instead of HTTP Host-Header
+* Plaintext HTTP is not that common anymore.
 
+  We are using TLS-SNI > Host-Header to resolve the target.
 
-* Optionally use additional DNS-based verfication if TTL > 3 min
+  Plain HTTP is unsecure by default. So we won't check for Host-Header mangling.
+
+  The ruleset is applied 'postrouting' (*IP/Net matching*) and Host-Header domains are ignored by the ruleset.
 
 
 * Whenever it is not possible to route the traffic through the proxy..
 
-  To overcome the DNAT restriction, of losing the real target IP, the proxy will have a lightweight forwarder mode:
-
-  |proxy_forwarder|
+  To overcome the DNAT restriction, of losing the real target IP, there will be a :ref:`Redirector <redirector>`!
 
 
 * **Transparent traffic interception will be the focus**.

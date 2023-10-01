@@ -2,6 +2,7 @@ package parse
 
 import (
 	"net"
+	"net/url"
 
 	"github.com/superstes/calamary/proc/meta"
 )
@@ -46,10 +47,16 @@ type ParsedHttp struct {
 	/*
 		method
 	*/
-	Headers  string
-	MimeType string
-	AuthUser string
-	AuthPwd  string
+	Host       string
+	Port       uint16
+	Method     string
+	Url        *url.URL
+	ProtoMajor int
+	ProtoMinor int
+	Headers    string
+	MimeType   string
+	AuthUser   string
+	AuthPwd    string
 }
 
 type ParsedTls struct {

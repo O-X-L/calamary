@@ -15,8 +15,8 @@ import (
 )
 
 func validateConfig(newCnf cnf.Config, fail bool) bool {
-	for i := range newCnf.Service.Listen {
-		if !validateListener(newCnf.Service.Listen[i], fail) {
+	for _, ln := range newCnf.Service.Listen {
+		if !validateListener(ln, fail) {
 			return false
 		}
 	}

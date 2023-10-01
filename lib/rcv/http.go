@@ -3,32 +3,24 @@ package rcv
 import (
 	"crypto/tls"
 	"fmt"
-	"net/http"
 
 	"github.com/superstes/calamary/cnf"
-	proc_http "github.com/superstes/calamary/proc/http"
 	"github.com/superstes/calamary/proc/meta"
 )
 
 func newServerHttpTcp(addr string, lncnf cnf.ServiceListener) (Server, error) {
-	httpMux := http.NewServeMux()
-	httpMux.HandleFunc("/", proc_http.HandleRequest)
-
-	httpSrv := &http.Server{
-		Addr:    fmt.Sprintf("%s:%v", addr, lncnf.Port),
-		Handler: httpMux,
+	transparentSrv, err := newServerTransparentTcp(addr, lncnf)
+	if err != nil {
+		return transparentSrv, err
 	}
 	return Server{
-		HttpServer: httpSrv,
-		Cnf:        lncnf,
-		L4Proto:    meta.ProtoL4Tcp,
+		Listener: transparentSrv.Listener,
+		Cnf:      lncnf,
+		L4Proto:  meta.ProtoL4Tcp,
 	}, nil
 }
 
 func newServerHttpsTcp(addr string, lncnf cnf.ServiceListener) (Server, error) {
-	httpMux := http.NewServeMux()
-	httpMux.HandleFunc("/", proc_http.HandleRequestTls)
-
 	tlsCnf := &tls.Config{
 		MinVersion: tls.VersionTLS11,
 		NextProtos: []string{"h2", "http/1.1"},
@@ -43,15 +35,17 @@ func newServerHttpsTcp(addr string, lncnf cnf.ServiceListener) (Server, error) {
 			},
 		*/
 	}
-	httpSrv := &http.Server{
-		Addr:         fmt.Sprintf("%s:%v", addr, lncnf.Port),
-		Handler:      httpMux,
-		TLSConfig:    tlsCnf,
-		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
+	ln, err := tls.Listen(
+		"tcp",
+		fmt.Sprintf("%v:%v", addr, lncnf.Port),
+		tlsCnf,
+	)
+	if err != nil {
+		return Server{}, err
 	}
 	return Server{
-		HttpServer: httpSrv,
-		Cnf:        lncnf,
-		L4Proto:    meta.ProtoL4Tcp,
+		Listener: ln,
+		Cnf:      lncnf,
+		L4Proto:  meta.ProtoL4Tcp,
 	}, nil
 }

@@ -33,8 +33,8 @@ func startPrometheusExporter() {
 	if cnf.Metrics() {
 		log.Info("service", "Starting prometheus metrics-exporter")
 
-		for i := range metricFuncs {
-			prometheus.Register(metricFuncs[i])
+		for _, mf := range metricFuncs {
+			prometheus.Register(mf)
 		}
 
 		metricsSrv := http.NewServeMux()
@@ -43,8 +43,8 @@ func startPrometheusExporter() {
 		http.ListenAndServe(fmt.Sprintf("127.0.0.1:%v", cnf.C.Service.Metrics.Port), metricsSrv)
 		http.ListenAndServe(fmt.Sprintf("[::1]:%v", cnf.C.Service.Metrics.Port), metricsSrv)
 
-		for i := range metricFuncs {
-			prometheus.MustRegister(metricFuncs[i])
+		for _, mf := range metricFuncs {
+			prometheus.MustRegister(mf)
 		}
 	}
 }

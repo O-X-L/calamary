@@ -15,12 +15,10 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 	var v cnf.Var
 	var vf bool
 	var vn bool
-	var value string
 
 	// todo: move duplicate lines into sub-functions
 
-	for i := range rawRules {
-		ruleRaw := rawRules[i]
+	for _, ruleRaw := range rawRules {
 		rule := cnf.Rule{
 			Action: meta.RuleAction(ruleRaw.Action),
 		}
@@ -31,8 +29,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			rule.Match.SrcNet = []*net.IPNet{}
 			rule.Match.SrcNetN = []*net.IPNet{}
 		}
-		for i2 := range ruleRaw.Match.SrcNet {
-			value = ruleRaw.Match.SrcNet[i2]
+		for _, value := range ruleRaw.Match.SrcNet {
 			vf, vn, v = usedVar(value)
 			if vf {
 				for i3 := range v.Value {
@@ -56,8 +53,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			rule.Match.DestNet = []*net.IPNet{}
 			rule.Match.DestNetN = []*net.IPNet{}
 		}
-		for i2 := range ruleRaw.Match.DestNet {
-			value = ruleRaw.Match.DestNet[i2]
+		for _, value := range ruleRaw.Match.DestNet {
 			vf, vn, v = usedVar(value)
 			if vf {
 				for i3 := range v.Value {
@@ -81,8 +77,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			rule.Match.SrcPort = []uint16{}
 			rule.Match.SrcPortN = []uint16{}
 		}
-		for i2 := range ruleRaw.Match.SrcPort {
-			value = ruleRaw.Match.SrcPort[i2]
+		for _, value := range ruleRaw.Match.SrcPort {
 			vf, vn, v = usedVar(value)
 			if vf {
 				for i3 := range v.Value {
@@ -106,8 +101,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			rule.Match.DestPort = []uint16{}
 			rule.Match.DestPortN = []uint16{}
 		}
-		for i2 := range ruleRaw.Match.DestPort {
-			value = ruleRaw.Match.DestPort[i2]
+		for _, value := range ruleRaw.Match.DestPort {
 			vf, vn, v = usedVar(value)
 			if vf {
 				for i3 := range v.Value {
@@ -131,8 +125,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			rule.Match.ProtoL3 = []meta.Proto{}
 			rule.Match.ProtoL3N = []meta.Proto{}
 		}
-		for i2 := range ruleRaw.Match.ProtoL3 {
-			value = ruleRaw.Match.ProtoL3[i2]
+		for _, value := range ruleRaw.Match.ProtoL3 {
 			vf, vn, v = usedVar(value)
 			if vf {
 				for i3 := range v.Value {
@@ -156,8 +149,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			rule.Match.ProtoL4 = []meta.Proto{}
 			rule.Match.ProtoL4N = []meta.Proto{}
 		}
-		for i2 := range ruleRaw.Match.ProtoL4 {
-			value = ruleRaw.Match.ProtoL4[i2]
+		for _, value := range ruleRaw.Match.ProtoL4 {
 			vf, vn, v = usedVar(value)
 			if vf {
 				for i3 := range v.Value {
@@ -181,8 +173,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			rule.Match.ProtoL5 = []meta.Proto{}
 			rule.Match.ProtoL5N = []meta.Proto{}
 		}
-		for i2 := range ruleRaw.Match.ProtoL5 {
-			value = ruleRaw.Match.ProtoL5[i2]
+		for _, value := range ruleRaw.Match.ProtoL5 {
 			vf, vn, v = usedVar(value)
 			if vf {
 				for i3 := range v.Value {
@@ -205,8 +196,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 		if len(ruleRaw.Match.Domains) > 0 {
 			rule.Match.Domains = []string{}
 		}
-		for i2 := range ruleRaw.Match.Domains {
-			value = ruleRaw.Match.Domains[i2]
+		for _, value := range ruleRaw.Match.Domains {
 			vf, vn, v = usedVar(value)
 			if vf {
 				for i3 := range v.Value {

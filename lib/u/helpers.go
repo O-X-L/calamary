@@ -1,11 +1,16 @@
 package u
 
 import (
+	"context"
 	"fmt"
+	"net"
 	"strings"
 	"time"
 
 	"slices"
+
+	"github.com/superstes/calamary/cnf"
+	"github.com/superstes/calamary/log"
 )
 
 func ToStr(data any) string {
@@ -83,4 +88,63 @@ func IsIn(value string, list []string) bool {
 		}
 	}
 	return false
+}
+
+// just as shorter version
+func IsInStr(searchFor string, searchIn string) bool {
+	return strings.Contains(searchIn, searchFor)
+}
+
+func dnsResolveWithServer(srv string) *net.Resolver {
+	if !strings.Contains(srv, ":") {
+		srv = srv + ":53"
+	}
+	return &net.Resolver{
+		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+			d := net.Dialer{
+				Timeout: Timeout(cnf.C.Service.Timeout.DnsLookup),
+			}
+			return d.DialContext(ctx, network, srv)
+		},
+	}
+}
+
+func DnsLookup(dns string) (ips []net.IP) {
+	var err error
+	for _, srv := range cnf.C.Service.DnsNameservers {
+		ips, err = dnsResolveWithServer(srv).LookupIP(
+			context.Background(), "ip", dns,
+		)
+		if err != nil {
+			log.Debug("util", fmt.Sprintf("Failed to lookup DNS '%s' via server %s: %v", dns, srv, err))
+			continue
+		}
+		if len(ips) > 0 {
+			break
+		}
+	}
+	if len(ips) == 0 {
+		log.ErrorS("util", fmt.Sprintf("Failed to lookup DNS '%s'", dns))
+		return
+	}
+	log.Debug("util", fmt.Sprintf("DNS '%s' resolved to: %v", dns, ips))
+	return ips
+}
+
+func DnsLookup46(dns string) (ip4 []net.IP, ip6 []net.IP) {
+	for _, ip := range DnsLookup(dns) {
+		if IsIPv4(ip.String()) {
+			ip4 = append(ip4, ip)
+		} else {
+			ip6 = append(ip6, ip)
+		}
+	}
+	return
+}
+
+func FormatIPv6(ip string) string {
+	if !IsIPv4(ip) && !strings.Contains(ip, "[") {
+		return fmt.Sprintf("[%v]", ip)
+	}
+	return ip
 }

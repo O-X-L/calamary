@@ -3,6 +3,7 @@ package send
 import (
 	"io"
 	"net"
+	"net/http"
 
 	"github.com/superstes/calamary/proc/meta"
 	"github.com/superstes/calamary/proc/parse"
@@ -16,4 +17,15 @@ func Forward(pkt parse.ParsedPacket, conn net.Conn, connIo io.ReadWriter) {
 	} else {
 		forwardTcp(pkt, conn, connIo)
 	}
+}
+
+func ForwardHttp(pkt parse.ParsedPacket, conn net.Conn, connIo io.ReadWriter, req *http.Request) {
+	// http-proxy - rewrite request; only for plaintext http
+	connFwd := establishTcp(pkt)
+
+	if err := req.Write(connFwd); err != nil {
+		return
+	}
+
+	transportTcp(pkt, conn, connIo, connFwd)
 }

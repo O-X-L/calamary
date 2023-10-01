@@ -24,6 +24,7 @@ service:
     interceptPublic: '/tmp/calamary.subca.crt'
     interceptPrivate: '/tmp/calamary.subca.key'
 
+  dnsNameservers: ['1.1.1.1', '8.8.8.8']
   debug: false
   timeout:
     connect: 2000

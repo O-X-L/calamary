@@ -36,6 +36,17 @@ func (s *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
+func (s *ServiceConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	defaults.Set(s)
+
+	type plain ServiceConfig
+	if err := unmarshal((*plain)(s)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *ServiceListener) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	defaults.Set(s)
 

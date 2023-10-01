@@ -15,7 +15,7 @@ You may want/need to redirect traffic to the proxy's listeners for some use-case
 
 This is essential for using the :code:`transparent` mode.
 
-For modes like :code:`proxyproto`, :code:`http`, :code:`https` or :code:`socks5` this is not necessary. (*but it's also possible using the :ref:`Redirector <redirector>`*)
+For modes like :code:`proxyproto`, :code:`http`, :code:`https` or :code:`socks5` this is not necessary. (*but it's also possible using the* :ref:`Redirector <redirector>`)
 
 You will have to choose between using **DNAT** and **TPROXY** to redirect the traffic on firewall-level.
 

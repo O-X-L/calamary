@@ -46,23 +46,16 @@ func (svc *service) signalHandler() {
 
 func (svc *service) start() {
 	svc.servers = rcv.BuildServers()
-	for i := range svc.servers {
-		listener := svc.servers[i]
-		go svc.serve(listener)
+	for _, srv := range svc.servers {
+		go svc.serve(srv)
 	}
 	log.Info("service", "Started")
 }
 
 func (svc *service) shutdown(cancel context.CancelFunc) {
 	cancel()
-	for i := range svc.servers {
-		server := svc.servers[i]
-		if u.IsIn(string(server.Cnf.Mode), []string{"http", "https"}) {
-			server.HttpServer.Close()
-			time.Sleep(time.Millisecond * 500)
-		} else {
-			server.Listener.Close()
-		}
+	for _, srv := range svc.servers {
+		srv.Listener.Close()
 	}
 	log.Info("service", "Stopped")
 	os.Exit(0)
@@ -74,53 +67,28 @@ func (svc *service) shutdown(cancel context.CancelFunc) {
 }
 
 func (svc *service) serve(srv rcv.Server) (err error) {
-	// log.Info("service", fmt.Sprintf("Serving %s://%s", ln.Addr().Network(), ln.Addr().String()))
-
-	if srv.Cnf.Mode == meta.ListenModeHttp {
-		err = srv.HttpServer.ListenAndServe()
-		if err != nil && !strings.Contains(fmt.Sprintf("%v", err), "Server closed") {
-			log.ErrorS("service", fmt.Sprintf("HTTP server failure: %v", err))
-			return err
-		}
-
-	} else if srv.Cnf.Mode == meta.ListenModeHttps {
-		err = srv.HttpServer.ListenAndServeTLS(
-			cnf.C.Service.Certs.ServerPublic,
-			cnf.C.Service.Certs.ServerPrivate,
-		)
-		if err != nil && !strings.Contains(fmt.Sprintf("%v", err), "Server closed") {
-			log.ErrorS("service", fmt.Sprintf("HTTPS server failure: %v", err))
-			return err
-		}
-
-	} else {
-		var tempDelay time.Duration
-
-		for {
-			conn, err := srv.Listener.Accept()
-			if err != nil {
-				if _, ok := err.(net.Error); ok {
-					if !strings.Contains(fmt.Sprintf("%v", err), "use of closed network connection") {
-						if tempDelay == 0 {
-							tempDelay = 1 * time.Second
-						} else {
-							tempDelay *= 2
-						}
-						if max := 5 * time.Second; tempDelay > max {
-							tempDelay = max
-						}
-						log.Warn("service", fmt.Sprintf("Error: %v, retrying in %v", err, tempDelay))
-						time.Sleep(tempDelay)
-						continue
-					}
+	for {
+		conn, err := srv.Listener.Accept()
+		if err != nil {
+			if _, ok := err.(net.Error); ok {
+				if !strings.Contains(fmt.Sprintf("%v", err), "use of closed network connection") {
+					// todo: retries
+					time.Sleep(u.Timeout(cnf.DefaultConnectRetryWait))
+					continue
 				}
-				return err
 			}
-			tempDelay = 0
-			log.Debug("service", fmt.Sprintf("Accept: %s://%s", srv.Listener.Addr().Network(), srv.Listener.Addr().String()))
+			return err
+		}
+		log.Debug("service", fmt.Sprintf("Accept: %s://%s", srv.Listener.Addr().Network(), srv.Listener.Addr().String()))
 
+		if isModeHttp(srv.Cnf.Mode) {
+			go fwd.ForwardHttp(srv.Cnf, srv.L4Proto, conn)
+		} else {
 			go fwd.Forward(srv.Cnf, srv.L4Proto, conn)
 		}
 	}
-	return nil
+}
+
+func isModeHttp(mode meta.ListenMode) bool {
+	return mode == meta.ListenModeHttp || mode == meta.ListenModeHttps
 }

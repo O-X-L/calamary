@@ -11,7 +11,7 @@ import (
 	"github.com/superstes/calamary/u"
 )
 
-func forwardTcp(pkt parse.ParsedPacket, conn net.Conn, connIo io.ReadWriter) {
+func establishTcp(pkt parse.ParsedPacket) net.Conn {
 	var connFwd net.Conn
 	var err error
 	retries := 1
@@ -19,26 +19,30 @@ func forwardTcp(pkt parse.ParsedPacket, conn net.Conn, connIo io.ReadWriter) {
 		connFwd, err = net.DialTimeout("tcp", parse.PktDest(pkt), u.Timeout(cnf.C.Service.Timeout.Connect))
 
 		if err == nil {
-			defer connFwd.Close()
 			break
 
 		} else {
 			if retries >= int(cnf.C.Service.Output.Retries) {
 				parse.LogConnError(
 					"send", pkt, fmt.Sprintf("Connect retry exceeded (%v/%v): %v",
-						cnf.C.Service.Output.Retries, cnf.C.Service.Output.Retries, err),
+						retries, cnf.C.Service.Output.Retries, err),
 				)
-				return
+				return nil
 			}
 			parse.LogConnDebug(
 				"send", pkt, fmt.Sprintf("Connection failed (retry %v/%v): %v",
-					cnf.C.Service.Output.Retries, cnf.C.Service.Output.Retries, err),
+					retries, cnf.C.Service.Output.Retries, err),
 			)
 			retries++
 			time.Sleep(u.Timeout(cnf.DefaultConnectRetryWait))
 		}
 	}
+	parse.LogConnDebug("send", pkt, "Connection established")
+	return connFwd
+}
 
+func transportTcp(pkt parse.ParsedPacket, conn net.Conn, connIo io.ReadWriter, connFwd net.Conn) {
+	defer connFwd.Close()
 	close := make(chan bool, 1)
 	link := Link{src: connIo, close: close}
 	parse.LogConnDebug("send", pkt, "Forwarding")
@@ -46,4 +50,8 @@ func forwardTcp(pkt parse.ParsedPacket, conn net.Conn, connIo io.ReadWriter) {
 	go link.pipe(pkt, connFwd, connFwd, connIo)
 	<-close
 	parse.LogConnDebug("send", pkt, "Closed")
+}
+
+func forwardTcp(pkt parse.ParsedPacket, conn net.Conn, connIo io.ReadWriter) {
+	transportTcp(pkt, conn, connIo, establishTcp(pkt))
 }

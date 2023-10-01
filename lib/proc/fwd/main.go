@@ -23,18 +23,30 @@ func Forward(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn) {
 		defer metrics.CurrentConn.Dec()
 	}
 
-	var connIo io.ReadWriter = conn
+	pkt, connIo := parseConn(srvCnf, l4Proto, conn)
+	filterConn(pkt, conn, connIo)
+	send.Forward(pkt, conn, connIo)
+}
+
+func parseConn(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn) (pkt parse.ParsedPacket, connIo io.ReadWriter) {
+	connIo = conn
 	connIoBuf := new(bytes.Buffer)
 	connIoTee := io.TeeReader(connIo, connIoBuf)
-	pkt := parse.Parse(srvCnf, l4Proto, conn, connIoTee)
+
+	pkt = parse.Parse(srvCnf, l4Proto, conn, connIoTee)
+
+	// write read bytes back to stream so we can forward them
+	connIo = u.NewReadWriter(io.MultiReader(bytes.NewReader(connIoBuf.Bytes()), connIo), connIo)
+
+	return
+}
+
+func filterConn(pkt parse.ParsedPacket, conn net.Conn, connIo io.ReadWriter) {
 	if !filter.Filter(pkt) {
 		parse.LogConnInfo("forward", pkt, "Denied")
 		conn.Close()
 		return
 	}
-	// write read bytes back to stream so we can forward them
-	connIo = u.NewReadWriter(io.MultiReader(bytes.NewReader(connIoBuf.Bytes()), connIo), connIo)
 
 	parse.LogConnInfo("forward", pkt, "Accept")
-	send.Forward(pkt, conn, connIo)
 }

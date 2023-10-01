@@ -15,12 +15,13 @@ type Config struct {
 }
 
 type ServiceConfig struct {
-	Timeout ServiceTimeout      `yaml:"timeout"`
-	Listen  []ServiceListener   `yaml:"listen"`
-	Certs   ServiceCertificates `yaml:"certs"`
-	Output  ServiceOutput       `yaml:"output"`
-	Debug   bool                `yaml:"debug" default:"false"`
-	Metrics ServiceMetrics      `yaml:"metrics"`
+	Timeout        ServiceTimeout      `yaml:"timeout"`
+	Listen         []ServiceListener   `yaml:"listen"`
+	Certs          ServiceCertificates `yaml:"certs"`
+	Output         ServiceOutput       `yaml:"output"`
+	Debug          bool                `yaml:"debug" default:"false"`
+	Metrics        ServiceMetrics      `yaml:"metrics"`
+	DnsNameservers YamlStringArray     `yaml:"dnsNameservers" default:"[\"1.1.1.1\", \"8.8.8.8\"]"`
 }
 
 // todo: implement default listen-ips = localhost
@@ -37,9 +38,11 @@ type ServiceListener struct {
 }
 
 type ServiceTimeout struct {
-	Connect uint `yaml:"connect" default:"2000"` // dial
-	Process uint `yaml:"process" default:"1000"` // parsing packet
-	Idle    uint `yaml:"idle" default:"30000"`   // close connection if no data was sent or received
+	Connect   uint `yaml:"connect" default:"2000"` // dial
+	Process   uint `yaml:"process" default:"1000"` // parsing packet
+	Idle      uint `yaml:"idle" default:"30000"`   // close connection if no data was sent or received
+	Probe     uint `yaml:"probe" default:"500"`    // check if target port is reachable before establishing connection
+	DnsLookup uint `yaml:"dnsLookup" default:"200"`
 }
 
 var DefaultConnectRetryWait = uint(1000) // ms
@@ -53,6 +56,7 @@ type ServiceOutput struct {
 }
 
 var DefaultMetricsPort = uint16(9512)
+var InboundRetries = 3
 
 type ServiceMetrics struct {
 	Enabled bool   `yaml:"enabled" default:"false"`
