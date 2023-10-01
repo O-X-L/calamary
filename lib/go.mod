@@ -5,10 +5,10 @@ go 1.21
 require golang.org/x/sys v0.12.0
 
 require (
+	github.com/creasty/defaults v1.7.0
 	github.com/pires/go-proxyproto v0.7.0
 	github.com/prometheus/client_golang v1.17.0
 	gopkg.in/yaml.v3 v3.0.1
-	github.com/creasty/defaults v1.7.0
 )
 
 require (

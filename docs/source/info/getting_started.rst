@@ -34,45 +34,7 @@ Config-validation only:
 Modes
 #####
 
-Transparent
-===========
-
-**State:** Implemented/Testing
-
-Calamary focuses on transparent traffic interception.
-
-You will have to redirect the traffic: :ref:`Redirect <redirect>`
-
-This mode will work for TCP & UDP.
-
-HTTP/HTTPS Proxy
-================
-
-**State:** Implemented/Testing
-
-You can also choose to let Calamary act as a HTTP/S proxy.
-
-One commonly uses this feature if only some applications should send their traffic over the proxy.
-
-This mode only supports TCP.
-
-Note: Calamary uses TLS-SNI > Host-Header to find its actual target host. It will also check all IPs (IPv6 > IPv4) that are returned by the DNS query for their reachability, before establishing a connection.
-
-SOCKS5 Proxy
-============
-
-**State:** not implemented
-
-Like HTTP/S proxy, but it works for UDP as well.
-
-Proxy-Protocol
-==============
-
-**State:** in development
-
-You can use the proxy-protcol mode if you want to send traffic from remote systems over the proxy.
-
-The commonly used `proxy-protocol <https://www.haproxy.com/blog/use-the-proxy-protocol-to-preserve-a-clients-ip-address>`_ preserves the original source- & destination while minimizing overhead.
+See: :ref:`Modes <modes>`
 
 
 Configuration
@@ -201,5 +163,7 @@ Download and 'install' Golang 1.21 to build the binary from sources: `Golang dow
 .. code-block:: bash
 
     git clone https://github.com/superstes/calamary
-    cd calamary/lib/main
+    cd calamary/lib
+    go mod download
+    cd main/
     go build -o calamary

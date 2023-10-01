@@ -11,6 +11,17 @@ Modes
 Transparent
 ###########
 
+Info
+====
+
+**State:** Implemented/Testing
+
+Calamary focuses on transparent traffic interception.
+
+You will have to redirect the traffic: :ref:`Redirect <redirect>`
+
+This mode will work for TCP & UDP.
+
 Behaviour
 =========
 
@@ -77,9 +88,24 @@ DNAT - TLS
     </html>
     * Connection #0 to host superstes.eu left intact
 
+----
 
 HTTP Proxy
 ##########
+
+Info
+====
+
+**State:** Implemented/Testing
+
+You can also choose to let Calamary act as a HTTP/S proxy.
+
+One commonly uses this feature if only some applications should send their traffic over the proxy.
+
+This mode only supports TCP.
+
+Note: Calamary uses TLS-SNI > Host-Header to find its actual target host. It will also check all IPs (IPv6 > IPv4) that are returned by the DNS query for their reachability, before establishing a connection.
+
 
 Behaviour
 =========
@@ -173,25 +199,49 @@ HTTPS
     </html>
     * Connection #0 to host (nil) left intact
 
+----
 
 HTTPS Proxy
 ###########
 
+Has the same behaviour like 'HTTP Proxy' but the transport from client to proxy is also encrypted.
+
 Behaviour
 =========
 
 tbd
+
+----
 
 Proxy Protocol
 ##############
 
+Info
+====
+
+**State:** in development
+
+You can use the proxy-protcol mode if you want to send traffic from remote systems over the proxy.
+
+The commonly used `proxy-protocol <https://www.haproxy.com/blog/use-the-proxy-protocol-to-preserve-a-clients-ip-address>`_ preserves the original source- & destination while minimizing overhead.
+
 Behaviour
 =========
 
 tbd
 
+----
+
 SOCKS5
 ######
+
+Info
+====
+
+
+**State:** not implemented
+
+Like HTTP/S proxy, but it works for UDP as well.
 
 Behaviour
 =========
