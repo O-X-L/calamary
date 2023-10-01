@@ -60,8 +60,9 @@ func (svc *service) shutdown(cancel context.CancelFunc) {
 		if u.IsIn(string(server.Cnf.Mode), []string{"http", "https"}) {
 			server.HttpServer.Close()
 			time.Sleep(time.Millisecond * 500)
+		} else {
+			server.Listener.Close()
 		}
-		server.Listener.Close()
 	}
 	log.Info("service", "Stopped")
 	os.Exit(0)
@@ -76,21 +77,19 @@ func (svc *service) serve(srv rcv.Server) (err error) {
 	// log.Info("service", fmt.Sprintf("Serving %s://%s", ln.Addr().Network(), ln.Addr().String()))
 
 	if srv.Cnf.Mode == meta.ListenModeHttp {
-		log.Debug("service", "Starting HTTP server")
 		err = srv.HttpServer.ListenAndServe()
-		if err != nil {
-			log.ErrorS("service", fmt.Sprintf("Failed to start HTTP server: %v", err))
+		if err != nil && !strings.Contains(fmt.Sprintf("%v", err), "Server closed") {
+			log.ErrorS("service", fmt.Sprintf("HTTP server failure: %v", err))
 			return err
 		}
 
 	} else if srv.Cnf.Mode == meta.ListenModeHttps {
-		log.Debug("service", "Starting HTTPS server")
 		err = srv.HttpServer.ListenAndServeTLS(
 			cnf.C.Service.Certs.ServerPublic,
 			cnf.C.Service.Certs.ServerPrivate,
 		)
-		if err != nil {
-			log.ErrorS("service", fmt.Sprintf("Failed to start HTTPS server: %v", err))
+		if err != nil && !strings.Contains(fmt.Sprintf("%v", err), "Server closed") {
+			log.ErrorS("service", fmt.Sprintf("HTTPS server failure: %v", err))
 			return err
 		}
 

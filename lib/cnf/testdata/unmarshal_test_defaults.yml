@@ -1,0 +1,8 @@
+---
+
+service:
+  listen:
+    - mode: 'transparent'
+      port: 4128
+
+  timeout:

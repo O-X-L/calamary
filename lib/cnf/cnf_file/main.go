@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"os"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/superstes/calamary/cnf"
 	"github.com/superstes/calamary/log"
-	"gopkg.in/yaml.v3"
 )
 
 func readConfigFile(file string) (config []byte, err error) {
@@ -52,7 +53,6 @@ func Load(validationMode bool, fail bool) {
 		}
 		panic(fmt.Errorf("failed to parse config: %v", err))
 	}
-	applyConfigDefaults(&newConfig)
 	if !validateConfig(newConfig, fail) {
 		if !fail {
 			log.ErrorS("config", "Failed to validate config!")

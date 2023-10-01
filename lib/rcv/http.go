@@ -15,9 +15,8 @@ func newServerHttpTcp(addr string, lncnf cnf.ServiceListener) (Server, error) {
 	httpMux.HandleFunc("/", proc_http.HandleRequest)
 
 	httpSrv := &http.Server{
-		Addr:         fmt.Sprintf("%s:%v", addr, lncnf.Port),
-		Handler:      httpMux,
-		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
+		Addr:    fmt.Sprintf("%s:%v", addr, lncnf.Port),
+		Handler: httpMux,
 	}
 	return Server{
 		HttpServer: httpSrv,
