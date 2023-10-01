@@ -35,7 +35,7 @@ jobs:
           go test -v ./...
         shell: bash
 
-      - name: Run coverage
+      - name: Updating test-coverage
         run: |
           cd lib/
           go test ./... -race -coverprofile=coverage.out -covermode=atomic
