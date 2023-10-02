@@ -42,6 +42,8 @@ Its focus is set on transparent security filtering.
 
   - [ ] UDP
 
+    - [ ] QUIC
+
 - [x] YAML-based configuration
 
 - [ ] Parsing
@@ -50,7 +52,13 @@ Its focus is set on transparent security filtering.
 
     - [x] TCP
     - [ ] UDP
+
+      - [ ] QUIC
+
     - [x] TLS
+
+      - [ ] [ECH](https://datatracker.ietf.org/doc/draft-ietf-tls-esni/)/ESNI handling (*Encrypted Client Hello*)
+
     - [ ] Identify common protocols
 
   - [ ] Listener-Specific
