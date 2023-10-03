@@ -57,7 +57,7 @@ Its focus is set on transparent security filtering.
 
     - [x] TLS
 
-      - [ ] [ECH](https://datatracker.ietf.org/doc/draft-ietf-tls-esni/)/ESNI handling (*Encrypted Client Hello*)
+      - [ ] [ECH](https://datatracker.ietf.org/doc/draft-ietf-tls-esni/)/ESNI handling (*encrypted SNI*)
 
     - [ ] Identify common protocols
 

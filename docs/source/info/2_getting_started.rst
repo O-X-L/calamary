@@ -5,9 +5,9 @@
 .. include:: ../_inc/in_progress.rst
 
 
-###############
-Getting Started
-###############
+##################
+2- Getting Started
+##################
 
 Installation
 ############

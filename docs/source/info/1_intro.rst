@@ -5,15 +5,16 @@
 
 .. include:: ../_inc/head.rst
 
-#####
-Intro
-#####
+########
+1- Intro
+########
 
 Calamary is a `squid <http://www.squid-cache.org/>`_-like proxy.
 
 Its focus is set on **security filtering for HTTPS/TLS**.
 
 The ruleset should be logical, transparent & easy to understand.
+
 
 **Features**:
 
@@ -23,14 +24,52 @@ The ruleset should be logical, transparent & easy to understand.
   * ability to filter on protocol-basis
   * ability to enforce TLS (*deny any unencrypted connections*)
 
-* certificate verification
+* TLS handling
+
+  * certificate validation
+
+  * peaking information without decrypting traffic
+
+  * interception-mode with decryption
+
+  * ability to block ECH/ESNI
+
+* QUIC support
+
 * detect plain HTTP and respond with generic HTTPS-redirect
 
-**It will not**:
+* en- & disable parsing of protocols
+
+**Calamary will not**:
 
 * act as caching proxy
 * act as reverse proxy
 * implement edge-case workarounds for unencrypted protocols
+
+
+TLS handling
+############
+
+Most of todays internet traffic is encrypted. Therefore a proxy needs to focus on handling it.
+
+Calamary is striving to get the most out of TLS-peaking as TLS-interception might not be the solution for everyone.
+
+**TLS-interception** has some drawbacks:
+
+* possible legal issues
+
+* costly processing & higher latency
+
+* security issue if the CA gets compromised
+
+
+But so does **TLS-peaking**:
+
+* unable to filter ECH/ESNI protected traffic at all
+
+* far less information available to filter on
+
+  * unable to determine application-protocol
 
 Getting Started
 ###############
