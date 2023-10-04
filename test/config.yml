@@ -1,0 +1,71 @@
+---
+
+service:
+  listen:
+    - mode: 'transparent'
+      port: PORT_BASE1
+      tcp: true
+      udp: false
+      tproxy: false
+    - mode: 'transparent'
+      port: PORT_BASE2
+      tcp: true
+      udp: false
+      tproxy: true
+    - mode: 'proxyproto'
+      port: PORT_BASE3
+    - mode: 'http'
+      port: PORT_BASE4
+    - mode: 'https'
+      port: PORT_BASE5
+    # - mode: 'socks5'
+    #   port: PORT_BASE6
+
+  certs:
+    caPublic: 'CRT_BASE.ca.crt'
+    serverPublic: 'CRT_BASE.crt'
+    serverPrivate: 'CRT_BASE.key'
+    interceptPublic: 'CRT_BASE.subca.crt'
+    interceptPrivate: 'CRT_BASE.subca.key'
+
+  dnsNameservers: ['1.1.1.1', '8.8.8.8']
+  debug: false
+  timeout:
+    connect: 2000
+    process: 1000
+    idle: 30000
+
+  output:
+    retries: 1  # connect-retries
+
+  metrics:
+    enabled: false
+    port: 9512
+
+vars:
+  - name: 'net_private'
+    value: ['192.168.0.0/16', '172.16.0.0/12', '10.0.0.0/8']
+  - name: 'svc_http'
+    value: [80, 443]
+
+rules:
+  - match:
+      dest: '192.168.100.0/24'
+    action: 'drop'
+
+  - match:
+      port: ['!443', '!80']
+    action: 'drop'
+
+  - match:
+      src: '$net_private'
+      dest: '$net_private'
+      port: '$svc_http'
+      protoL4: 'tcp'
+    action: 'accept'
+
+  - match:
+      dest: '!$net_private'
+      port: [443, 80]
+      protoL4: 'tcp'
+    action: 'accept'
