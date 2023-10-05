@@ -16,8 +16,8 @@ service:
       port: PORT_BASE3
     - mode: 'http'
       port: PORT_BASE4
-    - mode: 'https'
-      port: PORT_BASE5
+    # - mode: 'https'
+    #   port: PORT_BASE5
     # - mode: 'socks5'
     #   port: PORT_BASE6
 

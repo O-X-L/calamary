@@ -22,8 +22,8 @@ You will have to redirect the traffic: :ref:`Redirect <redirect>`
 
 This mode will work for TCP & UDP.
 
-Behaviour
-=========
+Behavior
+========
 
 DNAT - TCP (plaintext)
 ----------------------
@@ -107,8 +107,8 @@ This mode only supports TCP.
 Note: Calamary uses TLS-SNI > Host-Header to find its actual target host. It will also check all IPs (IPv6 > IPv4) that are returned by the DNS query for their reachability, before establishing a connection.
 
 
-Behaviour
-=========
+Behavior
+========
 
 HTTP
 ----
@@ -204,10 +204,10 @@ HTTPS
 HTTPS Proxy
 ###########
 
-Has the same behaviour like 'HTTP Proxy' but the transport from client to proxy is also encrypted.
+Has the same behavior like 'HTTP Proxy' but the transport from client to proxy is also encrypted.
 
-Behaviour
-=========
+Behavior
+========
 
 tbd
 
@@ -225,8 +225,8 @@ You can use the proxy-protcol mode if you want to send traffic from remote syste
 
 The commonly used `proxy-protocol <https://www.haproxy.com/blog/use-the-proxy-protocol-to-preserve-a-clients-ip-address>`_ preserves the original source- & destination while minimizing overhead.
 
-Behaviour
-=========
+Behavior
+========
 
 tbd
 
@@ -243,7 +243,7 @@ Info
 
 Like HTTP/S proxy, but it works for UDP as well.
 
-Behaviour
-=========
+Behavior
+========
 
 tbd

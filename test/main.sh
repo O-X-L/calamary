@@ -4,11 +4,17 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-PORT_BASE="$(date +'%H%M')"
 PROXY_HOST='172.17.1.56'
 PROXY_USER='proxy_test'
 PROXY_SSH_PORT=22
-FILE_BASE="/tmp/calamary_$(date +%s)"
+TMP_BASE="/tmp/calamary_$(date +%s)"
+PORT_BASE="$(date +'%H%M')"
+
+# remove leading 0 as it is not valid as port
+if [[ ${PORT_BASE:0:1} == "0" ]]
+then
+  PORT_BASE="3${PORT_BASE:1}"
+fi
 
 function log {
   echo ''
@@ -16,17 +22,15 @@ function log {
   echo ''
 }
 
-if [[ ${PORT_BASE:0:1} == "0" ]]
-then
-  PORT_BASE="1${PORT_BASE:1}"
-fi
+log 'PREPARING BINARY'
+git clone
 
 log 'PREPARING FOR TESTS'
 
 cp 'config.yml' 'config_tmp.yml'
 
 sed -i "s@PORT_BASE@$PORT_BASE@g" 'config_tmp.yml'
-sed -i "s@CRT_BASE@$FILE_BASE@g" 'config_tmp.yml'
+sed -i "s@CRT_BASE@$TMP_BASE@g" 'config_tmp.yml'
 
 log 'GENERATING CERTS'
 # todo: generate ca & subca
@@ -37,9 +41,9 @@ function copy_file {
     scp -P "$PROXY_SSH_PORT" "$1" "$PROXY_USER"@"$PROXY_HOST":"$2"
 }
 
-copy_file 'config_tmp.yml' "${FILE_BASE}.yml'"
-copy_file 'cert_tmp.key' "${FILE_BASE}.key"
-copy_file 'cert_tmp.crt' "${FILE_BASE}.crt"
+copy_file 'config_tmp.yml' "${TMP_BASE}.yml'"
+copy_file 'cert_tmp.key' "${TMP_BASE}.key"
+copy_file 'cert_tmp.crt' "${TMP_BASE}.crt"
 
 function runTest {
   testScript="$1"
@@ -70,13 +74,7 @@ testsToRun[1]="dummyFail"
 log 'STARTING TESTS'
 
 sed +e
-for test in "${testsToRun[@]}"
-do
-  if ! runTest "$test"
-  then
-    fail
-  fi
-done
+source testTransparent.sh
 
 log 'TEST-RUN FINISHED SUCCESSFULLY!'
 
