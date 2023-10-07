@@ -68,6 +68,9 @@ ssh_cmd "sudo systemctl start calamary@${VERSION}.service"
 
 log 'STARTING TESTS'
 
+source ./util/route.sh
+source ./util/base.sh
+
 sed +e
 find . -type f -name '*.sh' -exec chmod +x {} \;
 source testTransparent.sh
