@@ -4,6 +4,21 @@ The functionality of a proxy-server cannot be tested well by just using unit-tes
 
 Therefore it is essential to also use integration tests to check if the proxy handles actual traffic the way we would expect.
 
+## Adding
+
+1. Add or extend test in one of the test-categories: general, transparent, transparentTproxy, http, https, proxyproto, socks5
+2. If it is a new test - add it to the list (*per example in: 'testTransparent.sh')
+
+General tests are ran against the 'transparent' mode.
+
+### Running
+
+1. You need an instance of the proxy up-and-running
+2. Export the `PROXY_HOST` and `PROXY_PORT` variables
+3. Execute the test-scripts you want to check
+
+   Per example: `bash testTransparent.sh`
+
 ## Setup
 
 We need a tester- and a proxy-VM.
@@ -11,7 +26,7 @@ We need a tester- and a proxy-VM.
 * Add 'tester' user on both nodes
 * Add service to run proxy-instances on proxy-vm
 
-   See: [test/proxy/](https://github.com/superstes/calamary/tree/latest/test/proxy)
+   See: [test/setup_proxy/](https://github.com/superstes/calamary/tree/latest/test/setup_proxy)
 
    ```bash
    systemctl daemon-reload
@@ -61,7 +76,7 @@ We need a tester- and a proxy-VM.
    ```
    
 
-## Run
+## Run all tests
 
 On the tester-VM:
 
@@ -83,7 +98,7 @@ bash calamary/test/wrapper.sh latest
 
 Using a systemd service to run it:
 
-See: [test/client/](https://github.com/superstes/calamary/tree/latest/test/client)
+See: [test/setup_client/](https://github.com/superstes/calamary/tree/latest/test/setup_client)
 
 ```bash
 systemctl daemon-reload

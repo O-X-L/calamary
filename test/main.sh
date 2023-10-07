@@ -88,6 +88,12 @@ log 'STARTING TESTS'
 sed +e
 find . -type f -name '*.sh' -exec chmod +x {} \;
 source testTransparent.sh
+source testGeneral.sh
+source testTransparentTproxy.sh
+source testHttp.sh
+source testHttps.sh
+source testProxyproto.sh
+source testSocks5.sh
 
 log 'TEST-RUN FINISHED SUCCESSFULLY!'
 status='PASSED'

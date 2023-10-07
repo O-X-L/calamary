@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PROXY_PORT="${PROXY_PORT:="${PORT_BASE}1"}"
+
 testsTransparent=()
 testsTransparent[0]="basic"
 testsTransparent[1]="dummyOk"
@@ -12,3 +14,5 @@ do
     fail
   fi
 done
+
+unset PROXY_PORT
