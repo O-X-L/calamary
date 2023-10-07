@@ -86,6 +86,7 @@ function fail {
 log 'STARTING TESTS'
 
 sed +e
+find . -type f -name '*.sh' -exec chmod +x {} \;
 source testTransparent.sh
 
 log 'TEST-RUN FINISHED SUCCESSFULLY!'
