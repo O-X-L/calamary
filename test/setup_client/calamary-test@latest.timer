@@ -1,0 +1,12 @@
+# /etc/systemd/system/calamary-test@latest.timer
+
+[Unit]
+Description=Timer to run integration tests for calamary proxy latest-version
+
+[Timer]
+OnCalendar=*-*-* 01:00:00
+Persistent=false
+WakeSystem=false
+
+[Install]
+WantedBy=multi-user.target
