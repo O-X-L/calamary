@@ -115,6 +115,31 @@ systemctl status calamary-test@latest.service --no-pager --full
 journalctl -u calamary-test@latest.service --no-pager --full -n 50
 ```
 
+Example run:
+
+```bash
+systemd[1]: Started calamary-test@latest.service - Service to run integration tests for calamary proxy.
+cicd_calamary[20673]: Cloning into 'calamary'...
+cicd_calamary[20680]: TESTING VERSION 'latest' WITH TEST-VERSION 'latest-157e6d6b'
+cicd_calamary[20680]: BUILDING BINARY (/tmp/calamary_1696688465/calamary)
+cicd_calamary[20680]: STARTING TESTS
+cicd_calamary[20680]: CLEANUP
+cicd_calamary[20680]: STOPPING PROXY
+cicd_calamary[20680]: PREPARING FOR TESTS
+cicd_calamary[20680]: GENERATING CERTS
+cicd_calamary[20680]: COPYING FILES TO PROXY-HOST
+cicd_calamary[20680]: STARTING PROXY
+cicd_calamary[20680]: STARTING TESTS
+cicd_calamary[20680]: ##### RUNNING TESTS: TRANSPARENT #####
+cicd_calamary[20680]: RUNNING TEST 'transparent/basic'
+cicd_calamary[20680]: RUNNING TEST 'transparent/dummyOk'
+cicd_calamary[20822]: Testing....
+cicd_calamary[20680]: TEST-RUN FINISHED SUCCESSFULLY!
+cicd_calamary[20680]: CLEANUP
+cicd_calamary[20680]: STOPPING PROXY
+systemd[1]: calamary-test@latest.service: Deactivated successfully.
+```
+
 ## Workflow
 
 We have a tester- (*client*) and a proxy-VM.
