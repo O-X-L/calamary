@@ -23,7 +23,7 @@ function log {
 function cleanup {
   log 'CLEANUP'
   ssh_cmd "sudo rm -f ${TMP_BASE}*"
-  rm ./*_tmp.*
+  rm -f ./*_tmp.*
   stop_proxy
 }
 

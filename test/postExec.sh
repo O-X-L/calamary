@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+cd "$(dirname "$0")"
 source ./target.sh
 
 VERSION="$1"
