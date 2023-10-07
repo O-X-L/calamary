@@ -56,14 +56,15 @@ cp -r ./* "${TMP_DIR}/"
 
 cd ..
 REPO_DIR="$(pwd)"
+VERSION_TEST_TAG="$(git rev-parse --abbrev-ref HEAD)"
 VERSION_TEST_COMMIT="$(git rev-parse HEAD)"
-VERSION_TEST="$(git rev-parse --abbrev-ref HEAD)-${VERSION_TEST_COMMIT:0:8}"
+VERSION_TEST="${VERSION_TEST_TAG}-${VERSION_TEST_COMMIT:0:8}"
 
 log "TESTING VERSION '${VERSION}' WITH TEST-VERSION '${VERSION_TEST}'"
 
 log "BUILDING BINARY (${TMP_BIN})"
 
-if [[ "$VERSION_TEST" != "$VERSION" ]]
+if [[ "$VERSION_TEST_TAG" != "$VERSION" ]]
 then
   git checkout "$VERSION"
 fi

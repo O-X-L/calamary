@@ -43,11 +43,11 @@ sed -i "s@CRT_BASE@$TMP_BASE@g" 'config_tmp.yml'
 
 log 'GENERATING CERTS'
 # todo: generate ca & subca
-openssl req -x509 -newkey rsa:4096 -keyout 'cert_tmp.key' -out 'cert_tmp.crt' -sha256 -days 60 -nodes -subj "$CERT_CN" > /dev/null
+openssl req -x509 -newkey rsa:4096 -keyout 'cert_tmp.key' -out 'cert_tmp.crt' -sha256 -days 60 -nodes -subj "$CERT_CN" 2>/dev/null
 
 log 'COPYING FILES TO PROXY-HOST'
 function copy_file {
-    scp -P "$PROXY_SSH_PORT" "$1" "$PROXY_USER"@"$PROXY_HOST":"$2" > /dev/null
+    scp -P "$PROXY_SSH_PORT" "$1" "$PROXY_USER"@"$PROXY_HOST":"$2" >/dev/null 2>&1
 }
 
 copy_file 'calamary' "$TMP_BASE"
