@@ -4,10 +4,7 @@ PROXY_PORT="${PROXY_PORT:="${PORT_BASE}3"}"
 
 testsProxyproto=()
 
-if [ "${#testsProxyproto}" -gt "0" ]
-then
-  log_header 'RUNNING TESTS: PROXYPROTO'
-fi
+# log_header 'RUNNING TESTS: PROXYPROTO'
 
 for test in "${testsProxyproto[@]}"
 do

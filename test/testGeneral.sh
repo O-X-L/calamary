@@ -6,10 +6,7 @@ PROXY_PORT="${PROXY_PORT:="${PORT_BASE}1"}"
 
 testsGeneral=()
 
-if [ "${#testsGeneral}" -gt "0" ]
-then
-  log_header 'RUNNING TESTS: GENERAL'
-fi
+# log_header 'RUNNING TESTS: GENERAL'
 
 for test in "${testsGeneral[@]}"
 do

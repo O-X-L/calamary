@@ -21,9 +21,7 @@ function log {
 }
 
 function log_header {
-  echo '##########'
-  echo "$1"
-  echo '##########'
+  echo "##### $1 #####"
 }
 
 function stop_proxy {

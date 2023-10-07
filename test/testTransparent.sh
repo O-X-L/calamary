@@ -7,10 +7,7 @@ testsTransparent[0]="basic"
 testsTransparent[1]="dummyOk"
 #testsTransparent[2]="dummyFail"
 
-if [ "${#testsTransparent}" -gt "0" ]
-then
-  log_header 'RUNNING TESTS: TRANSPARENT'
-fi
+log_header 'RUNNING TESTS: TRANSPARENT'
 
 for test in "${testsTransparent[@]}"
 do

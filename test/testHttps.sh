@@ -4,10 +4,7 @@ PROXY_PORT="${PROXY_PORT:="${PORT_BASE}5"}"
 
 testsHttps=()
 
-if [ "${#testsHttps}" -gt "0" ]
-then
-  log_header 'RUNNING TESTS: HTTPS'
-fi
+# log_header 'RUNNING TESTS: HTTPS'
 
 for test in "${testsHttps[@]}"
 do
