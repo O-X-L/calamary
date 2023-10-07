@@ -5,6 +5,7 @@ set +e
 
 source ./util/base.sh
 
+PORT_BASE="${PORT_BASE:='1000'}"
 PROXY_PORT="${PROXY_PORT:="${PORT_BASE}3"}"
 
 testsProxyproto=()

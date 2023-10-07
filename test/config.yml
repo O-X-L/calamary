@@ -14,12 +14,20 @@ service:
       tproxy: true
     - mode: 'proxyproto'
       port: PORT_BASE3
+      ip4: ['0.0.0.0']
+      ip6: ['::']
     - mode: 'http'
       port: PORT_BASE4
+      ip4: ['0.0.0.0']
+      ip6: ['::']
     # - mode: 'https'
     #   port: PORT_BASE5
+    #   ip4: ['0.0.0.0']
+    #   ip6: ['::']
     # - mode: 'socks5'
     #   port: PORT_BASE6
+    #   ip4: ['0.0.0.0']
+    #   ip6: ['::']
 
   certs:
     # caPublic: 'CRT_BASE.ca.crt'
@@ -39,33 +47,40 @@ service:
     retries: 1  # connect-retries
 
   metrics:
-    enabled: false
+    enabled: true
     port: 9512
 
 vars:
   - name: 'net_private'
     value: ['192.168.0.0/16', '172.16.0.0/12', '10.0.0.0/8']
-  - name: 'svc_http'
+  - name: 'svc_tcp'
     value: [80, 443]
+  - name: 'svc_udp'
+    value: [53, 123]
 
 rules:
   - match:
-      dest: '192.168.100.0/24'
-    action: 'drop'
+      dest: '!$net_private'
+      port: '$svc_tcp'
+      protoL3: 'ip4'
+      protoL4: 'tcp'
+    action: 'accept'
 
   - match:
-      port: ['!443', '!80']
-    action: 'drop'
-
-  - match:
-      src: '$net_private'
-      dest: '$net_private'
-      port: '$svc_http'
+      port: '$svc_tcp'
+      protoL3: 'ip6'
       protoL4: 'tcp'
     action: 'accept'
 
   - match:
       dest: '!$net_private'
-      port: [443, 80]
-      protoL4: 'tcp'
+      port: '$svc_udp'
+      protoL3: 'ip4'
+      protoL4: 'udp'
+    action: 'accept'
+
+  - match:
+      port: '$svc_udp'
+      protoL3: 'ip6'
+      protoL4: 'udp'
     action: 'accept'

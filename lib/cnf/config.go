@@ -30,8 +30,8 @@ type ServiceConfig struct {
 type ServiceListener struct {
 	Mode   meta.ListenMode `yaml:"mode" default:"transparent"`
 	Port   uint16          `yaml:"port"`
-	IP4    []string        `yaml:"ip4" default:"[\"127.0.0.1\"]"`
-	IP6    []string        `yaml:"ip6" default:"[\"::1\"]"`
+	IP4    YamlStringArray `yaml:"ip4" default:"[\"127.0.0.1\"]"`
+	IP6    YamlStringArray `yaml:"ip6" default:"[\"::1\"]"`
 	Tcp    bool            `yaml:"tcp" default:"true"`
 	Udp    bool            `yaml:"udp" default:"false"` // not implemented
 	TProxy bool            `yaml:"tproxy" default:"false"`

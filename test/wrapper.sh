@@ -5,6 +5,8 @@
 
 set -eo pipefail
 
+echo ''
+
 if [ -z "$1" ]
 then
   echo ''
@@ -31,9 +33,7 @@ BADGE_COLORS[FAILED]='#d9644d'
 BADGE_COLORS[FAILED-ENVIRONMENT]='#d9644d'
 
 function log {
-  echo ''
   echo "$1"
-  echo ''
 }
 
 function update_badge {
@@ -80,3 +80,5 @@ WD="$(pwd)"
 # start actual testing
 log 'STARTING TESTS'
 source ./main.sh
+
+echo ''

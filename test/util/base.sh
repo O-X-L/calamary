@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ./route.sh
+
 function runTest {
   testScript="$1"
   echo ''

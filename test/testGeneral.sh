@@ -3,11 +3,11 @@
 set -uo pipefail
 set +e
 
-# tests are targeting the 'transparent' mode
-
 source ./util/base.sh
 
+PORT_BASE="${PORT_BASE:='1000'}"
 PROXY_PORT="${PROXY_PORT:="${PORT_BASE}1"}"
+# tests are targeting the 'transparent' mode
 
 testsGeneral=()
 

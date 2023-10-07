@@ -5,6 +5,7 @@ set +e
 
 source ./util/base.sh
 
+PORT_BASE="${PORT_BASE:='1000'}"
 PROXY_PORT="${PROXY_PORT:="${PORT_BASE}4"}"
 
 export http_proxy="http://${PROXY_HOST}:${PROXY_PORT}"
