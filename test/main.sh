@@ -26,7 +26,7 @@ sed -i "s@PORT_BASE@$PORT_BASE@g" 'config_tmp.yml'
 sed -i "s@CRT_BASE@$TMP_BASE@g" 'config_tmp.yml'
 
 log 'GENERATING CERTS'
-easyrsa="$(pwd)/easyrsa/easyrsa"
+easyrsa="$(pwd)/$(grep EasyRSA <<< "$(ls .)")/easyrsa"
 export EASYRSA_PKI="$(pwd)/pki"
 mkdir -p "$EASYRSA_PKI"
 export EASYRSA_REQ_COUNTRY='AT'
@@ -34,23 +34,23 @@ export EASYRSA_REQ_PROVINCE='Styria'
 export EASYRSA_CERT_EXPIRE='60'
 export PKI_CERT_CN='Test CA'
 
-easyrsa init-pki
-easyrsa build-ca nopass
+$easyrsa init-pki >/dev/null 2>&1
+$easyrsa build-ca nopass  >/dev/null 2>&1
 export PKI_CERT_CN='Test Server'
-easyrsa gen-req server nopass
-easyrsa sign-req server proxy
+$easyrsa gen-req proxy nopass >/dev/null 2>&1
+$easyrsa sign-req server proxy >/dev/null 2>&1
 
 export EASYRSA_PKI="$(pwd)/pki_sub"
 mkdir -p "$EASYRSA_PKI"
 export PKI_CERT_CN='Test SSL-Interception'
-easyrsa init-pki
-easyrsa build-ca nopass subca
+$easyrsa init-pki >/dev/null 2>&1
+$easyrsa build-ca nopass subca >/dev/null 2>&1
 
 export EASYRSA_PKI="$(pwd)/pki"
-easyrsa import-req "$(pwd)/pki_sub/reqs/ca.req" subca
-easyrsa sign-req ca subca
+$easyrsa import-req "$(pwd)/pki_sub/reqs/ca.req" subca >/dev/null 2>&1
+$easyrsa sign-req ca subca >/dev/null 2>&1
 
-chmod 644 -R "$(pwd)/"pki*
+chmod 755 -R "$(pwd)/"pki*
 
 log 'COPYING FILES TO PROXY-HOST'
 

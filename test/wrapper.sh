@@ -23,7 +23,7 @@ TMP_DIR="/tmp/calamary_$(date +%s)"
 TMP_BIN="${TMP_DIR}/calamary"
 status='RUNNING'
 PATH_BADGE='/var/www/cicd/calamary'
-BADGE_LABEL="Integration Tests - ${VERSION}"
+BADGE_LABEL='Integration Tests'
 
 declare -A BADGE_COLORS
 BADGE_COLORS[UNKNOWN]='#404040'

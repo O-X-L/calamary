@@ -9,7 +9,7 @@ VERSION="$1"
 PATH_BADGE='/var/www/cicd/calamary'
 BADGE_STATUS='FAILED-ENVIRONMENT'
 BADGE_COLOR='#d9644d'
-BADGE_LABEL="Integration Tests - ${VERSION}"
+BADGE_LABEL='Integration Tests'
 
 function update_badge {
   if [ -d "$PATH_BADGE" ]
