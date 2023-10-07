@@ -80,7 +80,7 @@ function fail {
   status='FAILED'
   stop_proxy
   update_badge
-  exit 1
+  exit 99
 }
 
 log 'STARTING TESTS'
