@@ -11,7 +11,7 @@ TMP_DIR_REPO="$(cat /tmp/calamary_${VERSION}.run)"
 bash "${TMP_DIR_REPO}/calamary/test/postExec.sh" "$VERSION"
 
 # cleanup
-if echo "$TMP_DIR_REPO" | grep -q '/tmp/calamary'
+if grep -q '/tmp/calamary' <<< "$TMP_DIR_REPO"
 then
   rm -rf "$TMP_DIR_REPO"
 fi

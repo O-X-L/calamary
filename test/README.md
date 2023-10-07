@@ -27,6 +27,8 @@ General tests are ran against the 'transparent' mode.
 
 We need a tester- and a proxy-VM.
 
+Why use a dedicated proxy-VM? The most-used implementation of transparent-mode is redirecting routed traffic by using the `prerouting` chain. That's also the way it should be tested. In addition to this - the `proxyproto` mode is also used to connect to a remote server.
+
 * Add 'tester' user on both nodes
 * Add service to run proxy-instances on proxy-vm
 

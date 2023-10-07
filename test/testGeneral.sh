@@ -5,7 +5,7 @@ set +e
 
 # tests are targeting the 'transparent' mode
 
-source ./base.sh
+source ./util/base.sh
 
 PROXY_PORT="${PROXY_PORT:="${PORT_BASE}1"}"
 

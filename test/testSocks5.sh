@@ -3,9 +3,14 @@
 set -uo pipefail
 set +e
 
-source ./base.sh
+source ./util/base.sh
 
 PROXY_PORT="${PROXY_PORT:="${PORT_BASE}6"}"
+
+export http_proxy="socks5://${PROXY_HOST}:${PROXY_PORT}"
+export https_proxy="socks5://${PROXY_HOST}:${PROXY_PORT}"
+export HTTP_PROXY="socks5://${PROXY_HOST}:${PROXY_PORT}"
+export HTTPS_PROXY="socks5://${PROXY_HOST}:${PROXY_PORT}"
 
 testsSocks5=()
 

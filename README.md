@@ -37,6 +37,8 @@ Feel free to contribute to this project!
 
   - [ ] SOCKS5 Proxy
 
+  - [ ] Authentication
+
 - [ ] Forwarding
 
   - [x] TCP

@@ -3,14 +3,13 @@
 set -uo pipefail
 set +e
 
-source ./base.sh
+source ./util/base.sh
+source ./util/route.sh
 
 PROXY_PORT="${PROXY_PORT:="${PORT_BASE}1"}"
 
 testsTransparent=()
 testsTransparent[0]="basic"
-testsTransparent[1]="dummyOk"
-#testsTransparent[2]="dummyFail"
 
 log_header 'RUNNING TESTS: TRANSPARENT'
 
