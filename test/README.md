@@ -11,17 +11,19 @@ We need a tester- and a proxy-VM.
 * Add 'tester' user on both nodes
 * Add service to run proxy-instances on proxy-vm
 
-   ```bash
+   ```text
    # /etc/systemd/system/calamary@.service
 
    [Unit]
    Description=Service to run an instance of calamary proxy
+   ConditionPathExists=/tmp/calamary_%i
 
    [Service]
    Type=simple
    User=proxy
    Group=proxy
    ExecStart=/tmp/calamary_%i -f /tmp/calamary_%i.yml
+   ExecStop=/bin/bash -c 'rm -f /tmp/calamary_%i*'
 
    StandardOutput=journal
    StandardError=journal
@@ -39,7 +41,10 @@ We need a tester- and a proxy-VM.
 
    Cmnd_Alias TESTER_CALAMARY = \
    /bin/systemctl start calamary* ,\
-   /bin/systemctl stop calamary*
+   /bin/systemctl stop calamary*, \
+   /usr/bin/chown proxy\:proxy /tmp/calamary*, \
+   /usr/bin/chown tester\:tester /tmp/calamary*, \
+   /usr/bin/rm -f /tmp/calamary*
 
    tester ALL=(ALL) NOPASSWD: TESTER_CALAMARY
    ```

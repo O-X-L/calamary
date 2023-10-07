@@ -41,6 +41,7 @@ copy_file 'calamary' "$TMP_BASE"
 copy_file 'config_tmp.yml' "${TMP_BASE}.yml"
 copy_file 'cert_tmp.key' "${TMP_BASE}.key"
 copy_file 'cert_tmp.crt' "${TMP_BASE}.crt"
+ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "sudo chown proxy:proxy ${TMP_BASE}*"
 
 log 'STARTING PROXY'
 ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "sudo systemctl start calamary@${VERSION}.service"
@@ -84,7 +85,7 @@ status='PASSED'
 
 log 'CLEANUP'
 
-ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "rm ${TMP_BASE}*"
+ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "sudo rm -f ${TMP_BASE}*"
 rm ./*_tmp.*
 
 stop_proxy
