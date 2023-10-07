@@ -4,7 +4,7 @@ set -euo pipefail
 
 source ./target.sh
 
-TMP_BASE="/tmp/calamary_${VERSION}"  # could be problematic
+TMP_BASE="/tmp/calamary_${VERSION}"  # could be problematic; but so will nat
 PORT_BASE="$(date +'%H%M')"
 CERT_CN="/C=AT/ST=Styria/CN=Calamary Forward Proxy"
 
@@ -26,15 +26,42 @@ sed -i "s@PORT_BASE@$PORT_BASE@g" 'config_tmp.yml'
 sed -i "s@CRT_BASE@$TMP_BASE@g" 'config_tmp.yml'
 
 log 'GENERATING CERTS'
-# todo: generate ca & subca
-openssl req -x509 -newkey rsa:4096 -keyout 'cert_tmp.key' -out 'cert_tmp.crt' -sha256 -days 60 -nodes -subj "$CERT_CN" 2>/dev/null
+easyrsa="$(pwd)/easyrsa/easyrsa"
+export EASYRSA_PKI="$(pwd)/pki"
+mkdir -p "$EASYRSA_PKI"
+export EASYRSA_REQ_COUNTRY='AT'
+export EASYRSA_REQ_PROVINCE='Styria'
+export EASYRSA_CERT_EXPIRE='60'
+export PKI_CERT_CN='Test CA'
+
+easyrsa init-pki
+easyrsa build-ca nopass
+export PKI_CERT_CN='Test Server'
+easyrsa gen-req server nopass
+easyrsa sign-req server proxy
+
+export EASYRSA_PKI="$(pwd)/pki_sub"
+mkdir -p "$EASYRSA_PKI"
+export PKI_CERT_CN='Test SSL-Interception'
+easyrsa init-pki
+easyrsa build-ca nopass subca
+
+export EASYRSA_PKI="$(pwd)/pki"
+easyrsa import-req "$(pwd)/pki_sub/reqs/ca.req" subca
+easyrsa sign-req ca subca
+
+chmod 644 -R "$(pwd)/"pki*
 
 log 'COPYING FILES TO PROXY-HOST'
 
 copy_file 'calamary' "$TMP_BASE"
 copy_file 'config_tmp.yml' "${TMP_BASE}.yml"
-copy_file 'cert_tmp.key' "${TMP_BASE}.key"
-copy_file 'cert_tmp.crt' "${TMP_BASE}.crt"
+copy_file "$(pwd)/pki/ca.crt" "${TMP_BASE}.ca.crt"
+copy_file "$(pwd)/pki/issued/subca.crt" "${TMP_BASE}.subca.crt"
+copy_file "$(pwd)/pki_sub/private/ca.key" "${TMP_BASE}.subca.key"
+copy_file "$(pwd)/pki/issued/proxy.crt" "${TMP_BASE}.crt"
+copy_file "$(pwd)/pki/private/proxy.key" "${TMP_BASE}.key"
+
 ssh_cmd "sudo chown proxy:proxy ${TMP_BASE}*"
 
 log 'STARTING PROXY'

@@ -1,1 +1,1 @@
-EasyRSA: https://github.com/OpenVPN/easy-rsa/
+easyrsa: https://github.com/OpenVPN/easy-rsa/ (v3.1.6)

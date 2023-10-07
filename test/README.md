@@ -58,7 +58,7 @@ Why use a dedicated proxy-VM? The most-used implementation of transparent-mode i
 * Install test-utils on tester-VM:
 
    ```bash
-   sudo apt install git curl python3-pip python3-virtualenv
+   sudo apt install git curl python3-pip python3-virtualenv openssl
    su tester
    python3 -m virtualenv ~/venv/
    source ~/venv/bin/activate

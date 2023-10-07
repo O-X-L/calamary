@@ -54,6 +54,8 @@ update_badge
 mkdir -p "$TMP_DIR"
 cp -r ./* "${TMP_DIR}/"
 
+tar -C "${TMP_DIR}/" -xzf ./tools/easyrsa.tgz
+
 cd ..
 REPO_DIR="$(pwd)"
 VERSION_TEST_TAG="$(git rev-parse --abbrev-ref HEAD)"
