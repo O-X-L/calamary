@@ -19,6 +19,16 @@ VERSION="$1"
 
 TMP_DIR="/tmp/calamary_$(date +%s)"
 TMP_BIN="${TMP_DIR}/calamary"
+LABEL="TEST ${VERSION}"
+status='RUNNING'
+PATH_BADGE='/var/www/cicd/calamary'
+
+declare -A BADGE_COLORS
+BADGE_COLORS[UNKNOWN]='#404040'
+BADGE_COLORS[RUNNING]='#1f77aa'
+BADGE_COLORS[PASSED]='#97CA00'
+BADGE_COLORS[FAILED]='#d9644d'
+BADGE_COLORS[FAILED-ENVIRONMENT]='#d9644d'
 
 function log {
   echo ''
@@ -26,13 +36,25 @@ function log {
   echo ''
 }
 
+function update_badge {
+  if [ -d "$PATH_BADGE" ]
+  then
+    mkdir -p "$PATH_BADGE"
+    cd "$PATH_BADGE"
+    rm -f "${VERSION}.calamary.test.svg"
+    anybadge --label="$LABEL" --value="$status | $(date '+%Y-%m-%d %H:%M') GMT+2" --file="${VERSION}.calamary.test.svg" --color="${BADGE_COLORS[$status]}"
+  fi
+}
+
+update_badge
+
 cd "$(dirname "$0")"
 mkdir -p "$TMP_DIR"
 cp -r ./* "${TMP_DIR}/"
 
 cd ..
 REPO_DIR="$(pwd)"
-VERSION_TEST="$(git rev-parse HEAD)"
+VERSION_TEST="$(git rev-parse --abbrev-ref HEAD)-$(git rev-parse HEAD)"
 
 log "TESTING VERSION '${VERSION}' WITH TEST-VERSION '${VERSION_TEST}'"
 

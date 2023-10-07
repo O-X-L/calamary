@@ -1,7 +1,8 @@
 [![Unit Tests](https://github.com/superstes/calamary/actions/workflows/test.yml/badge.svg?branch=latest)](https://github.com/superstes/calamary/actions/workflows/test.yml)
+[![Integration Tests](https://badges.calamary.net/latest.calamary.test.svg)](https://github.com/superstes/calamary/tree/latest/test)
 [![Test Coverage](https://codecov.io/gh/superstes/calamary/graph/badge.svg?token=PPNLDDS0M8)](https://codecov.io/gh/superstes/calamary)
 [![Lint](https://github.com/superstes/calamary/actions/workflows/lint.yml/badge.svg?branch=latest)](https://github.com/superstes/calamary/actions/workflows/lint.yml)
-[![Documentation](https://readthedocs.org/projects/calamary/badge/?version=latest)](https://docs.calamary.net/en/latest/?badge=latest)
+[![Documentation](https://readthedocs.org/projects/calamary/badge/?version=latest)](https://docs.calamary.net/en/latest/)
 
 # Calamary - Forwarding- & Filtering-Proxy
 

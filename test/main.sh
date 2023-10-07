@@ -4,10 +4,10 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-PROXY_HOST='172.17.1.56'
-PROXY_USER='proxy_test'
+PROXY_HOST='172.17.1.81'
+PROXY_USER='tester'
 PROXY_SSH_PORT=22
-TMP_BASE="/tmp/calamary_$(date +%s)"
+TMP_BASE="/tmp/calamary_$(VERSION)"  # could be problematic
 PORT_BASE="$(date +'%H%M')"
 
 # remove leading 0 as it is not valid as port
@@ -41,9 +41,12 @@ function copy_file {
     scp -P "$PROXY_SSH_PORT" "$1" "$PROXY_USER"@"$PROXY_HOST":"$2"
 }
 
-copy_file 'config_tmp.yml' "${TMP_BASE}.yml'"
+copy_file 'config_tmp.yml' "${TMP_BASE}.yml"
 copy_file 'cert_tmp.key' "${TMP_BASE}.key"
 copy_file 'cert_tmp.crt' "${TMP_BASE}.crt"
+
+log 'STARTING PROXY'
+ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "systemctl start calamary@${VERSION}.service"
 
 function runTest {
   testScript="$1"
@@ -61,15 +64,18 @@ function runTest {
   return 0
 }
 
-function fail {
-  log 'TEST-RUN FAILED!'
-  exit 1
+function stop_proxy {
+  log 'STOPPING PROXY'
+  ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "systemctl stop calamary@${VERSION}.service"
 }
 
-testsToRun=()
-testsToRun[0]="dummyOk"
-testsToRun[1]="dummyFail"
-
+function fail {
+  log 'TEST-RUN FAILED!'
+  status='FAILED'
+  stop_proxy
+  update_badge
+  exit 1
+}
 
 log 'STARTING TESTS'
 
@@ -77,5 +83,15 @@ sed +e
 source testTransparent.sh
 
 log 'TEST-RUN FINISHED SUCCESSFULLY!'
+status='PASSED'
+
+log 'CLEANUP'
+
+ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "rm ${TMP_BASE}*"
+rm ./*_tmp.*
+
+stop_proxy
+
+update_badge
 
 exit 0
