@@ -2,13 +2,12 @@
 
 set -euo pipefail
 
-cd "$(dirname "$0")"
-
 PROXY_HOST='172.17.1.81'
 PROXY_USER='tester'
 PROXY_SSH_PORT=22
-TMP_BASE="/tmp/calamary_$(VERSION)"  # could be problematic
+TMP_BASE="/tmp/calamary_${VERSION}"  # could be problematic
 PORT_BASE="$(date +'%H%M')"
+CERT_CN="/C=AT/ST=Styria/CN=Calamary Forward Proxy"
 
 # remove leading 0 as it is not valid as port
 if [[ ${PORT_BASE:0:1} == "0" ]]
@@ -21,9 +20,6 @@ function log {
   echo "$1"
   echo ''
 }
-
-log 'PREPARING BINARY'
-git clone
 
 log 'PREPARING FOR TESTS'
 
@@ -41,6 +37,7 @@ function copy_file {
     scp -P "$PROXY_SSH_PORT" "$1" "$PROXY_USER"@"$PROXY_HOST":"$2"
 }
 
+copy_file 'calamary' "$TMP_BASE"
 copy_file 'config_tmp.yml' "${TMP_BASE}.yml"
 copy_file 'cert_tmp.key' "${TMP_BASE}.key"
 copy_file 'cert_tmp.crt' "${TMP_BASE}.crt"

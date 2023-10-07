@@ -65,6 +65,14 @@ We need a tester- and a proxy-VM.
    chown tester /var/www/cicd/calamary
    ```
 
+* You may want to add these lines to the `/home/tester/.bashrc` file
+
+   ```bash
+   source ~/venv/bin/activate
+   export PATH=$PATH:/usr/local/go/bin
+   ```
+   
+
 ## Run
 
 On the tester-VM:

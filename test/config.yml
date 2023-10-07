@@ -22,11 +22,11 @@ service:
     #   port: PORT_BASE6
 
   certs:
-    caPublic: 'CRT_BASE.ca.crt'
+    # caPublic: 'CRT_BASE.ca.crt'
     serverPublic: 'CRT_BASE.crt'
     serverPrivate: 'CRT_BASE.key'
-    interceptPublic: 'CRT_BASE.subca.crt'
-    interceptPrivate: 'CRT_BASE.subca.key'
+    # interceptPublic: 'CRT_BASE.subca.crt'
+    # interceptPrivate: 'CRT_BASE.subca.key'
 
   dnsNameservers: ['1.1.1.1', '8.8.8.8']
   debug: false
