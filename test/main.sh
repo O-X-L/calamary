@@ -63,22 +63,6 @@ ssh_cmd "sudo chown proxy:proxy ${TMP_BASE}*"
 log 'STARTING PROXY'
 ssh_cmd "sudo systemctl start calamary@${VERSION}.service"
 
-function runTest {
-  testScript="$1"
-  echo ''
-  echo "RUNNING TEST '${testScript}'"
-  echo ''
-  ./${testScript}.sh
-  result="$?"
-  if [[ "result" -ne "0" ]]
-  then
-    echo "FAILED TEST '${testScript}'"
-    return 1
-  fi
-  echo ''
-  return 0
-}
-
 function fail {
   log 'TEST-RUN FAILED!'
   status='FAILED'

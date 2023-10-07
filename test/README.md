@@ -15,7 +15,8 @@ General tests are ran against the 'transparent' mode.
 
 1. You need an instance of the proxy up-and-running
 2. Export the `PROXY_HOST` and `PROXY_PORT` variables
-3. Execute the test-scripts you want to check
+3. The `run_test` function should be imported by default (`source ./base.sh`)
+4. Execute the test-scripts you want to check
 
    Per example: `bash testTransparent.sh`
 

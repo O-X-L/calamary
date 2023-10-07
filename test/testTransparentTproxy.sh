@@ -1,5 +1,10 @@
 #!/bin/bash
 
+set -uo pipefail
+set +e
+
+source ./base.sh
+
 PROXY_PORT="${PROXY_PORT:="${PORT_BASE}2"}"
 
 testsTransparentTproxy=()

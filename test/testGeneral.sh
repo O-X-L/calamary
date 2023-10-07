@@ -1,6 +1,11 @@
 #!/bin/bash
 
+set -uo pipefail
+set +e
+
 # tests are targeting the 'transparent' mode
+
+source ./base.sh
 
 PROXY_PORT="${PROXY_PORT:="${PORT_BASE}1"}"
 
