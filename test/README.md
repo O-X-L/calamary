@@ -56,6 +56,8 @@ We need a tester- and a proxy-VM.
    pip install anybadge
    ```
 
+* [Download & install GO](https://go.dev/doc/install) on the tester-VM
+
 * Create badge-directory, if needed (on the tester-VM)
 
    ```bash
@@ -75,7 +77,7 @@ mkdir "$TMP_DIR"
 cd "$TMP_DIR"
 
 git clone https://github.com/superstes/calamary
-bash test/wrapper.sh
+bash calamary/test/wrapper.sh latest
 ```
 
 ## Workflow

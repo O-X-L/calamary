@@ -43,30 +43,38 @@ function update_badge {
     cd "$PATH_BADGE"
     rm -f "${VERSION}.calamary.test.svg"
     anybadge --label="$LABEL" --value="$status | $(date '+%Y-%m-%d %H:%M') GMT+2" --file="${VERSION}.calamary.test.svg" --color="${BADGE_COLORS[$status]}"
+    cd "$WD"
   fi
 }
 
+cd "$(dirname "$0")"
+WD="$(pwd)"
+
 update_badge
 
-cd "$(dirname "$0")"
 mkdir -p "$TMP_DIR"
 cp -r ./* "${TMP_DIR}/"
 
 cd ..
 REPO_DIR="$(pwd)"
-VERSION_TEST="$(git rev-parse --abbrev-ref HEAD)-$(git rev-parse HEAD)"
+VERSION_TEST_COMMIT="$(git rev-parse HEAD)"
+VERSION_TEST="$(git rev-parse --abbrev-ref HEAD)-${VERSION_TEST_COMMIT:0:8}"
 
 log "TESTING VERSION '${VERSION}' WITH TEST-VERSION '${VERSION_TEST}'"
 
 log "BUILDING BINARY (${TMP_BIN})"
 
-git checkout "$VERSION"
+if [[ "$VERSION_TEST" -ne "$VERSION" ]]
+then
+  git checkout "$VERSION"
+fi
 cd lib/
 go mod download
 cd main/
 go build -o "$TMP_BIN"
 
 cd "$TMP_DIR"
+WD="$(pwd)"
 
 # start actual testing
 source ./main.sh
