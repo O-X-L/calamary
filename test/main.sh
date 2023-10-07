@@ -20,6 +20,12 @@ function log {
   echo ''
 }
 
+function log_header {
+  echo '##########'
+  echo "$1"
+  echo '##########'
+}
+
 function stop_proxy {
   log 'STOPPING PROXY'
   ssh_cmd "sudo systemctl stop calamary@${VERSION}.service"
