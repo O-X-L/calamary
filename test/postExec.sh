@@ -20,7 +20,7 @@ function update_badge {
   fi
 }
 
-if [[ cat "/tmp/calamary_${VERSION}.exit" != "0" ]]
+if [[ "$(cat "/tmp/calamary_${VERSION}.exit")" != "0" ]]
 then
   update_badge
 fi
