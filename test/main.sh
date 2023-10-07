@@ -20,6 +20,11 @@ function log {
   echo ''
 }
 
+function stop_proxy {
+  log 'STOPPING PROXY'
+  ssh_cmd "sudo systemctl stop calamary@${VERSION}.service"
+}
+
 function cleanup {
   log 'CLEANUP'
   ssh_cmd "sudo rm -f ${TMP_BASE}*"
@@ -68,11 +73,6 @@ function runTest {
   fi
   echo ''
   return 0
-}
-
-function stop_proxy {
-  log 'STOPPING PROXY'
-  ssh_cmd "sudo systemctl stop calamary@${VERSION}.service"
 }
 
 function fail {

@@ -4,6 +4,8 @@ set -euo pipefail
 
 VERSION="$1"
 
+source ~/venv/bin/activate
+
 TMP_DIR="$(cat /tmp/calamary_${VERSION}.run)"
 
 bash "${TMP_DIR}/calamary/test/postExec.sh" "$VERSION"
