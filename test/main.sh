@@ -2,9 +2,8 @@
 
 set -euo pipefail
 
-PROXY_HOST='172.17.1.81'
-PROXY_USER='tester'
-PROXY_SSH_PORT=22
+source ./target.sh
+
 TMP_BASE="/tmp/calamary_${VERSION}"  # could be problematic
 PORT_BASE="$(date +'%H%M')"
 CERT_CN="/C=AT/ST=Styria/CN=Calamary Forward Proxy"
@@ -20,6 +19,15 @@ function log {
   echo "$1"
   echo ''
 }
+
+function cleanup {
+  log 'CLEANUP'
+  ssh_cmd "sudo rm -f ${TMP_BASE}*"
+  rm ./*_tmp.*
+  stop_proxy
+}
+
+cleanup
 
 log 'PREPARING FOR TESTS'
 
@@ -41,10 +49,10 @@ copy_file 'calamary' "$TMP_BASE"
 copy_file 'config_tmp.yml' "${TMP_BASE}.yml"
 copy_file 'cert_tmp.key' "${TMP_BASE}.key"
 copy_file 'cert_tmp.crt' "${TMP_BASE}.crt"
-ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "sudo chown proxy:proxy ${TMP_BASE}*"
+ssh_cmd "sudo chown proxy:proxy ${TMP_BASE}*"
 
 log 'STARTING PROXY'
-ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "sudo systemctl start calamary@${VERSION}.service"
+ssh_cmd "sudo systemctl start calamary@${VERSION}.service"
 
 function runTest {
   testScript="$1"
@@ -64,7 +72,7 @@ function runTest {
 
 function stop_proxy {
   log 'STOPPING PROXY'
-  ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "sudo systemctl stop calamary@${VERSION}.service"
+  ssh_cmd "sudo systemctl stop calamary@${VERSION}.service"
 }
 
 function fail {
@@ -83,13 +91,7 @@ source testTransparent.sh
 log 'TEST-RUN FINISHED SUCCESSFULLY!'
 status='PASSED'
 
-log 'CLEANUP'
-
-ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "sudo rm -f ${TMP_BASE}*"
-rm ./*_tmp.*
-
-stop_proxy
-
+cleanup
 update_badge
 
 exit 0

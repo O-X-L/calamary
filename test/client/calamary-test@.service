@@ -1,0 +1,19 @@
+# /etc/systemd/system/calamary-test@.service
+
+[Unit]
+Description=Service to run integration tests for calamary proxy
+Documentation=https://docs.calamary.net
+Documentation=https://github.com/superstes/calamary/tree/latest/test
+
+[Service]
+Type=simple
+User=tester
+Group=tester
+ExecStart=/bin/bash /usr/local/bin/cicd/calamary_start.sh %i
+
+# failure-handling & cleanup
+ExecStop=/bin/bash /usr/local/bin/cicd/calamary_stop.sh %i
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cicd_calamary

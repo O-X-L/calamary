@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+source ./target.sh
+
 VERSION="$1"
 PATH_BADGE='/var/www/cicd/calamary'
 BADGE_STATUS='FAILED-ENVIRONMENT'

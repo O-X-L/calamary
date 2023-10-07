@@ -1,0 +1,18 @@
+# /etc/systemd/system/calamary@.service
+
+[Unit]
+Description=Service to run an instance of calamary proxy
+ConditionPathExists=/tmp/calamary_%i
+Documentation=https://docs.calamary.net
+Documentation=https://github.com/superstes/calamary/tree/latest/test
+
+[Service]
+Type=simple
+User=proxy
+Group=proxy
+ExecStart=/tmp/calamary_%i -f /tmp/calamary_%i.yml
+ExecStop=/bin/bash -c 'rm -f /tmp/calamary_%i*'
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cicd_calamary

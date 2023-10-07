@@ -11,24 +11,7 @@ We need a tester- and a proxy-VM.
 * Add 'tester' user on both nodes
 * Add service to run proxy-instances on proxy-vm
 
-   ```text
-   # /etc/systemd/system/calamary@.service
-
-   [Unit]
-   Description=Service to run an instance of calamary proxy
-   ConditionPathExists=/tmp/calamary_%i
-
-   [Service]
-   Type=simple
-   User=proxy
-   Group=proxy
-   ExecStart=/tmp/calamary_%i -f /tmp/calamary_%i.yml
-   ExecStop=/bin/bash -c 'rm -f /tmp/calamary_%i*'
-
-   StandardOutput=journal
-   StandardError=journal
-   SyslogIdentifier=cicd_calamary
-   ```
+   See: [test/proxy/](https://github.com/superstes/calamary/tree/latest/test/proxy)
 
    ```bash
    systemctl daemon-reload
@@ -70,7 +53,7 @@ We need a tester- and a proxy-VM.
    chown tester /var/www/cicd/calamary
    ```
 
-* You may want to add these lines to the `/home/tester/.bashrc` file
+* You may want to append these lines to the `/home/tester/.bashrc` file
 
    ```bash
    source ~/venv/bin/activate
@@ -90,7 +73,30 @@ mkdir "$TMP_DIR"
 cd "$TMP_DIR"
 
 git clone https://github.com/superstes/calamary
+
+# TODO: update the connection-settings in 'target.sh'
+
 bash calamary/test/wrapper.sh latest
+```
+
+### As Service
+
+Using a systemd service to run it:
+
+See: [test/client/](https://github.com/superstes/calamary/tree/latest/test/client)
+
+```bash
+systemctl daemon-reload
+```
+
+To start:
+
+```bash
+systemctl start calamary-test@latest.service
+
+# logs
+systemctl status calamary-test@latest.service --no-pager --full
+journalctl -u calamary-test@latest.service --no-pager --full -n 50
 ```
 
 ## Workflow
