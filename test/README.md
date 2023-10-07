@@ -6,8 +6,11 @@ Therefore it is essential to also use integration tests to check if the proxy ha
 
 ## Adding
 
-1. Add or extend test in one of the test-categories: general, transparent, transparentTproxy, http, https, proxyproto, socks5
-2. If it is a new test - add it to the list (*per example in: 'testTransparent.sh')
+1. Add or extend test in one of the test-category directories:
+
+   general, transparent, transparentTproxy, http, https, proxyproto, socks5
+
+2. If it is a new test - add it to the list inside the main category-script (*per example in: 'testGeneral.sh'*)
 
 General tests are ran against the 'transparent' mode.
 
