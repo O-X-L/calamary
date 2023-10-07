@@ -27,22 +27,19 @@ sed -i "s@CRT_BASE@$TMP_BASE@g" 'config_tmp.yml'
 
 log 'GENERATING CERTS'
 easyrsa="$(pwd)/$(grep EasyRSA <<< "$(ls .)")/easyrsa"
+export EASYRSA_BATCH='1'
 export EASYRSA_PKI="$(pwd)/pki"
-mkdir -p "$EASYRSA_PKI"
-export EASYRSA_REQ_COUNTRY='AT'
-export EASYRSA_REQ_PROVINCE='Styria'
 export EASYRSA_CERT_EXPIRE='60'
-export PKI_CERT_CN='Test CA'
+export EASYRSA_REQ_CN='Test CA'
 
 $easyrsa init-pki >/dev/null 2>&1
-$easyrsa build-ca nopass  >/dev/null 2>&1
-export PKI_CERT_CN='Test Server'
+$easyrsa build-ca nopass >/dev/null 2>&1
+export EASYRSA_REQ_CN='Test Server'
 $easyrsa gen-req proxy nopass >/dev/null 2>&1
 $easyrsa sign-req server proxy >/dev/null 2>&1
 
 export EASYRSA_PKI="$(pwd)/pki_sub"
-mkdir -p "$EASYRSA_PKI"
-export PKI_CERT_CN='Test SSL-Interception'
+export EASYRSA_REQ_CN='Test SSL-Interception'
 $easyrsa init-pki >/dev/null 2>&1
 $easyrsa build-ca nopass subca >/dev/null 2>&1
 

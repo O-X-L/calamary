@@ -19,8 +19,8 @@ fi
 set -u
 VERSION="$1"
 
-TMP_DIR="/tmp/calamary_$(date +%s)"
-TMP_BIN="${TMP_DIR}/calamary"
+TMP_DIR_SCRIPT="/tmp/calamary_$(date +%s)"
+TMP_BIN="${TMP_DIR_SCRIPT}/calamary"
 status='RUNNING'
 PATH_BADGE='/var/www/cicd/calamary'
 BADGE_LABEL='Integration Tests'
@@ -48,16 +48,24 @@ function update_badge {
 
 cd "$(dirname "$0")"
 WD="$(pwd)"
+REPO_DIR="$(pwd)/.."
 
 update_badge
 
-mkdir -p "$TMP_DIR"
-cp -r ./* "${TMP_DIR}/"
+# allow wrapper.sh to be re-started after it was copied to 'TMP_DIR_SCRIPT'
+if ! [ -d "${REPO_DIR}/.git" ]
+then
+  source ./main.sh
+  exit 0
+fi
 
-tar -C "${TMP_DIR}/" -xzf ./tools/EasyRSA.tgz
+mkdir -p "$TMP_DIR_SCRIPT"
+cp -r ./* "${TMP_DIR_SCRIPT}/"
 
-cd ..
-REPO_DIR="$(pwd)"
+tar -C "${TMP_DIR_SCRIPT}/" -xzf ./tools/EasyRSA.tgz
+
+cd "$REPO_DIR"
+
 VERSION_TEST_TAG="$(git rev-parse --abbrev-ref HEAD)"
 VERSION_TEST_COMMIT="$(git rev-parse HEAD)"
 VERSION_TEST="${VERSION_TEST_TAG}-${VERSION_TEST_COMMIT:0:8}"
@@ -76,7 +84,7 @@ cd main/
 go build -o "$TMP_BIN"
 chmod +x "$TMP_BIN"
 
-cd "$TMP_DIR"
+cd "$TMP_DIR_SCRIPT"
 WD="$(pwd)"
 
 # start actual testing
