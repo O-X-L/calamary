@@ -6,14 +6,14 @@ VERSION="$1"
 
 source ~/venv/bin/activate
 
-TMP_DIR="$(cat /tmp/calamary_${VERSION}.run)"
+TMP_DIR_REPO="$(cat /tmp/calamary_${VERSION}.run)"
 
-bash "${TMP_DIR}/calamary/test/postExec.sh" "$VERSION"
+bash "${TMP_DIR_REPO}/calamary/test/postExec.sh" "$VERSION"
 
 # cleanup
-if echo "$TMP_DIR" | grep -q '/tmp/calamary'
+if echo "$TMP_DIR_REPO" | grep -q '/tmp/calamary'
 then
-  rm -rf "$TMP_DIR"
+  rm -rf "$TMP_DIR_REPO"
 fi
 rm "/tmp/calamary_${VERSION}.run"
 rm "/tmp/calamary_${VERSION}.exit"
