@@ -43,7 +43,7 @@ copy_file 'cert_tmp.key' "${TMP_BASE}.key"
 copy_file 'cert_tmp.crt' "${TMP_BASE}.crt"
 
 log 'STARTING PROXY'
-ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "systemctl start calamary@${VERSION}.service"
+ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "sudo systemctl start calamary@${VERSION}.service"
 
 function runTest {
   testScript="$1"
@@ -63,7 +63,7 @@ function runTest {
 
 function stop_proxy {
   log 'STOPPING PROXY'
-  ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "systemctl stop calamary@${VERSION}.service"
+  ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "sudo systemctl stop calamary@${VERSION}.service"
 }
 
 function fail {

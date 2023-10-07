@@ -18,7 +18,7 @@ We need a tester- and a proxy-VM.
    Description=Service to run an instance of calamary proxy
 
    [Service]
-   Type=oneshot
+   Type=simple
    User=proxy
    Group=proxy
    ExecStart=/tmp/calamary_%i -f /tmp/calamary_%i.yml
