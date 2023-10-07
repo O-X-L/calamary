@@ -54,7 +54,7 @@ update_badge
 mkdir -p "$TMP_DIR"
 cp -r ./* "${TMP_DIR}/"
 
-tar -C "${TMP_DIR}/" -xzf ./tools/easyrsa.tgz
+tar -C "${TMP_DIR}/" -xzf ./tools/EasyRSA.tgz
 
 cd ..
 REPO_DIR="$(pwd)"
