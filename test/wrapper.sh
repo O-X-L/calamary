@@ -19,7 +19,7 @@ VERSION="$1"
 
 TMP_DIR="/tmp/calamary_$(date +%s)"
 TMP_BIN="${TMP_DIR}/calamary"
-LABEL="TEST ${VERSION}"
+LABEL="Integration Tests - ${VERSION}"
 status='RUNNING'
 PATH_BADGE='/var/www/cicd/calamary'
 
