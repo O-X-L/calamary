@@ -5,6 +5,7 @@ PROXY_USER='tester'
 PROXY_SSH_PORT=22
 
 function ssh_cmd {
-  echo "Running remote command: $1"
+  echo "Running remote command: '$1'"
   ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "$1" >/dev/null 2>&1
+  return "$?"
 }

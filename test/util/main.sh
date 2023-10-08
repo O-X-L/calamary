@@ -23,6 +23,7 @@ function cleanup {
 function copy_file {
   echo "Copying file $1 => $2"
   scp -P "$PROXY_SSH_PORT" "$1" "$PROXY_USER"@"$PROXY_HOST":"$2" >/dev/null 2>&1
+  return "$?"
 }
 
 function fail {
