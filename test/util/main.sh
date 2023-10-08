@@ -22,13 +22,13 @@ function cleanup {
 
 function copy_file {
   echo "Copying file $1 => $2"
-  set +e
-  scp -P "$PROXY_SSH_PORT" "$1" "$PROXY_USER"@"$PROXY_HOST":"$2" >/dev/null 2>&1
-  if [[ "$?" != '0' ]]
+  rc=0
+  scp -P "$PROXY_SSH_PORT" "$1" "$PROXY_USER"@"$PROXY_HOST":"$2" >/dev/null 2>&1 || rc="$?"
+  if [[ "$rc" != '0' ]]
   then
-    exit 1
+    return 1
   fi
-  set -e
+  return 0
 }
 
 function fail {
