@@ -26,4 +26,4 @@ else
 fi
 
 echo 'ADDING NAT RULE'
-sudo nft "add rule ${table_type} ${table} ${dnat_chain} meta l4proto { tcp, udp } ip saddr ${TESTER_HOST} redirect to ${proxy_port}"
+sudo nft "add rule ${table_type} ${table} ${dnat_chain} meta l4proto { tcp, udp } ip saddr ${TESTER_HOST} ip daddr != ${PROXY_HOST} redirect to ${proxy_port}"

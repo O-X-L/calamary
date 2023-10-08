@@ -23,6 +23,7 @@ function cleanup {
 function copy_file {
   echo "Copying file $1 => $2"
   rc=0
+  # retry up to 5 times
   for i in {1..5}
   do
     scp -P "$PROXY_SSH_PORT" "$1" "$PROXY_USER"@"$PROXY_HOST":"$2" >/dev/null 2>&1 || rc="$?"

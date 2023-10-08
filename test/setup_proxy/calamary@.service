@@ -24,4 +24,6 @@ StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=cicd_calamary
 
+# only needed if NAT is created
 Environment=TESTER_HOST=172.17.1.80
+Environment=PROXY_HOST=172.17.1.81
