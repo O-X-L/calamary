@@ -22,20 +22,21 @@ function route_add {
     fi
 
     net="$1"
-    rt="route add ${net} via ${PROXY_HOST}"
+    rt="${net} via ${PROXY_HOST}"
+    cmd="route add ${rt}"
 
     if grep -q ':' <<< "$net" && grep -q ':' <<< "$PROXY_HOST"
     then
       if ! route_ex '6' "$net"
       then
         echo "Adding route: ${rt}"
-        sudo ip -6 $rt
+        sudo ip -6 $cmd
       fi
     else
       if ! route_ex '4' "$net"
       then
         echo "Adding route: ${rt}"
-        sudo ip $rt
+        sudo ip $cmd
       fi
     fi
 }
@@ -47,20 +48,21 @@ function route_rm {
     fi
 
     net="$1"
-    rt="route del ${net} via ${PROXY_HOST}"
+    rt="${net} via ${PROXY_HOST}"
+    cmd="route del ${rt}"
 
     if grep -q ':' <<< "$net" && grep -q ':' <<< "$PROXY_HOST"
     then
       if route_ex '6' "$net"
       then
         echo "Removing route: ${rt}"
-        sudo ip -6 $rt
+        sudo ip -6 $cmd
       fi
     else
       if route_ex '4' "$net"
       then
         echo "Removing route: ${rt}"
-        sudo ip $rt
+        sudo ip $cmd
       fi
     fi
 }

@@ -28,7 +28,7 @@ function fail {
   echo ''
   log 'TEST-RUN FAILED!'
   status='FAILED'
-  stop_proxy
+  cleanup
   update_badge
   exit 99
 }
