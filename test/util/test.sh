@@ -3,7 +3,8 @@
 function curlRc {
   echo "HTTP Call to $1" > "$(tty)"
   curl -ss --connect-timeout 2 --fail "$1"
-  return "$?"
+  echo "$?"
+  return
 }
 
 function anyFailed {

@@ -88,7 +88,7 @@ cd "$TMP_DIR_SCRIPT"
 WD="$(pwd)"
 
 # start actual testing
-log 'STARTING TESTS'
+log 'STARTING MAIN'
 source ./main.sh
 
 echo ''

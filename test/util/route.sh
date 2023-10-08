@@ -29,13 +29,13 @@ function route_add {
     then
       if ! route_ex '6' "$net"
       then
-        echo "Adding route: ${rt}" > "$(tty)"
+        echo "Adding route: ${rt}"
         sudo ip -6 $cmd
       fi
     else
       if ! route_ex '4' "$net"
       then
-        echo "Adding route: ${rt}" > "$(tty)"
+        echo "Adding route: ${rt}"
         sudo ip $cmd
       fi
     fi
@@ -55,13 +55,13 @@ function route_rm {
     then
       if route_ex '6' "$net"
       then
-        echo "Removing route: ${rt}" > "$(tty)"
+        echo "Removing route: ${rt}"
         sudo ip -6 $cmd
       fi
     else
       if route_ex '4' "$net"
       then
-        echo "Removing route: ${rt}" > "$(tty)"
+        echo "Removing route: ${rt}"
         sudo ip $cmd
       fi
     fi
