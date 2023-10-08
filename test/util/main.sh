@@ -25,6 +25,7 @@ function copy_file {
 }
 
 function fail {
+  echo ''
   log 'TEST-RUN FAILED!'
   status='FAILED'
   stop_proxy

@@ -1,11 +1,12 @@
 #!/bin/bash
 
+# executing test-script as new process
 function runTest {
   testScript="$1"
   echo ''
   echo "RUNNING TEST '${testScript}'"
   echo ''
-  ./${testScript}.sh
+  bash ./${testScript}.sh
   result="$?"
   if [[ "result" -ne "0" ]]
   then

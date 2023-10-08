@@ -17,11 +17,11 @@ General tests are ran against the 'transparent' mode.
 ### Running
 
 1. You need an instance of the proxy up-and-running
-2. Export the `PROXY_HOST` and `PROXY_PORT` variables
-3. Import the main functions `source test/util/base.sh`
-4. Execute the test-scripts you want to check
+2. Update the proxy in `target.sh`
+3. Export `PROXY_PORT`
+4. Execute the test-scripts for a category.
 
-   Per example: `bash testTransparent.sh`
+   Per example: `bash runCategory.sh transparent latest`
 
 ## Setup
 
@@ -49,6 +49,18 @@ Why use a dedicated proxy-VM? The most-used implementation of transparent-mode i
    /usr/bin/chown proxy\:proxy /tmp/calamary*, \
    /usr/bin/chown tester\:tester /tmp/calamary*, \
    /usr/bin/rm -f /tmp/calamary*
+
+   tester ALL=(ALL) NOPASSWD: TESTER_CALAMARY
+   ```
+
+* Add routing privileges on tester-vm
+
+   ```bash
+   Cmnd_Alias TESTER_CALAMARY = \
+   /usr/sbin/ip -6 route add * ,\
+   /usr/sbin/ip route add * ,\
+   /usr/sbin/ip -6 route del * ,\
+   /usr/sbin/ip route del * 
 
    tester ALL=(ALL) NOPASSWD: TESTER_CALAMARY
    ```

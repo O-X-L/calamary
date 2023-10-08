@@ -3,9 +3,11 @@
 set -uo pipefail
 set +e
 
-PORT_BASE="${PORT_BASE:='1000'}"
-PROXY_PORT="${PROXY_PORT:="${PORT_BASE}5"}"
+PORT_BASE="${PORT_BASE:-1000}"
+PROXY_PORT="${PROXY_PORT:-"${PORT_BASE}5"}"
 
+export PROXY_HOST="$PROXY_HOST"
+export PROXY_PORT="$PROXY_PORT"
 export http_proxy="https://${PROXY_HOST}:${PROXY_PORT}"
 export https_proxy="https://${PROXY_HOST}:${PROXY_PORT}"
 export HTTP_PROXY="https://${PROXY_HOST}:${PROXY_PORT}"

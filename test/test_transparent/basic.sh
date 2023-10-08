@@ -1,15 +1,16 @@
 #!/bin/bash
 
-source ../util/test.sh
-source ../util/route.sh
+source "$(pwd)/util/test.sh"
+source "$(pwd)/util/route.sh"
+
+results=()
 
 target='1.1.1.1'
 route_add "$target"
-c1=$(curlRc "http://${target}")
-c2=$(curlRc "https://${target}")
+results[0]=$(curlRc "http://${target}")
+results[1]=$(curlRc "https://${target}")
 route_rm "$target"
 
-if [[ "$c1" != "0" ]] || [[ "$c2" != "0" ]]
-then
-  exit 1
-fi
+
+exit_code="$(anyFailed "${results[@]}")"
+exit "$exit_code"
