@@ -7,7 +7,7 @@ source ./target.sh
 
 VERSION="$1"
 PATH_BADGE='/var/www/cicd/calamary'
-BADGE_STATUS='FAILED-ENVIRONMENT'
+BADGE_STATUS='FAILED-ENV'
 BADGE_COLOR='#d9644d'
 BADGE_LABEL='Integration Tests'
 

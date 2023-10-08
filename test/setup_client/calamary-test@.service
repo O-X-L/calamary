@@ -4,8 +4,6 @@
 Description=Service to run integration tests for calamary proxy
 Documentation=https://docs.calamary.net
 Documentation=https://github.com/superstes/calamary/tree/latest/test
-StartLimitInterval=60
-StartLimitBurst=3
 
 [Service]
 Type=simple
@@ -20,6 +18,4 @@ StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=cicd_calamary
 
-Restart=on-failure
-RestartSec=60
 SuccessExitStatus=0 99

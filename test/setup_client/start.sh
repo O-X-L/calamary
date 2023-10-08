@@ -17,4 +17,6 @@ git clone 'https://github.com/superstes/calamary'
 set +e
 bash "${TMP_DIR_REPO}/calamary/test/wrapper.sh" "$VERSION"
 
-echo $? > "/tmp/calamary_${VERSION}.exit"
+ec="$?"
+echo "$ec" > "/tmp/calamary_${VERSION}.exit"
+exit "$ec"

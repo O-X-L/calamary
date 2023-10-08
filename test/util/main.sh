@@ -23,12 +23,19 @@ function cleanup {
 function copy_file {
   echo "Copying file $1 => $2"
   rc=0
-  scp -P "$PROXY_SSH_PORT" "$1" "$PROXY_USER"@"$PROXY_HOST":"$2" >/dev/null 2>&1 || rc="$?"
-  if [[ "$rc" != '0' ]]
-  then
-    return 1
-  fi
-  return 0
+  for i in {1..5}
+  do
+    scp -P "$PROXY_SSH_PORT" "$1" "$PROXY_USER"@"$PROXY_HOST":"$2" >/dev/null 2>&1 || rc="$?"
+    if [[ "$rc" == '0' ]]
+    then
+      return
+    fi
+  done
+}
+
+function ssh_cmd {
+  echo "Running remote command: '$1'"
+  ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "$1" >/dev/null 2>&1
 }
 
 function fail {
