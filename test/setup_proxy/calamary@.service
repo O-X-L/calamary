@@ -10,9 +10,18 @@ Documentation=https://github.com/superstes/calamary/tree/latest/test
 Type=simple
 User=proxy
 Group=proxy
+# add nat rule
+ExecStartPre=/usr/local/bin/cicd/calamary_startpre.sh %i
+
 ExecStart=/tmp/calamary_%i -f /tmp/calamary_%i.yml
+
+# remove nat rule
+ExecStop=/usr/local/bin/cicd/calamary_stop.sh %i
+
 ExecStop=/bin/bash -c 'rm -f /tmp/calamary_%i*'
 
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=cicd_calamary
+
+Environment=TESTER_HOST=172.17.1.80

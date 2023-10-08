@@ -3,15 +3,15 @@
 service:
   listen:
     - mode: 'transparent'
+      tproxy: false
       port: PORT_BASE1
       tcp: true
       udp: false
-      tproxy: false
     - mode: 'transparent'
+      tproxy: true
       port: PORT_BASE2
       tcp: true
       udp: false
-      tproxy: true
     - mode: 'proxyproto'
       port: PORT_BASE3
       ip4: ['0.0.0.0']

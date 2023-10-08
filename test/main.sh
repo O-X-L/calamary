@@ -25,6 +25,8 @@ cp 'config.yml' 'config_tmp.yml'
 sed -i "s@PORT_BASE@$PORT_BASE@g" 'config_tmp.yml'
 sed -i "s@CRT_BASE@$TMP_BASE@g" 'config_tmp.yml'
 
+# todo: will sometimes fail on certs/copying with ec 0..
+
 log 'GENERATING CERTS'
 easyrsa="$(pwd)/$(grep EasyRSA <<< "$(ls .)")/easyrsa"
 export EASYRSA_BATCH='1'
