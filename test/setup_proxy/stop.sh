@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ruleset="$(nft --handle list ruleset)"
+ruleset="$(sudo nft --handle list ruleset)"
 
 VERSION="$1"
 
@@ -23,4 +23,4 @@ dnat_chain="$(grep 'type nat hook prerouting' -B1 <<< "$ruleset" | head -n1 | cu
 rule_id="$(grep "$redirect_rule" <<< "$ruleset" | cut -d '#' -f 2 | cut -d ' ' -f3)"
 
 echo 'REMOVING NAT RULE'
-nft "delete rule ${table_type} ${table} ${dnat_chain} handle ${rule_id}"
+sudo nft "delete rule ${table_type} ${table} ${dnat_chain} handle ${rule_id}"

@@ -41,16 +41,28 @@ Why use a dedicated proxy-VM? The most-used implementation of transparent-mode i
 * Add privileges to start/stop proxy on proxy-vm
 
    ```bash
-   # /etc/sudoders.d/tester_calamary
+   # /etc/sudoers.d/tester_calamary
 
    Cmnd_Alias TESTER_CALAMARY = \
-   /bin/systemctl start calamary* ,\
-   /bin/systemctl stop calamary*, \
-   /usr/bin/chown proxy\:proxy /tmp/calamary*, \
-   /usr/bin/chown tester\:tester /tmp/calamary*, \
-   /usr/bin/rm -f /tmp/calamary*
+     /bin/systemctl start calamary* ,\
+     /bin/systemctl stop calamary*, \
+     /usr/bin/chown proxy\:proxy /tmp/calamary*, \
+     /usr/bin/chown tester\:tester /tmp/calamary*, \
+     /usr/bin/rm -f /tmp/calamary*
 
    tester ALL=(ALL) NOPASSWD: TESTER_CALAMARY
+   ```
+
+   You may also need to add firewall-tools for the proxy service-user. (*to create the NAT-firewall-rules*)
+
+   ```bash
+   # /etc/sudoers.d/service_calamary
+
+   Cmnd_Alias SERVICE_CALAMARY = \
+     /usr/sbin/nft *, \
+     /usr/sbin/iptables *
+
+   proxy ALL=(ALL) NOPASSWD: SERVICE_CALAMARY
    ```
 
 * Add routing privileges on tester-vm

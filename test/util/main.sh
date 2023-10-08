@@ -1,11 +1,11 @@
 #!/bin/bash
 
 function log {
-  echo "$1"
+  echo "$1" > "$(tty)"
 }
 
 function log_header {
-  echo "##### $1 #####"
+  echo "##### $1 #####" > "$(tty)"
 }
 
 function stop_proxy {
@@ -21,7 +21,7 @@ function cleanup {
 }
 
 function copy_file {
-  echo "Copying file $1 => $2"
+  echo "Copying file $1 => $2" > "$(tty)"
   rc=0
   for i in {1..5}
   do
@@ -34,12 +34,12 @@ function copy_file {
 }
 
 function ssh_cmd {
-  echo "Running remote command: '$1'"
+  echo "Running remote command: '$1'" > "$(tty)"
   ssh -p "$PROXY_SSH_PORT" "$PROXY_USER"@"$PROXY_HOST" "$1" >/dev/null 2>&1
 }
 
 function fail {
-  echo ''
+  echo '' > "$(tty)"
   log 'TEST-RUN FAILED!'
   status='FAILED'
   cleanup

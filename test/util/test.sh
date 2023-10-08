@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function curlRc {
-  echo "HTTP Call to $1"
+  echo "HTTP Call to $1" > "$(tty)"
   curl -ss --connect-timeout 2 --fail "$1"
   return "$?"
 }

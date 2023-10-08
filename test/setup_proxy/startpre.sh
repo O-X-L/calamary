@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ruleset="$(nft --handle list ruleset)"
+ruleset="$(sudo nft --handle list ruleset)"
 
 VERSION="$1"
 
@@ -20,10 +20,10 @@ fi
 
 if ! grep -q 'type nat hook prerouting' <<< "$ruleset"
 then
-  nft "add chain ${table_type} ${table} ${dnat_chain} { type nat hook prerouting priority -100; }"
+  sudo nft "add chain ${table_type} ${table} ${dnat_chain} { type nat hook prerouting priority -100; }"
 else
   dnat_chain="$(grep 'type nat hook prerouting' -B1 <<< "$ruleset" | head -n1 | cut -d ' ' -f 2)"
 fi
 
 echo 'ADDING NAT RULE'
-nft "add rule ${table_type} ${table} ${dnat_chain} meta l4proto { tcp, udp } ip saddr ${TESTER_HOST} redirect to ${proxy_port}"
+sudo nft "add rule ${table_type} ${table} ${dnat_chain} meta l4proto { tcp, udp } ip saddr ${TESTER_HOST} redirect to ${proxy_port}"
