@@ -17,7 +17,7 @@ testsHttps=()
 
 for test in "${testsHttps[@]}"
 do
-  if ! runTest "https/$test"
+  if ! runTest "test_https/$test"
   then
     fail
   fi

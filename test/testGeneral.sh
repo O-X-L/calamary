@@ -13,7 +13,7 @@ testsGeneral=()
 
 for test in "${testsGeneral[@]}"
 do
-  if ! runTest "general/$test"
+  if ! runTest "test_general/$test"
   then
     fail
   fi

@@ -13,7 +13,7 @@ log_header 'RUNNING TESTS: TRANSPARENT'
 
 for test in "${testsTransparent[@]}"
 do
-  if ! runTest "transparent/$test"
+  if ! runTest "test_transparent/$test"
   then
     fail
   fi

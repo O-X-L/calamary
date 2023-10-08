@@ -17,7 +17,7 @@ testsHttp=()
 
 for test in "${testsHttp[@]}"
 do
-  if ! runTest "http/$test"
+  if ! runTest "test_http/$test"
   then
     fail
   fi

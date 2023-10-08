@@ -17,7 +17,7 @@ testsSocks5=()
 
 for test in "${testsSocks5[@]}"
 do
-  if ! runTest "socks5/$test"
+  if ! runTest "test_socks5/$test"
   then
     fail
   fi

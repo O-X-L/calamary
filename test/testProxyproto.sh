@@ -12,7 +12,7 @@ testsProxyproto=()
 
 for test in "${testsProxyproto[@]}"
 do
-  if ! runTest "proxyproto/$test"
+  if ! runTest "test_proxyproto/$test"
   then
     fail
   fi

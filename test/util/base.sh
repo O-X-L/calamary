@@ -15,8 +15,3 @@ function runTest {
   echo ''
   return 0
 }
-
-function curlRc {
-  curl --connect-timeout 3 --fail "$1"
-  return "$?"
-}

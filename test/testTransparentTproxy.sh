@@ -12,7 +12,7 @@ testsTransparentTproxy=()
 
 for test in "${testsTransparentTproxy[@]}"
 do
-  if ! runTest "transparentTproxy/$test"
+  if ! runTest "test_transparentTproxy/$test"
   then
     fail
   fi
