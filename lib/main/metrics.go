@@ -34,14 +34,23 @@ func startPrometheusExporter() {
 		log.Info("service", "Starting prometheus metrics-exporter")
 
 		for _, mf := range metricFuncs {
-			prometheus.Register(mf)
+			err := prometheus.Register(mf)
+			if err != nil {
+				log.ErrorS("service", fmt.Sprintf("Error registering prometheus metric: %v", err))
+			}
 		}
 
 		metricsSrv := http.NewServeMux()
 		metricsSrv.Handle("/metrics", promhttp.Handler())
 		metricsSrv.HandleFunc("/", denyAll)
-		http.ListenAndServe(fmt.Sprintf("127.0.0.1:%v", cnf.C.Service.Metrics.Port), metricsSrv)
-		http.ListenAndServe(fmt.Sprintf("[::1]:%v", cnf.C.Service.Metrics.Port), metricsSrv)
+		err := http.ListenAndServe(fmt.Sprintf("127.0.0.1:%v", cnf.C.Service.Metrics.Port), metricsSrv)
+		if err != nil {
+			log.ErrorS("service", fmt.Sprintf("Error starting IPv4 prometheus exporter: %v", err))
+		}
+		err = http.ListenAndServe(fmt.Sprintf("[::1]:%v", cnf.C.Service.Metrics.Port), metricsSrv)
+		if err != nil {
+			log.Warn("service", fmt.Sprintf("Error starting IPv6 prometheus exporter: %v", err))
+		}
 
 		for _, mf := range metricFuncs {
 			prometheus.MustRegister(mf)

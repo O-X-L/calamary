@@ -1,17 +1,6 @@
 package parse
 
-import (
-	"bytes"
-	"encoding/binary"
-	"fmt"
-	"net"
-	"strconv"
-	"unsafe"
-
-	"github.com/superstes/calamary/u"
-	"golang.org/x/sys/unix"
-)
-
+/*
 func getUdpOriginalDstAddr(conn *net.UDPConn, b []byte) (n int, remoteAddr *net.UDPAddr, dstAddr *net.UDPAddr, err error) {
 	oob := u.GetBufferPool(1024)
 	defer u.PutBufferPool(oob)
@@ -64,3 +53,4 @@ func getUdpOriginalDstAddr(conn *net.UDPConn, b []byte) (n int, remoteAddr *net.
 	return n, remoteAddr, dstAddr, nil
 
 }
+*/

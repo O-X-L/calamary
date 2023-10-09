@@ -1,20 +1,6 @@
 package rcv
 
-import (
-	"context"
-	"fmt"
-	"io"
-	"net"
-	"sync"
-	"syscall"
-	"time"
-
-	"github.com/superstes/calamary/cnf"
-	"github.com/superstes/calamary/log"
-	"github.com/superstes/calamary/u"
-	"golang.org/x/sys/unix"
-)
-
+/*
 type listenerTransparentUdp struct {
 	ln    *net.UDPConn
 	addr  string
@@ -23,18 +9,16 @@ type listenerTransparentUdp struct {
 
 func newServerTransparentUdp(addr string, lncnf cnf.ServiceListener) (Server, error) {
 	return Server{}, fmt.Errorf("UDP listener is not yet implemented!")
-	/*
-		lnu := &listenerTransparentUdp{
-			addr:  addr,
-			lncnf: lncnf,
-		}
-		ln, err := lnu.listenUdp(addr)
-		if err != nil {
-			return nil, err
-		}
-		lnu.ln = ln
-		return lnu, nil
-	*/
+	lnu := &listenerTransparentUdp{
+		addr:  addr,
+		lncnf: lncnf,
+	}
+	ln, err := lnu.listenUdp(addr)
+	if err != nil {
+		return nil, err
+	}
+	lnu.ln = ln
+	return lnu, nil
 }
 
 func (l *listenerTransparentUdp) Accept() (conn net.Conn, err error) {
@@ -52,6 +36,7 @@ func (l *listenerTransparentUdp) Addr() net.Addr {
 func (l *listenerTransparentUdp) Close() error {
 	return l.ln.Close()
 }
+
 
 type connUdp struct {
 	net.Conn
@@ -120,56 +105,54 @@ func (l *listenerTransparentUdp) listenUdp(addr string) (*net.UDPConn, error) {
 
 func (l *listenerTransparentUdp) accept() (conn net.Conn, err error) {
 	panic(fmt.Errorf("processing of UDP traffic is not yet implemented"))
-	/*
-		b := u.GetBufferPool(cnf.UDP_BUFFER_SIZE)
 
-		_, raddr, dstAddr, err := readAdressesFromUDP(l.ln, *b)
-		logSrc := raddr.String()
-		logDst := dstAddr.String()
-		if err != nil {
-			if !strings.Contains(fmt.Sprintf("%v", err), "use of closed network connection") {
-				log.ConnError("listener-udp", logSrc, logDst, err)
-			}
-			return
-		}
+	b := u.GetBufferPool(cnf.UDP_BUFFER_SIZE)
 
-		log.ConnInfo("listener-udp", logSrc, logDst, "establishing connection")
-
-		network := "udp"
-		if u.IsIPv4(l.addr) {
-			network = "udp4"
-		}
-		freePort, err := net.ResolveUDPAddr(network, "localhost:0")
-		if err != nil {
-			log.ConnErrorS("listener-udp", logSrc, logDst, "Unable to get free port")
-			return
-		}
-		conn, err = net.ListenUDP(network, freePort)
-		if err != nil {
-			log.ConnErrorS("listener-udp", logSrc, logDst, "Unable to get free port")
-			return
-		}
-	*/
-	/*
-		conn = &connUdp{
-			Conn: c,
-			buf:  (*b)[:n],
-		}
-
-		c, err := nw.DialUDP(network, dstAddr, raddr)
-		if err != nil {
-			if strings.Contains(u.ToStr(err), "address already in use") && strings.Contains(u.ToStr(err), u.ToStr(cnf.ListenPort)) {
-				err = fmt.Errorf("Denied connection targeting proxy directly")
-			}
+	_, raddr, dstAddr, err := readAdressesFromUDP(l.ln, *b)
+	logSrc := raddr.String()
+	logDst := dstAddr.String()
+	if err != nil {
+		if !strings.Contains(fmt.Sprintf("%v", err), "use of closed network connection") {
 			log.ConnError("listener-udp", logSrc, logDst, err)
-			return
 		}
+		return
+	}
 
-		conn = &connUdp{
-			Conn: c,
-			buf:  (*b)[:n],
+	log.ConnInfo("listener-udp", logSrc, logDst, "establishing connection")
+
+	network := "udp"
+	if u.IsIPv4(l.addr) {
+		network = "udp4"
+	}
+	freePort, err := net.ResolveUDPAddr(network, "localhost:0")
+	if err != nil {
+		log.ConnErrorS("listener-udp", logSrc, logDst, "Unable to get free port")
+		return
+	}
+	conn, err = net.ListenUDP(network, freePort)
+	if err != nil {
+		log.ConnErrorS("listener-udp", logSrc, logDst, "Unable to get free port")
+		return
+	}
+
+	conn = &connUdp{
+		Conn: c,
+		buf:  (*b)[:n],
+	}
+
+	c, err := nw.DialUDP(network, dstAddr, raddr)
+	if err != nil {
+		if strings.Contains(u.ToStr(err), "address already in use") && strings.Contains(u.ToStr(err), u.ToStr(cnf.ListenPort)) {
+			err = fmt.Errorf("Denied connection targeting proxy directly")
 		}
-	*/
+		log.ConnError("listener-udp", logSrc, logDst, err)
+		return
+	}
+
+	conn = &connUdp{
+		Conn: c,
+		buf:  (*b)[:n],
+	}
 	return l.ln, nil
 }
 
@@ -206,3 +189,4 @@ type WriteUDP interface {
 	WriteToUDP(b []byte, addr *net.UDPAddr) (int, error)
 	WriteMsgUDP(b, oob []byte, addr *net.UDPAddr) (n, oobn int, err error)
 }
+*/

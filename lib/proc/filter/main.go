@@ -71,10 +71,7 @@ func ruleDebug(pkt parse.ParsedPacket, rule_id int, msg string) {
 }
 
 func applyAction(action meta.Action) bool {
-	if action == meta.ActionAccept {
-		return true
-	}
-	return false
+	return action == meta.ActionAccept
 }
 
 func alwaysDeny(pkt parse.ParsedPacket) meta.Match {

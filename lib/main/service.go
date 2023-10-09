@@ -61,7 +61,7 @@ func (svc *service) shutdown(cancel context.CancelFunc) {
 	os.Exit(0)
 }
 
-func (svc *service) serve(srv rcv.Server) (err error) {
+func (svc *service) serve(srv rcv.Server) {
 	for {
 		conn, err := srv.Listener.Accept()
 		if err != nil {
@@ -72,7 +72,7 @@ func (svc *service) serve(srv rcv.Server) (err error) {
 					continue
 				}
 			}
-			return err
+			return
 		}
 		log.Debug("service", fmt.Sprintf("Accept: %s://%s", srv.Listener.Addr().Network(), srv.Listener.Addr().String()))
 

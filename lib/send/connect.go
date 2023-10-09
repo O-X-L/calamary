@@ -25,7 +25,10 @@ func (l *Link) pipe(pkt parse.ParsedPacket, srcConn net.Conn, src io.ReadWriter,
 
 	buff := make([]byte, 0xffff)
 	for {
-		srcConn.SetDeadline(time.Now().Add(u.Timeout(cnf.C.Service.Timeout.Idle)))
+		err := srcConn.SetDeadline(time.Now().Add(u.Timeout(cnf.C.Service.Timeout.Idle)))
+		if err != nil {
+			parse.LogConnDebug("send", pkt, fmt.Sprintf("Error updating idle-timeout: %v", err))
+		}
 		if l.closed {
 			return
 		}

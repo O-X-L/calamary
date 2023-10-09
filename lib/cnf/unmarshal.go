@@ -26,7 +26,9 @@ func (a *YamlStringArray) UnmarshalYAML(value *yaml.Node) error {
 
 // apply defaults from tags on unmarshal
 func (s *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	defaults.Set(s)
+	if err := defaults.Set(s); err != nil {
+		return err
+	}
 
 	type plain Config
 	if err := unmarshal((*plain)(s)); err != nil {
@@ -37,7 +39,9 @@ func (s *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 func (s *ServiceConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	defaults.Set(s)
+	if err := defaults.Set(s); err != nil {
+		return err
+	}
 
 	type plain ServiceConfig
 	if err := unmarshal((*plain)(s)); err != nil {
@@ -48,7 +52,9 @@ func (s *ServiceConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 func (s *ServiceListener) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	defaults.Set(s)
+	if err := defaults.Set(s); err != nil {
+		return err
+	}
 
 	type plain ServiceListener
 	if err := unmarshal((*plain)(s)); err != nil {
@@ -59,7 +65,9 @@ func (s *ServiceListener) UnmarshalYAML(unmarshal func(interface{}) error) error
 }
 
 func (s *ServiceTimeout) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	defaults.Set(s)
+	if err := defaults.Set(s); err != nil {
+		return err
+	}
 
 	type plain ServiceTimeout
 	if err := unmarshal((*plain)(s)); err != nil {
@@ -70,7 +78,9 @@ func (s *ServiceTimeout) UnmarshalYAML(unmarshal func(interface{}) error) error 
 }
 
 func (s *ServiceOutput) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	defaults.Set(s)
+	if err := defaults.Set(s); err != nil {
+		return err
+	}
 
 	type plain ServiceOutput
 	if err := unmarshal((*plain)(s)); err != nil {
@@ -81,7 +91,9 @@ func (s *ServiceOutput) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 func (s *ServiceMetrics) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	defaults.Set(s)
+	if err := defaults.Set(s); err != nil {
+		return err
+	}
 
 	type plain ServiceMetrics
 	if err := unmarshal((*plain)(s)); err != nil {

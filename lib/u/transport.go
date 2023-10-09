@@ -1,9 +1,7 @@
 package u
 
 import (
-	"bufio"
 	"io"
-	"net"
 )
 
 const (
@@ -47,7 +45,9 @@ func CopyBuffer(dst io.Writer, src io.Reader, bufSize int) error {
 	return err
 }
 
+/*
 type bufferReaderConn struct {
 	net.Conn
 	br *bufio.Reader
 }
+*/

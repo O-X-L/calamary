@@ -16,7 +16,10 @@ import (
 )
 
 func Parse(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn, connIo io.Reader) (pkt ParsedPacket, err error) {
-	conn.SetReadDeadline(time.Now().Add(u.Timeout(cnf.C.Service.Timeout.Process)))
+	err = conn.SetReadDeadline(time.Now().Add(u.Timeout(cnf.C.Service.Timeout.Process)))
+	if err != nil {
+		log.Warn("parse", fmt.Sprintf("Error setting process-timeout: %v", err))
+	}
 
 	// get packet L5-header
 	var hdr [cnf.BYTES_HDR_L5]byte
@@ -37,7 +40,11 @@ func Parse(srvCnf cnf.ServiceListener, l4Proto meta.Proto, conn net.Conn, connIo
 		pkt = parseTcp(srvCnf, conn, connIo, hdr)
 	}
 
-	conn.SetReadDeadline(time.Time{})
+	err = conn.SetReadDeadline(time.Time{})
+	if err != nil {
+		log.Warn("parse", fmt.Sprintf("Error un-setting process-timeout: %v", err))
+	}
+
 	l5ProtoStr := meta.RevProto(pkt.L5.Proto)
 	tlsVersionStr := meta.RevTlsVersion(pkt.L5.TlsVersion)
 	if cnf.Metrics() {

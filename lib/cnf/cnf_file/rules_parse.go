@@ -197,7 +197,7 @@ func ParseRules(rawRules []cnf.RuleRaw) (rules []cnf.Rule) {
 			rule.Match.Domains = []string{}
 		}
 		for _, value := range ruleRaw.Match.Domains {
-			vf, vn, v = usedVar(value)
+			vf, _, v = usedVar(value)
 			if vf {
 				for i3 := range v.Value {
 					rule.Match.Domains = append(rule.Match.Domains, matchDomain(v.Value[i3]))

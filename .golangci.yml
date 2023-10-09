@@ -9,5 +9,5 @@ run:
 
 issues:
   exclude:
-    - 'structtag'  # yaml-config defaults
+    - 'S1000'
   exclude-rules: []

@@ -65,7 +65,11 @@ func forwardPlain(
 	dest := resolveTargetHostname(pkt)
 	if dest == nil {
 		proxyResp := responseFailed()
-		proxyResp.Write(conn)
+		err := proxyResp.Write(conn)
+		if err != nil {
+			parse.LogConnError("forward", pkt, "Failed to write proxy response")
+			return
+		}
 		return
 	}
 	pkt.L3.DestIP = dest
@@ -73,7 +77,11 @@ func forwardPlain(
 
 	if !filterConn(pkt, conn, connIo) {
 		proxyResp := responseReject()
-		proxyResp.Write(conn)
+		err := proxyResp.Write(conn)
+		if err != nil {
+			parse.LogConnError("forward", pkt, "Failed to write proxy response")
+			return
+		}
 		return
 	}
 	send.ForwardHttp(pkt, conn, connIo, req)
@@ -114,7 +122,11 @@ func forwardConnect(
 	dest := resolveTargetHostname(pkt)
 	if dest == nil {
 		proxyResp = responseFailed()
-		proxyResp.Write(conn)
+		err = proxyResp.Write(conn)
+		if err != nil {
+			parse.LogConnError("forward", pkt, "Failed to write proxy response")
+			return
+		}
 		return
 	}
 	pkt.L3.DestIP = dest
@@ -127,7 +139,11 @@ func forwardConnect(
 
 		} else {
 			proxyResp := responseReject()
-			proxyResp.Write(conn)
+			err = proxyResp.Write(conn)
+			if err != nil {
+				parse.LogConnError("forward", pkt, "Failed to write proxy response")
+				return
+			}
 			return
 		}
 	}

@@ -20,10 +20,7 @@ func validateConfig(newCnf cnf.Config, fail bool) bool {
 			return false
 		}
 	}
-	if !validateCerts(newCnf.Service.Certs, fail) {
-		return false
-	}
-	return true
+	return validateCerts(newCnf.Service.Certs, fail)
 }
 
 func validateListener(lncnf cnf.ServiceListener, fail bool) bool {

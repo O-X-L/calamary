@@ -20,6 +20,17 @@ type listenerTransparentTcp struct {
 
 func newServerTransparentTcp(addr string, lncnf cnf.ServiceListener) (Server, error) {
 	lc := net.ListenConfig{}
+
+	if lncnf.TProxy {
+		lc.Control = func(network, address string, c syscall.RawConn) error {
+			return c.Control(func(fd uintptr) {
+				if err := unix.SetsockoptInt(int(fd), unix.SOL_IP, unix.IP_TRANSPARENT, 1); err != nil {
+					log.ErrorS("listener-tcp", fmt.Sprintf("SetsockoptInt(SOL_IP, IP_TRANSPARENT, 1): %v", err))
+				}
+			})
+		}
+	}
+
 	ln, err := lc.Listen(
 		context.Background(),
 		"tcp",
@@ -46,14 +57,4 @@ func (l *listenerTransparentTcp) Addr() net.Addr {
 
 func (l *listenerTransparentTcp) Close() error {
 	return l.ln.Close()
-}
-
-func (l *listenerTransparentTcp) control(network, address string, c syscall.RawConn) error {
-	return c.Control(func(fd uintptr) {
-		if l.Lncnf.TProxy {
-			if err := unix.SetsockoptInt(int(fd), unix.SOL_IP, unix.IP_TRANSPARENT, 1); err != nil {
-				log.ErrorS("listener-tcp", fmt.Sprintf("SetsockoptInt(SOL_IP, IP_TRANSPARENT, 1): %v", err))
-			}
-		}
-	})
 }
