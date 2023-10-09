@@ -28,10 +28,6 @@ func AllStrInList(list []string, check []string) bool {
 	return true
 }
 
-func IsIPv4(address string) bool {
-	return strings.Contains(address, ".")
-}
-
 func IsDomainName(s string) bool {
 	// source: https://github.com/golang/go/blob/go1.20.5/src/net/dnsclient.go#L72-L75
 	if s == "." {
@@ -111,14 +107,19 @@ func dnsResolveWithServer(srv string) *net.Resolver {
 	}
 }
 
-func DnsLookup(dns string) (ips []net.IP) {
+func DnsLookup(host string) (ips []net.IP) {
 	var err error
+	isIP, ip := IsIP(host)
+	if isIP {
+		return append(ips, ip)
+	}
+
 	for _, srv := range cnf.C.Service.DnsNameservers {
 		ips, err = dnsResolveWithServer(srv).LookupIP(
-			context.Background(), "ip", dns,
+			context.Background(), "ip", host,
 		)
 		if err != nil {
-			log.Debug("util", fmt.Sprintf("Failed to lookup DNS '%s' via server %s: %v", dns, srv, err))
+			log.Debug("util", fmt.Sprintf("Failed to lookup DNS '%s' via server %s: %v", host, srv, err))
 			continue
 		}
 		if len(ips) > 0 {
@@ -126,10 +127,10 @@ func DnsLookup(dns string) (ips []net.IP) {
 		}
 	}
 	if len(ips) == 0 {
-		log.ErrorS("util", fmt.Sprintf("Failed to lookup DNS '%s'", dns))
+		log.ErrorS("util", fmt.Sprintf("Failed to lookup DNS '%s'", host))
 		return
 	}
-	log.Debug("util", fmt.Sprintf("DNS '%s' resolved to: %v", dns, ips))
+	log.Debug("util", fmt.Sprintf("DNS '%s' resolved to: %v", host, ips))
 	return ips
 }
 
@@ -144,11 +145,24 @@ func DnsLookup46(dns string) (ip4 []net.IP, ip6 []net.IP) {
 	return
 }
 
+// enclose IPv6 addresses in brackets
 func FormatIPv6(ip string) string {
+	// todo: maybe check if is IP first (needed?)
 	if !IsIPv4(ip) && !strings.Contains(ip, "[") {
 		return fmt.Sprintf("[%v]", ip)
 	}
 	return ip
+}
+
+func IsIPv4(address string) bool {
+	// todo: maybe check if is IP first (needed?)
+	return strings.Contains(address, ".")
+}
+
+func IsIP(host string) (valid bool, ip net.IP) {
+	ip = net.ParseIP(host)
+	valid = !(ip == nil)
+	return
 }
 
 func TrustedCAs() *x509.CertPool {
