@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net"
 	"os"
@@ -36,9 +35,7 @@ func (svc *service) signalHandler() {
 
 			case syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM:
 				log.Warn("service", "Received shutdown signal")
-				_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-				defer cancel()
-				svc.shutdown(cancel)
+				svc.shutdown()
 			}
 		}
 	}
@@ -52,8 +49,7 @@ func (svc *service) start() {
 	log.Info("service", "Started")
 }
 
-func (svc *service) shutdown(cancel context.CancelFunc) {
-	cancel()
+func (svc *service) shutdown() {
 	for _, srv := range svc.servers {
 		srv.Listener.Close()
 	}

@@ -105,15 +105,15 @@ func TestVars(t *testing.T) {
 		Vars: []cnf.Var{testVarFP, testVar1, testVar2},
 	}
 
-	vf, vn, v := usedVar("no-var")
+	vf, _, _ := usedVar("no-var")
 	if vf == true {
 		t.Error("Var #1")
 	}
-	vf, vn, v = usedVar("$non-existent-var")
+	vf, _, _ = usedVar("$non-existent-var")
 	if vf == true {
 		t.Error("Var #2")
 	}
-	vf, vn, v = usedVar("$test1")
+	vf, vn, v := usedVar("$test1")
 	if vf == false || vn == true || v.Name != testVar1.Name {
 		t.Error("Var #3")
 	}

@@ -1,6 +1,7 @@
 package fwd
 
 import (
+	"fmt"
 	"net"
 	"testing"
 
@@ -11,7 +12,10 @@ import (
 
 func TestTargetReachable(t *testing.T) {
 	cnf.C = &cnf.Config{}
-	defaults.Set(cnf.C) // probe timeout
+	err := defaults.Set(cnf.C) // probe timeout
+	if err != nil {
+		fmt.Printf("Failed to set default probe-timeout: %v", err)
+	}
 
 	testTarget := net.ParseIP("1.1.1.1")
 	if !TargetIsReachable("tcp", testTarget, 53) {
@@ -24,7 +28,10 @@ func TestTargetReachable(t *testing.T) {
 
 func TestFirstReachableTarget(t *testing.T) {
 	cnf.C = &cnf.Config{}
-	defaults.Set(cnf.C) // probe timeout
+	err := defaults.Set(cnf.C) // probe timeout
+	if err != nil {
+		fmt.Printf("Failed to set default probe-timeout: %v", err)
+	}
 
 	testTarget1 := net.ParseIP("135.181.170.219")
 	testTarget2 := net.ParseIP("1.1.1.1")

@@ -126,7 +126,7 @@ func TestIsIP(t *testing.T) {
 		t.Errorf("Failed to check for IP #1")
 	}
 
-	valid, ip = IsIP("test.at")
+	valid, _ = IsIP("test.at")
 	if valid {
 		t.Errorf("Failed to check for IP #2")
 	}
