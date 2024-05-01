@@ -10,6 +10,8 @@ Calamary is a [squid](http://www.squid-cache.org/)-like proxy.
 
 Its focus is set on transparent security filtering.
 
+**WARNING**: This Project is still in early development. Have not had enough time to focus on it (yet).
+
 ## Contributing
 
 Feel free to contribute to this project!
